@@ -218,6 +218,8 @@ body.tut-on #cards { display: none; }
 /* ---------- tooltip, toasts ---------- */
 #tip { position: fixed; z-index: 20; max-width: 320px; padding: 6px 10px; font-size: 13.5px; line-height: 1.35; pointer-events: none; border-width: 1.6px; }
 #tip.bad { border-color: var(--red); }
+body.armed #toolhint { visibility: hidden; }
+#tapok { position: fixed; z-index: 21; font-size: 16px; padding: 8px 16px; background-color: var(--paper); box-shadow: 3px 4px 0 var(--shadow); white-space: nowrap; }
 #tip ul { margin: 4px 0; padding-left: 16px; }
 #tip .why { color: var(--red); margin-top: 2px; }
 #tip .cost { font-family: var(--f-data); font-size: 12.5px; margin-top: 3px; }
@@ -380,6 +382,7 @@ body.tut-on #cards { display: none; }
   <div id="ticker" role="status" aria-live="polite"></div>
   <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><button data-legend="1" title="Co oznaczają linie i znaczki">Legenda</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
   <div id="tip" hidden></div>
+  <button id="tapok" class="act prim" hidden></button>
   <div id="toasts"></div>
   <div id="cards" aria-live="polite"></div>
   <div id="legend" hidden></div>

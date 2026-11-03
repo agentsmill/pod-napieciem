@@ -34,7 +34,7 @@
         text: 'Wybierz „Elektrownia parowa prądu stałego”. Na razie prądnice stoją w środku miasta – sieć niskiego napięcia sięga ledwie półtora kilometra.',
         done: () => (UI.tool && UI.tool.id === 'steam_dc') || !!firstPlant(), back: () => !UI.flyCat && !UI.tool },
       { title: 'Postaw ją w ' + (LOC[cn] || cn), map: () => city, enter: () => focus(city, Math.max(1.6, UI.V.cam.z)),
-        text: () => (UI.touch ? 'Dotknij pola w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Dotknij tego samego pola jeszcze raz, żeby zacząć budowę.' : 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.'),
+        text: () => (UI.touch ? 'Dotknij pola w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Potem naciśnij „Zbuduj” albo dotknij tego samego pola jeszcze raz.' : 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.'),
         done: () => !!firstPlant(), back: () => !UI.tool },
       { title: 'Puść czas', el: '#speed button[data-s="4"]', enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy – postęp widać na pasku pod rysunkiem. Kliknij 4×, żeby czas płynął szybciej (spacja to pauza, klawisze 1–4 zmieniają tempo).',
@@ -92,7 +92,7 @@
       { title: 'Kliknij koniec', map: end,
         text: () => (!P ? 'Kliknij miasto w zasięgu kręgu. Podpowiedź pokaże koszt, straty i czas budowy.'
           : P.d > hard * 0.97 ? 'Do miasta ' + nm(P.b) + ' jest ok. ' + PN.nf(km(), 0) + ' km – dalej, niż sięga jedna linia ' + lt.short + '. Kliknij puste pole w stronę miasta, w zasięgu kręgu: powstanie tam stacja, a linia pobiegnie dalej od niej. Powtarzaj, aż dojdziesz do miasta ' + nm(P.b) + '.'
-            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy' + (UI.touch ? ', a drugie dotknięcie zatwierdzi budowę.' : '.')),
+            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy' + (UI.touch ? ', a przycisk „Zbuduj linię” zatwierdzi budowę.' : '.')),
         done: () => reached(), back: () => !UI.tool },
       { title: 'Linia w budowie', next: true, last: true, enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy. Gdy linia ruszy, żółte kreski pokażą kierunek przepływu, a panel miasta – skąd płynie prąd. Kolejne linie stawiasz tak samo.' },

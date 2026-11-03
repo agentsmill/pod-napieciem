@@ -139,16 +139,26 @@
   };
 
   UI.kv = function (id) { const t = PN.TECH[id]; if (!t) return ''; return Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, PN.ym(UI.G)) : t.kvLabel; };
+  /* touch: after the first tap a button under the finger confirms the build (a second tap works too) */
+  UI.confirmTap = function (label, cx, cy, act) {
+    const b = $('#tapok'); if (!b) return;
+    document.body.classList.add('armed');
+    if (!label) { b.hidden = true; return; }
+    b.textContent = label; b.hidden = false; b.onclick = (e) => { e.stopPropagation(); b.hidden = true; act(); };
+    const w = b.offsetWidth, hgt = b.offsetHeight, W = window.innerWidth;
+    b.style.left = PN.clamp(cx - w / 2, 8, W - w - 8) + 'px'; b.style.top = Math.max(60, cy - hgt - 34) + 'px';
+  };
+  UI.disarm = function () { UI.tapArm = null; document.body.classList.remove('armed'); const b = $('#tapok'); if (b) b.hidden = true; };
   UI.setTool = function (tool) {
-    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null; UI.tapArm = null;
+    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null; UI.disarm();
     document.body.classList.toggle('tooling', !!tool);
     $('#toolhint').hidden = !tool;
     if (tool) {
       const t = PN.TECH[tool.id];
       const end = UI.touch ? ' Koniec: przycisk „Wskaż i sprawdź”.' : ' <kbd>Esc</kbd> kończy.';
       $('#toolhint').innerHTML = tool.kind === 'demolish' ? '<b>Burzenie</b> – kliknij obiekt lub linię.' + end :
-        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec' + (UI.touch ? '; drugie dotknięcie końca zatwierdza budowę.' : '.') + end :
-          '<b>' + esc(t.name) + '</b> – ' + (UI.touch ? 'dotknij pola, by zobaczyć koszt i zasięg; drugie dotknięcie buduje. ' : 'kliknij pole na mapie. ') + esc(t.desc || '') + end;
+        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec' + (UI.touch ? '; koniec zatwierdzasz przyciskiem „Zbuduj linię” albo drugim dotknięciem.' : '.') + end :
+          '<b>' + esc(t.name) + '</b> – ' + (UI.touch ? 'dotknij pola, by zobaczyć koszt i zasięg, potem naciśnij „Zbuduj” (albo dotknij pola drugi raz). ' : 'kliknij pole na mapie. ') + esc(t.desc || '') + end;
       if (tool.id === 'wind' || tool.id === 'wind_offshore') UI.setOverlay('wind');
       else if (tool.id === 'solar' || tool.id === 'csp') UI.setOverlay('solar');
       else if (['coal_mine', 'lignite_mine', 'gas_well'].indexOf(tool.id) >= 0) UI.setOverlay('res');

@@ -222,6 +222,8 @@ body.tut-on #cards { display: none; }
 /* ---------- tooltip, toasts ---------- */
 #tip { position: fixed; z-index: 20; max-width: 320px; padding: 6px 10px; font-size: 13.5px; line-height: 1.35; pointer-events: none; border-width: 1.6px; }
 #tip.bad { border-color: var(--red); }
+body.armed #toolhint { visibility: hidden; }
+#tapok { position: fixed; z-index: 21; font-size: 16px; padding: 8px 16px; background-color: var(--paper); box-shadow: 3px 4px 0 var(--shadow); white-space: nowrap; }
 #tip ul { margin: 4px 0; padding-left: 16px; }
 #tip .why { color: var(--red); margin-top: 2px; }
 #tip .cost { font-family: var(--f-data); font-size: 12.5px; margin-top: 3px; }
@@ -385,6 +387,7 @@ body.tut-on #cards { display: none; }
   <div id="ticker" role="status" aria-live="polite"></div>
   <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><button data-legend="1" title="Co oznaczają linie i znaczki">Legenda</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
   <div id="tip" hidden></div>
+  <button id="tapok" class="act prim" hidden></button>
   <div id="toasts"></div>
   <div id="cards" aria-live="polite"></div>
   <div id="legend" hidden></div>
@@ -8391,16 +8394,26 @@ window.PN_EVENTS_US = [
   };
 
   UI.kv = function (id) { const t = PN.TECH[id]; if (!t) return ''; return Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, PN.ym(UI.G)) : t.kvLabel; };
+  /* touch: after the first tap a button under the finger confirms the build (a second tap works too) */
+  UI.confirmTap = function (label, cx, cy, act) {
+    const b = $('#tapok'); if (!b) return;
+    document.body.classList.add('armed');
+    if (!label) { b.hidden = true; return; }
+    b.textContent = label; b.hidden = false; b.onclick = (e) => { e.stopPropagation(); b.hidden = true; act(); };
+    const w = b.offsetWidth, hgt = b.offsetHeight, W = window.innerWidth;
+    b.style.left = PN.clamp(cx - w / 2, 8, W - w - 8) + 'px'; b.style.top = Math.max(60, cy - hgt - 34) + 'px';
+  };
+  UI.disarm = function () { UI.tapArm = null; document.body.classList.remove('armed'); const b = $('#tapok'); if (b) b.hidden = true; };
   UI.setTool = function (tool) {
-    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null; UI.tapArm = null;
+    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null; UI.disarm();
     document.body.classList.toggle('tooling', !!tool);
     $('#toolhint').hidden = !tool;
     if (tool) {
       const t = PN.TECH[tool.id];
       const end = UI.touch ? ' Koniec: przycisk „Wskaż i sprawdź”.' : ' <kbd>Esc</kbd> kończy.';
       $('#toolhint').innerHTML = tool.kind === 'demolish' ? '<b>Burzenie</b> – kliknij obiekt lub linię.' + end :
-        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec' + (UI.touch ? '; drugie dotknięcie końca zatwierdza budowę.' : '.') + end :
-          '<b>' + esc(t.name) + '</b> – ' + (UI.touch ? 'dotknij pola, by zobaczyć koszt i zasięg; drugie dotknięcie buduje. ' : 'kliknij pole na mapie. ') + esc(t.desc || '') + end;
+        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec' + (UI.touch ? '; koniec zatwierdzasz przyciskiem „Zbuduj linię” albo drugim dotknięciem.' : '.') + end :
+          '<b>' + esc(t.name) + '</b> – ' + (UI.touch ? 'dotknij pola, by zobaczyć koszt i zasięg, potem naciśnij „Zbuduj” (albo dotknij pola drugi raz). ' : 'kliknij pole na mapie. ') + esc(t.desc || '') + end;
       if (tool.id === 'wind' || tool.id === 'wind_offshore') UI.setOverlay('wind');
       else if (tool.id === 'solar' || tool.id === 'csp') UI.setOverlay('solar');
       else if (['coal_mine', 'lignite_mine', 'gas_well'].indexOf(tool.id) >= 0) UI.setOverlay('res');
@@ -9225,7 +9238,7 @@ window.PN_EVENTS_US = [
         text: 'Wybierz „Elektrownia parowa prądu stałego”. Na razie prądnice stoją w środku miasta – sieć niskiego napięcia sięga ledwie półtora kilometra.',
         done: () => (UI.tool && UI.tool.id === 'steam_dc') || !!firstPlant(), back: () => !UI.flyCat && !UI.tool },
       { title: 'Postaw ją w ' + (LOC[cn] || cn), map: () => city, enter: () => focus(city, Math.max(1.6, UI.V.cam.z)),
-        text: () => (UI.touch ? 'Dotknij pola w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Dotknij tego samego pola jeszcze raz, żeby zacząć budowę.' : 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.'),
+        text: () => (UI.touch ? 'Dotknij pola w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Potem naciśnij „Zbuduj” albo dotknij tego samego pola jeszcze raz.' : 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.'),
         done: () => !!firstPlant(), back: () => !UI.tool },
       { title: 'Puść czas', el: '#speed button[data-s="4"]', enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy – postęp widać na pasku pod rysunkiem. Kliknij 4×, żeby czas płynął szybciej (spacja to pauza, klawisze 1–4 zmieniają tempo).',
@@ -9283,7 +9296,7 @@ window.PN_EVENTS_US = [
       { title: 'Kliknij koniec', map: end,
         text: () => (!P ? 'Kliknij miasto w zasięgu kręgu. Podpowiedź pokaże koszt, straty i czas budowy.'
           : P.d > hard * 0.97 ? 'Do miasta ' + nm(P.b) + ' jest ok. ' + PN.nf(km(), 0) + ' km – dalej, niż sięga jedna linia ' + lt.short + '. Kliknij puste pole w stronę miasta, w zasięgu kręgu: powstanie tam stacja, a linia pobiegnie dalej od niej. Powtarzaj, aż dojdziesz do miasta ' + nm(P.b) + '.'
-            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy' + (UI.touch ? ', a drugie dotknięcie zatwierdzi budowę.' : '.')),
+            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy' + (UI.touch ? ', a przycisk „Zbuduj linię” zatwierdzi budowę.' : '.')),
         done: () => reached(), back: () => !UI.tool },
       { title: 'Linia w budowie', next: true, last: true, enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy. Gdy linia ruszy, żółte kreski pokażą kierunek przepływu, a panel miasta – skąd płynie prąd. Kolejne linie stawiasz tak samo.' },
@@ -9531,7 +9544,7 @@ window.PN_EVENTS_US = [
       if (pinch && ptrs.size === 2) { const [a, b] = [...ptrs.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; const f = (pinch.z * d) / pinch.d / V.cam.z; V.zoomAt(mx, my, f); return; }
       if (drag) {
         const dx = p[0] - drag.x, dy = p[1] - drag.y;
-        if (!drag.moved && Math.hypot(dx, dy) > 6) drag.moved = true;
+        if (!drag.moved && Math.hypot(dx, dy) > (drag.type === 'touch' ? 16 : drag.type === 'pen' ? 10 : 6)) { drag.moved = true; UI.disarm(); }
         if (drag.moved) { const s = V.scale(); V.cam.x = drag.cx - dx / s; V.cam.y = drag.cy - dy / s; V.clampCam(); UI.tip(0, 0, null); return; }
       }
       hover(p[0], p[1], e.clientX, e.clientY);
@@ -9544,7 +9557,7 @@ window.PN_EVENTS_US = [
       if (!d.moved && e.type === 'pointerup') { if (d.btn === 2) { UI.setTool(null); return; } click(p[0], p[1], e.clientX, e.clientY, d.type); }
     };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
-    cv.addEventListener('pointerleave', () => { UI.tip(0, 0, null); if (V) V.hover = null; });
+    cv.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') return; UI.tip(0, 0, null); if (V) V.hover = null; });
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     cv.addEventListener('wheel', (e) => { e.preventDefault(); if (!V) return; const p = pos(e); V.zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0016))); }, { passive: false });
     window.addEventListener('resize', () => { if (V) V.resize(); });
@@ -9607,8 +9620,13 @@ window.PN_EVENTS_US = [
     if ((type === 'touch' || type === 'pen') && tool && (tool.kind === 'build' || (tool.kind === 'line' && V.lineStart))) {
       const ve = tool.kind === 'line' ? virtualEnd(wx, wy) : null;
       const key = tool.kind + ':' + tool.id + ':' + (ve && ve.node ? 'n' + ve.node.id : tx + ',' + ty);
-      if (UI.tapArm !== key) { UI.tapArm = key; hover(sx, sy, cx, cy); return; }
-      UI.tapArm = null; UI.tip(0, 0, null);
+      if (UI.tapArm !== key) {
+        UI.tapArm = key; hover(sx, sy, cx, cy);
+        const c = tool.kind === 'build' ? V.hover.check : V.hover.lcheck;
+        UI.confirmTap(c && c.ok ? (tool.kind === 'line' ? 'Zbuduj linię' : 'Zbuduj') + (c.cost != null ? ' · ' + PN.money(c.cost) : '') : null, cx, cy, () => click(sx, sy, cx, cy, type));
+        return;
+      }
+      UI.disarm(); UI.tip(0, 0, null); V.hover = null;
     }
     if (!tool) { const p = V.pick(sx, sy); UI.select(p ? p.obj : null); return; }
     if (tool.kind === 'build') {

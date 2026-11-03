@@ -157,7 +157,7 @@
       if (pinch && ptrs.size === 2) { const [a, b] = [...ptrs.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; const f = (pinch.z * d) / pinch.d / V.cam.z; V.zoomAt(mx, my, f); return; }
       if (drag) {
         const dx = p[0] - drag.x, dy = p[1] - drag.y;
-        if (!drag.moved && Math.hypot(dx, dy) > 6) drag.moved = true;
+        if (!drag.moved && Math.hypot(dx, dy) > (drag.type === 'touch' ? 16 : drag.type === 'pen' ? 10 : 6)) { drag.moved = true; UI.disarm(); }
         if (drag.moved) { const s = V.scale(); V.cam.x = drag.cx - dx / s; V.cam.y = drag.cy - dy / s; V.clampCam(); UI.tip(0, 0, null); return; }
       }
       hover(p[0], p[1], e.clientX, e.clientY);
@@ -170,7 +170,7 @@
       if (!d.moved && e.type === 'pointerup') { if (d.btn === 2) { UI.setTool(null); return; } click(p[0], p[1], e.clientX, e.clientY, d.type); }
     };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
-    cv.addEventListener('pointerleave', () => { UI.tip(0, 0, null); if (V) V.hover = null; });
+    cv.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') return; UI.tip(0, 0, null); if (V) V.hover = null; });
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     cv.addEventListener('wheel', (e) => { e.preventDefault(); if (!V) return; const p = pos(e); V.zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0016))); }, { passive: false });
     window.addEventListener('resize', () => { if (V) V.resize(); });
@@ -233,8 +233,13 @@
     if ((type === 'touch' || type === 'pen') && tool && (tool.kind === 'build' || (tool.kind === 'line' && V.lineStart))) {
       const ve = tool.kind === 'line' ? virtualEnd(wx, wy) : null;
       const key = tool.kind + ':' + tool.id + ':' + (ve && ve.node ? 'n' + ve.node.id : tx + ',' + ty);
-      if (UI.tapArm !== key) { UI.tapArm = key; hover(sx, sy, cx, cy); return; }
-      UI.tapArm = null; UI.tip(0, 0, null);
+      if (UI.tapArm !== key) {
+        UI.tapArm = key; hover(sx, sy, cx, cy);
+        const c = tool.kind === 'build' ? V.hover.check : V.hover.lcheck;
+        UI.confirmTap(c && c.ok ? (tool.kind === 'line' ? 'Zbuduj linię' : 'Zbuduj') + (c.cost != null ? ' · ' + PN.money(c.cost) : '') : null, cx, cy, () => click(sx, sy, cx, cy, type));
+        return;
+      }
+      UI.disarm(); UI.tip(0, 0, null); V.hover = null;
     }
     if (!tool) { const p = V.pick(sx, sy); UI.select(p ? p.obj : null); return; }
     if (tool.kind === 'build') {
