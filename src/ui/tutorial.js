@@ -13,8 +13,10 @@
     const l = G.lines.find((q) => q.local && (q.a === p.id || q.b === p.id)), id = l && (l.a === p.id ? l.b : l.a);
     return (id != null && G.cities.find((c) => c.id === id)) || homeCity();
   };
-  const phone = () => window.innerWidth <= 820;
+  const phone = () => window.innerWidth <= 820 && window.innerHeight > 520; // phone held upright; sideways uses the side placement
   const nm = (n) => (n.type === 'city' ? PN.cityName(n, PN.G.y) : n.name);
+  // on an upright phone the note sits at the bottom: show the target in the upper part of the map
+  const focus = (c, z) => { const V = UI.V; V.centerOn(c.x, c.y, z); if (phone()) { V.cam.y += (window.innerHeight * 0.18) / V.scale(); V.clampCam(); } };
   const visible = (el) => !!el && el.offsetParent !== null && !el.closest('[hidden]');
 
   T.build = function () {
@@ -24,22 +26,22 @@
       { title: 'Witaj w kronice sieci', next: true,
         text: pl ? 'Jest ' + G.y + ' rok i prąd elektryczny to nowinka – miasta świecą gazem i naftą. Zbudujesz pierwszą elektrownię, puścisz czas i zobaczysz, jak ' + cn + ' zapala światła. To zajmie kilka minut.'
           : 'Jest ' + G.y + ' rok. Thomas Edison szykuje elektrownię przy Pearl Street, a Manhattan świeci gazem. Zbudujesz własną elektrownię, puścisz czas i zobaczysz, jak miasto zapala światła. To zajmie kilka minut.' },
-      { title: 'Mapa', next: true, map: () => city, enter: () => UI.V.centerOn(city.x, city.y, Math.max(1.6, UI.V.cam.z)),
+      { title: 'Mapa', next: true, map: () => city, enter: () => focus(city, Math.max(1.6, UI.V.cam.z)),
         text: 'Przeciągnij mapę myszą lub palcem, a kółkiem albo dwoma palcami przybliżaj. ' + (pl ? 'Kreskowane obszary to ziemie poza Twoim zasięgiem w tej epoce – zabór pruski i Cesarstwo Niemieckie.' : 'Kanada i Meksyk leżą poza Twoim zasięgiem, ale później połączysz się z nimi liniami.') },
       { title: 'Elektrownie', el: '#tools button[data-cat="gen"]', text: 'Otwórz menu elektrowni na lewym pasku.',
         done: () => UI.flyCat === 'gen' || !!UI.tool || !!firstPlant() },
       { title: 'Pierwsza elektrownia', el: '#fly [data-tech="steam_dc"]',
         text: 'Wybierz „Elektrownia parowa prądu stałego”. Na razie prądnice stoją w środku miasta – sieć niskiego napięcia sięga ledwie półtora kilometra.',
         done: () => (UI.tool && UI.tool.id === 'steam_dc') || !!firstPlant(), back: () => !UI.flyCat && !UI.tool },
-      { title: 'Postaw ją w ' + (LOC[cn] || cn), map: () => city,
-        text: 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.',
+      { title: 'Postaw ją w ' + (LOC[cn] || cn), map: () => city, enter: () => focus(city, Math.max(1.6, UI.V.cam.z)),
+        text: () => (UI.touch ? 'Dotknij pola w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Dotknij tego samego pola jeszcze raz, żeby zacząć budowę.' : 'Najedź na pole w obrębie miasta: zielona ramka i podpowiedź pokażą koszt i czas budowy. Kliknij, żeby zacząć budowę.'),
         done: () => !!firstPlant(), back: () => !UI.tool },
       { title: 'Puść czas', el: '#speed button[data-s="4"]', enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy – postęp widać na pasku pod rysunkiem. Kliknij 4×, żeby czas płynął szybciej (spacja to pauza, klawisze 1–4 zmieniają tempo).',
         done: () => UI.speed > 0 || (firstPlant() && firstPlant().built) },
       { title: 'Budowa trwa', el: '#ticker', text: 'Czekamy, aż elektrownia ruszy. W lewym dolnym rogu jest kronika – trafiają tam wszystkie wiadomości.',
         done: () => firstPlant() && firstPlant().built },
-      { title: 'Jest prąd!', map: servedCity, enter: () => { const c = servedCity(); UI.V.centerOn(c.x, c.y, Math.max(1.8, UI.V.cam.z)); },
+      { title: 'Jest prąd!', map: servedCity, enter: () => focus(servedCity(), Math.max(1.8, UI.V.cam.z)),
         text: 'Elektrownia pracuje, a w mieście zapalają się pierwsze okna. Kliknij miasto, żeby zobaczyć, ilu mieszkańców ma już elektryczność.',
         done: () => UI.sel === servedCity() },
       { title: 'Panel miasta', el: '#info', next: true,
@@ -90,7 +92,7 @@
       { title: 'Kliknij koniec', map: end,
         text: () => (!P ? 'Kliknij miasto w zasięgu kręgu. Podpowiedź pokaże koszt, straty i czas budowy.'
           : P.d > hard * 0.97 ? 'Do miasta ' + nm(P.b) + ' jest ok. ' + PN.nf(km(), 0) + ' km – dalej, niż sięga jedna linia ' + lt.short + '. Kliknij puste pole w stronę miasta, w zasięgu kręgu: powstanie tam stacja, a linia pobiegnie dalej od niej. Powtarzaj, aż dojdziesz do miasta ' + nm(P.b) + '.'
-            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy.'),
+            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy' + (UI.touch ? ', a drugie dotknięcie zatwierdzi budowę.' : '.')),
         done: () => reached(), back: () => !UI.tool },
       { title: 'Linia w budowie', next: true, last: true, enter: () => UI.setTool(null),
         text: 'Budowa potrwa kilka miesięcy. Gdy linia ruszy, żółte kreski pokażą kierunek przepływu, a panel miasta – skąd płynie prąd. Kolejne linie stawiasz tak samo.' },
@@ -161,7 +163,8 @@
       T.ring.hidden = false;
     } else T.ring.hidden = true;
     // place the note next to the target, inside the viewport
-    const cw = T.card.offsetWidth, ch = T.card.offsetHeight, m = 16, top = 76;
+    const hud = document.getElementById('hud'), top = hud ? Math.round(hud.getBoundingClientRect().bottom) + 8 : 76;
+    const cw = T.card.offsetWidth, ch = T.card.offsetHeight, m = window.innerHeight < 520 ? 8 : 16;
     const fitX = (v) => PN.clamp(v, m, Math.max(m, W - cw - m)), fitY = (v) => PN.clamp(v, top, Math.max(top, H - ch - m));
     // how much of the target (plus a small margin) a note placed at x,y would cover
     const cover = (x, y) => { if (!r) return 0; const g = 10, ox = Math.min(x + cw, r.right + g) - Math.max(x, r.left - g), oy = Math.min(y + ch, r.bottom + g) - Math.max(y, r.top - g); return ox > 0 && oy > 0 ? ox * oy : 0; };

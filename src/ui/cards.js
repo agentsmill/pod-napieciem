@@ -11,7 +11,7 @@
 
   /* ---------------------------------------------------------------- cards */
   const box = () => $('#cards');
-  const maxCards = () => (window.innerWidth <= 820 ? 2 : window.innerHeight < 760 ? 2 : 3);
+  const maxCards = () => (window.innerHeight < 520 ? 1 : window.innerWidth <= 820 ? 2 : window.innerHeight < 760 ? 2 : 3);
   C.add = function (kind, html, opts) {
     opts = opts || {};
     const b = box(); if (!b) return null;

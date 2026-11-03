@@ -46,6 +46,14 @@ Wagi zmieniają się z epoką: na początku liczy się głównie dostęp, od lat
 - **Skąd płynie prąd**: po kliknięciu miasta panel pokazuje udziały elektrowni w jego energii, a mapa – drogę prądu (żółta poświata). Po kliknięciu elektrowni – dokąd trafia jej energia. Udziały liczy metoda proporcjonalnego podziału przepływów (Bialek).
 - **Legenda** (przycisk w prawym dolnym rogu) objaśnia wszystkie linie i znaczki.
 
+## Telefon i tablet
+
+Gra działa na ekranach dotykowych w pionie i w poziomie (sprawdzone w emulacji iPhone SE, iPhone 13, Pixel 7 i iPad Mini, z dotykiem zamiast myszy):
+- **budowa w dwóch dotknięciach**: pierwsze pokazuje koszt, czas budowy i krąg zasięgu, drugie na tym samym polu buduje (na linii dotyczy to punktu końcowego); myszą wystarcza jedno kliknięcie,
+- **w pionie** narzędzia są na dole, panel wysuwa się od dołu (▾ go zwija), warstwy są w kolumnie po prawej, a karty u góry,
+- **w poziomie** (niski ekran) pasek stanu ma jeden wiersz, narzędzia są w kolumnie po lewej, a panel z boku, żeby mapa została widoczna,
+- samouczek mówi o dotykaniu, gdy ekran jest dotykowy, i ustawia mapę tak, żeby cel nie chował się pod notatką.
+
 ## GitHub Pages
 
 Repozytorium jest gotowe do publikacji bez żadnego kroku budowania po stronie GitHuba: w *Settings → Pages* wybierz *Deploy from a branch*, gałąź `main` i katalog `/ (root)`. Po każdej zmianie w `src/` uruchom `node build.js` i zatwierdź nowy `index.html`.

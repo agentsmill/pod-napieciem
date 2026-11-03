@@ -17,6 +17,9 @@
 
   /* ---------------------------------------------------------------- setup */
   UI.init = function () {
+    // touch screens have no hover: know it before the first tap, and follow whatever the player uses
+    UI.touch = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    document.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' || e.pointerType === 'pen') UI.touch = true; else if (e.pointerType === 'mouse') UI.touch = false; }, true);
     $('#tools').addEventListener('click', (e) => {
       const b = e.target.closest('button[data-cat]'); if (!b) return;
       const cat = b.dataset.cat;
@@ -137,14 +140,15 @@
 
   UI.kv = function (id) { const t = PN.TECH[id]; if (!t) return ''; return Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, PN.ym(UI.G)) : t.kvLabel; };
   UI.setTool = function (tool) {
-    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null;
+    UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null; UI.tapArm = null;
     document.body.classList.toggle('tooling', !!tool);
     $('#toolhint').hidden = !tool;
     if (tool) {
       const t = PN.TECH[tool.id];
-      $('#toolhint').innerHTML = tool.kind === 'demolish' ? '<b>Burzenie</b> – kliknij obiekt lub linię. <kbd>Esc</kbd> kończy.' :
-        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec. <kbd>Esc</kbd> kończy.' :
-          '<b>' + esc(t.name) + '</b> – kliknij pole na mapie. ' + esc(t.desc || '') + ' <kbd>Esc</kbd> kończy.';
+      const end = UI.touch ? ' Koniec: przycisk „Wskaż i sprawdź”.' : ' <kbd>Esc</kbd> kończy.';
+      $('#toolhint').innerHTML = tool.kind === 'demolish' ? '<b>Burzenie</b> – kliknij obiekt lub linię.' + end :
+        tool.kind === 'line' ? '<b>' + esc(t.name) + '</b> – kliknij początek (elektrownia, miasto, stacja lub puste pole), potem koniec' + (UI.touch ? '; drugie dotknięcie końca zatwierdza budowę.' : '.') + end :
+          '<b>' + esc(t.name) + '</b> – ' + (UI.touch ? 'dotknij pola, by zobaczyć koszt i zasięg; drugie dotknięcie buduje. ' : 'kliknij pole na mapie. ') + esc(t.desc || '') + end;
       if (tool.id === 'wind' || tool.id === 'wind_offshore') UI.setOverlay('wind');
       else if (tool.id === 'solar' || tool.id === 'csp') UI.setOverlay('solar');
       else if (['coal_mine', 'lignite_mine', 'gas_well'].indexOf(tool.id) >= 0) UI.setOverlay('res');
@@ -183,7 +187,8 @@
     const G = UI.G; if (!G) return;
     const now = performance.now(); if (!force && now - UI.lastHud < 250) return; UI.lastHud = now;
     const st = G.stats || {};
-    $('#date').textContent = PN.MONTHS[G.m] + ' ' + G.y;
+    const narrow = window.innerWidth < 380 || (window.innerHeight < 520 && window.innerWidth < 720);
+    $('#date').textContent = (narrow ? PN.MONTHS_SHORT[G.m] : PN.MONTHS[G.m]) + ' ' + G.y;
     $('#era').textContent = UI.era();
     $('#money').textContent = PN.money(G.money);
     const pf = st.profit || 0; const mp = $('#mprofit'); mp.textContent = PN.money(pf, { sign: true }) + '/mies.'; mp.className = 'sub ' + (pf >= 0 ? 'pos' : 'neg');

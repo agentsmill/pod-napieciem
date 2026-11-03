@@ -148,7 +148,8 @@
     cv.addEventListener('pointerdown', (e) => {
       cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, pos(e));
       if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: V.cam.z }; drag = null; return; }
-      const [x, y] = pos(e); drag = { x, y, cx: V.cam.x, cy: V.cam.y, moved: false, btn: e.button };
+      const [x, y] = pos(e); drag = { x, y, cx: V.cam.x, cy: V.cam.y, moved: false, btn: e.button, type: e.pointerType };
+      if (e.pointerType === 'touch' || e.pointerType === 'pen') UI.touch = true; else if (e.pointerType === 'mouse') UI.touch = false;
     });
     cv.addEventListener('pointermove', (e) => {
       if (!V) return; const p = pos(e);
@@ -166,7 +167,7 @@
       if (pinch) { if (ptrs.size < 2) pinch = null; drag = null; return; }
       if (!had || !drag) return;
       const p = pos(e); const d = drag; drag = null;
-      if (!d.moved && e.type === 'pointerup') { if (d.btn === 2) { UI.setTool(null); return; } click(p[0], p[1], e.clientX, e.clientY); }
+      if (!d.moved && e.type === 'pointerup') { if (d.btn === 2) { UI.setTool(null); return; } click(p[0], p[1], e.clientX, e.clientY, d.type); }
     };
     cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
     cv.addEventListener('pointerleave', () => { UI.tip(0, 0, null); if (V) V.hover = null; });
@@ -226,8 +227,15 @@
     return '<b>' + PN.esc(o.name) + '</b>' + (o.cap ? '<div>' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie ' + PN.pct(o.prog)) + '</div>' : '');
   }
   function cvCursor(c) { $('#map').style.cursor = c; }
-  function click(sx, sy) {
+  function click(sx, sy, cx, cy, type) {
     const tool = UI.tool; const [wx, wy] = V.toWorld(sx, sy); const tx = Math.floor(wx), ty = Math.floor(wy);
+    // a finger cannot hover: the first touch shows cost, time and reach, a second touch on the same spot builds
+    if ((type === 'touch' || type === 'pen') && tool && (tool.kind === 'build' || (tool.kind === 'line' && V.lineStart))) {
+      const ve = tool.kind === 'line' ? virtualEnd(wx, wy) : null;
+      const key = tool.kind + ':' + tool.id + ':' + (ve && ve.node ? 'n' + ve.node.id : tx + ',' + ty);
+      if (UI.tapArm !== key) { UI.tapArm = key; hover(sx, sy, cx, cy); return; }
+      UI.tapArm = null; UI.tip(0, 0, null);
+    }
     if (!tool) { const p = V.pick(sx, sy); UI.select(p ? p.obj : null); return; }
     if (tool.kind === 'build') {
       const r = PN.build(G, tool.id, tx, ty);
