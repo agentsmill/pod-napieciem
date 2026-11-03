@@ -57,6 +57,7 @@
     PN.bus.on('mission', () => { if (UI.tab === 'overview' || UI.tab === 'goals') UI.refreshInfo(true); });
     PN.bus.on('completed', (o) => { const n = o.a ? null : o; if (n && n.x != null) V.flash.push({ x: n.x, y: n.y, until: performance.now() + 900 }); });
     PN.bus.on('gameover', (k) => UI.gameOver(k));
+    PN.bus.on('chapter', (r) => UI.onChapter(r));
     PN.bus.on('month', () => { if (UI.sel) UI.V.trace = UI.traceFor(UI.sel); UI.refreshInfo(); if (PN.Cards) PN.Cards.sync(); if (UI.G.m === 0) PN.autosave && PN.autosave(); });
     PN.bus.on('tech', (ids) => { if (PN.Cards) { PN.Cards.tech(ids); PN.Cards.updateLayers(); } if (UI.flyCat && !$('#fly').hidden) UI.openFly(UI.flyCat); });
     PN.bus.on('ipp', (o) => { if (PN.Cards) PN.Cards.ipp(o); });
@@ -243,9 +244,46 @@
   const row = (k, v, cls) => '<div class="kv' + (cls ? ' ' + cls : '') + '"><span>' + k + '</span><b>' + v + '</b></div>';
   const btn = (act, label, cost, dis, extra) => '<button class="act' + (dis ? ' dis' : '') + '" data-act="' + act + '"' + (dis ? ' disabled' : '') + (extra || '') + '>' + label + (cost != null ? ' <span class="c">' + PN.money(cost) + '</span>' : '') + '</button>';
 
+  const STARS = (n) => '<span class="stars" aria-label="' + n + ' z 3 gwiazdek">' + '★'.repeat(n) + '<i>' + '☆'.repeat(3 - n) + '</i></span>';
+  UI.starsHtml = STARS;
+  const HOW = [
+    'Doprowadź prąd do kolejnych miast, rozbudowuj sieci miejskie i uruchamiaj elektryfikację wsi.',
+    'Dobuduj moc i linie, trzymaj zapas mocy na awarie i mrozy.',
+    'Tańsze paliwo (własne kopalnie), sprawniejsze bloki, mniejsze straty w liniach i nic na zapas bez potrzeby.',
+    'Gaz zamiast węgla, odnawialne źródła i atom; najstarsze, najbrudniejsze bloki wyłączaj.',
+  ];
+  /* what we are playing for, always on top of the overview */
+  UI.goalHtml = function () {
+    const G = UI.G, y = PN.ym(G), chs = G.sc.chapters || [], ch = PN.chapterAt(G, y), r = G.goalNow;
+    if (!chs.length) return '';
+    if (!ch) return '<div class="goal"><div class="goal-h"><b>Kronika zakończona</b></div><p class="note">Ocena końcowa: ' + Math.round(PN.goalFinal(G).score) + ' pkt. Grasz dalej bez oceny.</p></div>';
+    const k = chs.indexOf(ch), a = G.goal && G.goal.acc && G.goal.acc.id === ch.id ? G.goal.acc : null, avg = a && a.n ? a.sum / a.n : null;
+    const w = PN.goalWeights(G), done = PN.clamp((y - ch.from) / (ch.to - ch.from), 0, 1);
+    let s = '<div class="goal"><div class="goal-h"><span>Rozdział ' + (k + 1) + ' z ' + chs.length + ': <b>' + esc(ch.name) + '</b></span>' + STARS(PN.stars(avg)) + '</div>';
+    s += '<div class="goal-t" title="Postęp rozdziału"><i style="width:' + Math.round(done * 100) + '%"></i></div>';
+    if (r) {
+      s += '<div class="pillars">';
+      PN.GOAL_NAMES.forEach((nmx, j) => {
+        if (w[j] < 0.005) { s += '<div class="pl off" title="W tej epoce jeszcze się nie liczy"><span>' + nmx + '</span><b>–</b></div>'; return; }
+        const v = Math.round(r.pil[j]);
+        s += '<div class="pl' + (v < 40 ? ' low' : '') + '"><span>' + nmx + ' <small>' + Math.round(w[j] * 100) + '%</small></span><b>' + v + '</b><i><em style="width:' + v + '%"></em></i></div>';
+      });
+      s += '</div>';
+      const det = [];
+      if (r.could > 1) det.push('prąd ma ' + PN.pct(r.have / r.could, 0) + ' tylu ludzi, co w historii');
+      if (r.mwhCost != null) det.push('Twój koszt ' + PN.price(r.mwhCost) + ', taryfa ' + PN.price(r.price));
+      if (w[3] >= 0.005 && r.gh) det.push(PN.nf(r.g, 0) + ' g CO₂/kWh (historycznie ' + PN.nf(r.gh, 0) + ')');
+      if (det.length) s += '<p class="goal-d">' + esc(det.join(' · ')) + '</p>';
+      let worst = -1, wv = 1e9; for (let j = 0; j < 4; j++) if (w[j] >= 0.1 && r.pil[j] < wv) { wv = r.pil[j]; worst = j; }
+      if (worst >= 0 && wv < 60) s += '<p class="goal-tip"><b>' + PN.GOAL_NAMES[worst] + ':</b> ' + esc(HOW[worst]) + '</p>';
+    }
+    s += '<p class="note">Ocena rozdziału: <b>' + (avg == null ? '–' : Math.round(avg) + ' pkt') + '</b> · koniec w ' + Math.floor(ch.to) + ' r.</p></div>';
+    return s;
+  };
   UI.overviewHtml = function () {
     const G = UI.G, st = G.stats || {}, y = PN.ym(G), H = PN.helpers(G);
     let s = '<h2>' + esc(G.sc.name) + ' · ' + G.y + '</h2><p class="era">' + esc(UI.era()) + '</p>';
+    s += UI.goalHtml();
     s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (PN.co2Price(G) > 0 ? row(G.code === 'PL' ? 'Cena uprawnień CO₂ (EU ETS)' : 'Cena CO₂ (programy stanowe)', PN.money(PN.co2Price(G)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
     const adv = UI.advice();
     if (adv.length) s += '<h3>Doradca</h3><ul class="advice">' + adv.map((a) => '<li' + (a.p >= 8 ? ' class="hot"' : '') + '>' + (a.id ? '<a href="#" data-goto="' + a.id + '">' + esc(a.t) + '</a>' : esc(a.t)) + '</li>').join('') + '</ul>';
@@ -311,7 +349,13 @@
     return '<div class="mission ' + cls + '"><b>' + esc(m.title) + '</b> <small>do ' + m.deadline + '</small><p>' + esc(m.text) + '</p><div class="bar"><i style="width:' + Math.round(p * 100) + '%"></i></div><small>' + (st.state === 'done' ? 'Wykonane w ' + Math.floor(st.when) + ' r.' : st.state === 'failed' ? 'Nie udało się' : 'Postęp ' + PN.pct(p) + ' · nagroda ' + PN.money(m.reward.money || 0)) + '</small></div>';
   };
   UI.goalsHtml = function () {
-    const G = UI.G; let s = '<h2>Zadania</h2>';
+    const G = UI.G, chs = G.sc.chapters || [], y = PN.ym(G), cur = PN.chapterAt(G, y);
+    let s = '<h2>Cel gry</h2><p class="note">Daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Każdy rozdział historii dostaje ocenę z czterech wskaźników (dostęp, niezawodność, koszt, klimat) w porównaniu z prawdziwą historią. Na koniec kroniki: ocena końcowa.</p><ul class="chapters">';
+    for (const c of chs) {
+      const d = G.goal && G.goal.done[c.id], on = cur === c;
+      s += '<li class="' + (d ? 'done' : on ? 'on' : 'next') + '"><span>' + Math.floor(c.from) + '–' + Math.floor(c.to) + ' · ' + esc(c.name) + '</span>' + (d ? (d.score == null ? '<b>–</b>' : STARS(PN.stars(d.score)) + '<b>' + Math.round(d.score) + '</b>') : on ? '<b>trwa</b>' : '<b></b>') + '</li>';
+    }
+    s += '</ul><h2>Zadania</h2>';
     const list = G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state !== 'hidden');
     if (!list.length) s += '<p>Zadania pojawią się wraz z epokami.</p>';
     for (const m of list.slice().reverse()) s += UI.missionHtml(m);
@@ -642,8 +686,38 @@
     const html = '<h2>Propozycja umowy</h2><canvas class="evicon" width="200" height="200" data-icon="data"></canvas><p><b>' + esc(o.company) + '</b> planuje ' + (o.ai ? 'centrum obliczeń sztucznej inteligencji' : 'centrum danych') + '. Lokalizacja: <b>' + esc(c ? PN.cityName(c, G.y) : '?') + '</b> i okolice.</p><div class="kvs">' + row('Moc docelowa', PN.mw(o.mw)) + row('Dojście do pełnej mocy', PN.months(o.years * 12)) + row('Taryfa', '+' + PN.pct(o.premium) + ' ponad cenę') + row('Warunek', 'zasilanie 24/7, kara za braki') + '</div><p class="note">Oferta czeka pół roku w zakładce Przegląd.</p><div class="row end"><button class="act" data-m="later">Później</button><button class="act" data-m="no">Odrzuć</button><button class="act prim" data-m="yes">Podpisz umowę</button></div>';
     UI.modal(html, { cls: 'offer', queue: true, pause: G.settings.pauseOnEvents, on: (k) => { if (k === 'yes') { const n = PN.acceptOffer(G, o); if (n) { UI.V.centerOn(n.x, n.y); UI.select(n); } } else if (k === 'no') PN.declineOffer(G, o); UI.refreshInfo(true); } });
   };
+  UI.onChapter = function (res) {
+    const G = UI.G; if (G.y >= G.sc.end || res.score == null) return; // the final report covers the last chapter
+    const chs = G.sc.chapters, next = chs[chs.findIndex((c) => c.id === res.id) + 1], st = PN.stars(res.score), L = res.last || {};
+    let html = '<div class="report"><div class="k">Rozdział zamknięty · ' + Math.floor(res.from) + '–' + Math.floor(res.to) + '</div><h2>' + esc(res.name) + '</h2><div class="grade">' + STARS(st).replace('stars', 'stars big') + '<b>' + Math.round(res.score) + ' pkt</b><span>' + esc(PN.goalTitle(res.score)) + '</span></div><div class="kvs">';
+    PN.GOAL_NAMES.forEach((nmx, j) => { if (res.w[j] >= 0.005) html += row(nmx + ' <small>(waga ' + Math.round(res.w[j] * 100) + '%)</small>', Math.round(res.pil[j]) + ' / 100', res.pil[j] < 40 ? 'neg' : res.pil[j] >= 70 ? 'pos' : ''); });
+    html += '</div><h3>Ty i historia</h3><ul class="help">';
+    if (L.could > 1) html += '<li>Prąd ma ' + PN.pct(L.have / L.could, 0) + ' tylu mieszkańców, ilu miało go naprawdę w ' + Math.floor(res.to) + ' r.</li>';
+    if (L.q != null) html += '<li>Zasilono ' + PN.pct(L.q, 1) + ' zapotrzebowania miast.</li>';
+    if (L.mwhCost != null) html += '<li>Twój koszt energii: ' + PN.price(L.mwhCost) + ' (z kosztem kapitału), historyczna taryfa: ' + PN.price(L.price) + '.</li>';
+    if (res.w[3] >= 0.005 && L.gh) html += '<li>Emisyjność ' + PN.nf(L.g, 0) + ' g CO₂/kWh, a w prawdziwej sieci ' + PN.nf(L.gh, 0) + ' g.</li>';
+    html += '</ul>';
+    if (next) {
+      const w0 = res.w, w1 = PN.goalWeights(G, (next.from + next.to) / 2), up = PN.GOAL_NAMES.map((n, j) => [n, w1[j] - w0[j], w1[j]]).filter((x) => x[1] > 0.04).sort((a, b) => b[1] - a[1]);
+      html += '<p class="lead">Następny rozdział: <b>' + esc(next.name) + '</b> (do ' + Math.floor(next.to) + ' r.).' + (up.length ? ' Bardziej liczy się teraz: ' + up.map((x) => x[0].toLowerCase() + ' (' + Math.round(x[2] * 100) + '%)').join(', ') + '.' : '') + '</p>';
+    }
+    html += '</div><div class="row end"><button class="act prim" data-m="ok">Dalej</button></div>';
+    UI.modal(html, { queue: true, cls: 'chapter' });
+  };
   UI.gameOver = function (kind) {
     const G = UI.G, H = PN.helpers(G);
+    if (G.sc.chapters) {
+      const f = PN.goalFinal(G), best = PN.bestScore && PN.bestScore(G.code);
+      if (kind === 'end' && PN.saveBest) PN.saveBest(G.code, f);
+      let html = '<div class="report"><div class="k">' + (kind === 'bankrupt' ? 'Kampania przerwana · ' + G.y : 'Koniec kroniki · ' + G.y) + '</div><h2>' + (kind === 'bankrupt' ? 'Bankructwo' : esc(f.title)) + '</h2>';
+      html += '<div class="grade">' + STARS(f.stars).replace('stars', 'stars big') + '<b>' + Math.round(f.score) + ' pkt</b><span>' + (kind === 'bankrupt' ? 'wierzyciele przejęli sieć' : 'ocena końcowa') + '</span></div><ul class="chapters">';
+      for (const c of G.sc.chapters) { const d = f.chapters.find((q) => q.id === c.id); html += '<li class="' + (d ? 'done' : 'next') + '"><span>' + Math.floor(c.from) + '–' + Math.floor(c.to) + ' · ' + esc(c.name) + (d && d.partial ? ' (niedokończony)' : '') + '</span>' + (d ? STARS(PN.stars(d.score)) + '<b>' + Math.round(d.score) + '</b>' : '<b>–</b>') + '</li>'; }
+      html += '</ul><div class="kvs">' + row('Energia dostarczona łącznie', PN.mwh(G.hist.reduce((s, q) => s + (q.servedE || 0), 0))) + row('Wykonane zadania', G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state === 'done').length + ' / ' + G.sc.missions.length) + row('Udział czystej energii', PN.pct(H.cleanShare())) + row('Emisyjność', PN.nf(H.co2g(), 0) + ' g CO₂/kWh') + '</div>';
+      if (best && kind === 'end') html += '<p class="note">' + (f.score >= best.score - 0.01 ? 'To Twój najlepszy wynik w tej kampanii!' : 'Twój najlepszy wynik: ' + Math.round(best.score) + ' pkt (' + esc(best.title) + ').') + '</p>';
+      html += '</div><div class="row end">' + (kind === 'end' ? '<button class="act" data-m="cont">Graj dalej</button>' : '') + '<button class="act prim" data-m="menu">Menu główne</button></div>';
+      UI.modal(html, { dismiss: false, cls: 'chapter', on: (k) => { if (k === 'cont') { G.over = false; G.sc = Object.assign({}, G.sc, { end: 2100 }); } else if (k === 'menu') PN.showStart(); } });
+      return;
+    }
     const score = Math.round(G.hist.reduce((s, q) => s + (q.servedE || 0), 0) / 1e3 * (G.rep / 60) + Math.max(0, G.money - G.debt) / 1e6);
     const done = G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state === 'done').length;
     const html = '<h2>' + (kind === 'bankrupt' ? 'Bankructwo' : 'Koniec kroniki: ' + G.y) + '</h2><p>' + (kind === 'bankrupt' ? 'Wierzyciele przejęli spółkę. Sieć przechodzi w inne ręce.' : 'Kronika dobiegła końca. Oto bilans Twojej sieci.') + '</p><div class="kvs">' + row('Energia dostarczona łącznie', PN.mwh(G.hist.reduce((s, q) => s + (q.servedE || 0), 0))) + row('Wykonane zadania', done + ' / ' + G.sc.missions.length) + row('Udział czystej energii', PN.pct(H.cleanShare())) + row('Emisyjność', PN.nf(H.co2g(), 0) + ' g CO₂/kWh') + row('Reputacja', PN.nf(G.rep, 0)) + row('Wynik', PN.nf(score, 0) + ' pkt') + '</div><div class="row end">' + (kind === 'end' ? '<button class="act" data-m="cont">Graj dalej</button>' : '') + '<button class="act prim" data-m="menu">Menu główne</button></div>';
@@ -661,7 +735,7 @@
     } });
   };
   UI.help = function () {
-    UI.modal('<h2>Jak grać</h2><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Na początku są tylko parowe elektrownie w miastach. Kolejne wynalazki przychodzą same, razem z historią – w menu widzisz tylko to, co już istnieje, a nowość ogłasza gazeta.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: elektrownia w mieście zasila je wprost (kropkowana kreska nN). Kliknij miasto, by rozbudować sieć miejską; elektryfikacja wsi to program uruchamiany przyciskiem, gdy na wsi pojawią się chętni.</li><li><b>Skąd płynie prąd</b>: kliknij miasto albo elektrownię – panel pokaże udziały, a mapa drogę prądu.</li><li><b>Inwestorzy prywatni</b> pojawiają się po otwarciu rynku. Ich projekty przychodzą jako karty: przyłączasz je linią i kupujesz energię po cenie z umowy.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><p class="note">Pełna legenda linii i znaczków: przycisk „Legenda” w prawym dolnym rogu.</p><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
+    UI.modal('<h2>Jak grać</h2><p class="lead"><b>Cel:</b> daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Kronika ma siedem rozdziałów; każdy dostaje ocenę z czterech wskaźników (dostęp, niezawodność, koszt 1 MWh, emisyjność) w porównaniu z prawdziwą historią, a ich wagi zmieniają się z epoką. Na koniec kroniki – ocena końcowa i tytuł. Wskaźniki widzisz na górze Przeglądu.</p><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Na początku są tylko parowe elektrownie w miastach. Kolejne wynalazki przychodzą same, razem z historią – w menu widzisz tylko to, co już istnieje, a nowość ogłasza gazeta.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: elektrownia w mieście zasila je wprost (kropkowana kreska nN). Kliknij miasto, by rozbudować sieć miejską; elektryfikacja wsi to program uruchamiany przyciskiem, gdy na wsi pojawią się chętni.</li><li><b>Skąd płynie prąd</b>: kliknij miasto albo elektrownię – panel pokaże udziały, a mapa drogę prądu.</li><li><b>Inwestorzy prywatni</b> pojawiają się po otwarciu rynku. Ich projekty przychodzą jako karty: przyłączasz je linią i kupujesz energię po cenie z umowy.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><p class="note">Pełna legenda linii i znaczków: przycisk „Legenda” w prawym dolnym rogu.</p><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
   };
 
   /* small sketched icons for news clippings */

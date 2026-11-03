@@ -1108,6 +1108,65 @@
 
   /* --------------------------------------------------------- stats & history */
   function emptyStats() { return { y: 0, m: 0, rev: 0, profit: 0, servedE: 0, demandE: 0, unservedE: 0, co2t: 0, gen: {}, cap: {}, peak: 0, capTot: 0, price: 0 }; }
+  /* ------------------------------------------------------------- the goal */
+  /* What society asked of the grid, graded every month and averaged over seven chapters of history:
+     access (people with electricity vs. how many had it in real history), reliability (demand served),
+     cost (what 1 MWh really costs you, assets included, vs. the tariff of the time) and climate
+     (CO2 per kWh vs. the real grid of that year). The weights move with the era. */
+  const lerpW = (tab, y) => {
+    if (!tab || !tab.length) return [0.4, 0.3, 0.3, 0];
+    if (y <= tab[0][0]) return tab[0][1].slice();
+    for (let k = 1; k < tab.length; k++) if (y <= tab[k][0]) { const [y0, a] = tab[k - 1], [y1, b] = tab[k], f = (y - y0) / (y1 - y0); return a.map((v, j) => v + (b[j] - v) * f); }
+    return tab[tab.length - 1][1].slice();
+  };
+  PN.goalWeights = (G, y) => lerpW(G.sc.scoreW, y == null ? ym(G) : y);
+  PN.GOAL_NAMES = ['Dostęp', 'Niezawodność', 'Koszt', 'Klimat'];
+  PN.goalMonth = function (G, D, F) {
+    const y = ym(G);
+    let have = 0, could = 0;
+    for (const c of G.cities) { if (!PN.cityOwned(G, c)) continue; have += c.eU * c.pop + c.eR * c.popR; could += G.satU * c.pop + G.satR * c.popR; }
+    const access = could > 1 ? PN.clamp(have / could, 0, 1) : 1;
+    const q = D.cityDemE > 0 ? D.cityServedE / D.cityDemE : have > 0 ? 1 : 0;
+    const rel = PN.clamp((q - 0.9) / 0.099, 0, 1);
+    const cost = F.fuel + F.co2 + F.om + F.grid + F.dist + F.retail + F.imp + F.mine + F.penalty + (F.ipp || 0) + (assetValue(G) * 0.07) / 12;
+    const mwhCost = D.servedE > 0 ? cost / D.servedE : null;
+    const aff = mwhCost == null ? 0.5 : PN.clamp(0.5 + (1 - mwhCost / F.price), 0, 1);
+    const H = PN.helpers(G), g = H.co2g(), genE = G.months12.reduce((a, m) => a + (m.genE || 0), 0), gh = G.sc.co2Hist ? PN.curve(G.sc.co2Hist, y) : 0;
+    const clim = !(genE > 0) || !gh ? 0.5 : PN.clamp(0.5 + (0.5 * (gh - g)) / gh, 0, 1);
+    const w = PN.goalWeights(G, y), pil = [access, rel, aff, clim].map((v) => v * 100), wt = w.reduce((a, v) => a + v, 0) || 1;
+    return { pil, w, score: pil.reduce((a, v, k) => a + v * w[k], 0) / wt, have, could, q, mwhCost, price: F.price, g, gh };
+  };
+  PN.chapterAt = (G, y) => (G.sc.chapters || []).find((c) => y >= c.from && y < c.to) || null;
+  PN.stars = (score) => (score == null ? 0 : score >= 75 ? 3 : score >= 60 ? 2 : score >= 45 ? 1 : 0);
+  PN.goalTitle = (score) => (score >= 85 ? 'Legenda energetyki' : score >= 75 ? 'Architekt systemu' : score >= 60 ? 'Główny inżynier' : score >= 45 ? 'Inżynier ruchu' : 'Praktykant');
+  function goalTick(G, D, F) {
+    const chs = G.sc.chapters || []; if (!chs.length) return;
+    const y = ym(G), r = PN.goalMonth(G, D, F);
+    G.goal = G.goal || { done: {}, acc: null };
+    G.goalNow = r;
+    const a0 = G.goal.acc;
+    if (a0) { const c = chs.find((q) => q.id === a0.id); if (c && y >= c.to) closeChapter(G, c); }
+    const ch = PN.chapterAt(G, y); if (!ch || G.goal.done[ch.id]) return;
+    if (!G.goal.acc) G.goal.acc = { id: ch.id, n: 0, sum: 0, pil: [0, 0, 0, 0] };
+    if (G.fx.freezeUntil > y) return; // war and occupation are not graded
+    const a = G.goal.acc; a.n++; a.sum += r.score; r.pil.forEach((v, k) => (a.pil[k] += v));
+    a.last = { have: r.have, could: r.could, q: r.q, mwhCost: r.mwhCost, price: r.price, g: r.g, gh: r.gh };
+  }
+  function closeChapter(G, c) {
+    const a = G.goal.acc, n = Math.max(1, a.n);
+    const res = { id: c.id, name: c.name, from: c.from, to: c.to, score: a.n ? a.sum / n : null, pil: a.pil.map((v) => v / n), last: a.last || null, n: a.n, w: PN.goalWeights(G, (c.from + c.to) / 2) };
+    G.goal.done[c.id] = res; G.goal.acc = null;
+    PN.bus.emit('chapter', res);
+    return res;
+  }
+  /* final grade: the mean of graded chapters (the running one counts if the game ends inside it) */
+  PN.goalFinal = function (G) {
+    const chs = G.sc.chapters || [], g = G.goal || { done: {} }, list = [];
+    for (const c of chs) { const d = g.done[c.id]; if (d && d.score != null) list.push(d); else if (g.acc && g.acc.id === c.id && g.acc.n) list.push({ id: c.id, name: c.name, score: g.acc.sum / g.acc.n, partial: true }); }
+    const score = list.length ? list.reduce((a, d) => a + d.score, 0) / list.length : 0;
+    return { score, stars: PN.stars(score), title: PN.goalTitle(score), chapters: list, total: chs.length };
+  };
+
   function record(G, D, F) {
     const gen = {}, cap = {};
     let capTot = 0, resE = 0, cleanE = 0, genE = 0;
@@ -1126,6 +1185,7 @@
     G.stats = st;
     G.months12.push({ rev: F.rev, profit: F.profit, resE, cleanE, genE, co2t: F.co2t, servedE: D.servedE, demandE: D.demandE });
     if (G.months12.length > 12) G.months12.shift();
+    goalTick(G, D, F);
     if (G.m === 11 || !G.hist.length) {
       const yr = G.months12.reduce((a, m) => { for (const k in m) a[k] = (a[k] || 0) + m[k]; return a; }, {});
       const h = { y: G.y, rev: yr.rev, profit: yr.profit, servedE: yr.servedE, demandE: yr.demandE, co2t: yr.co2t, genE: yr.genE, resE: yr.resE, cleanE: yr.cleanE, capTot, peak, money: G.money, rep: G.rep, cap: Object.assign({}, cap), gen: Object.assign({}, gen) };
@@ -1437,11 +1497,11 @@
     const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; delete c.srcTop; delete c.dstTop; delete c._src; delete c._dst; return c; };
     return JSON.stringify({ v: 1, code: G.code, y: G.y, m: G.m, months: G.months, money: G.money, debt: G.debt, rep: G.rep, nodes: G.nodes.map(strip), lines: G.lines, nextId: G.nextId,
       unlocked: G.unlocked, rules: G.rules, terr: G.terr, regime: G.regime, fx: G.fx, lambda: G.lambda, prosumerMW: G.prosumerMW, prosumer: G.prosumer, fired: G.fired, missions: G.missions,
-      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
+      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, goal: G.goal, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
   };
   PN.deserialize = function (str) {
     const S = JSON.parse(str); const G = PN.newGame(S.code);
-    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
+    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'goal', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
     for (const k of keep) if (S[k] !== undefined) G[k] = S[k];
     G.rnd = PN.rng(G.seed + G.months);
     const cityByCi = {}; G.cities.forEach((c) => (cityByCi[c.ci] = c));

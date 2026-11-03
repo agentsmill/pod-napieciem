@@ -38,14 +38,21 @@
   const hasSave = (code) => { try { return !!localStorage.getItem('pn_save_' + code); } catch (e) { return false; } };
 
   /* ------------------------------------------------------- start screen */
+  /* best final grade per campaign, kept in this browser */
+  PN.bestScore = function (code) { try { return JSON.parse(localStorage.getItem('pn_best_' + code) || 'null'); } catch (e) { return null; } };
+  PN.saveBest = function (code, f) {
+    const old = PN.bestScore(code); if (old && old.score >= f.score) return;
+    try { localStorage.setItem('pn_best_' + code, JSON.stringify({ score: f.score, stars: f.stars, title: f.title, when: Date.now() })); } catch (e) { /* storage blocked */ }
+  };
   PN.showStart = function () {
     UI.closeModal && UI.closeModal();
     const st = $('#start'); st.hidden = false; document.body.classList.add('at-start');
     const card = (code) => {
       const sc = PN.SCEN[code];
-      return '<div class="scen" data-code="' + code + '"><canvas class="thumb" data-thumb="' + code + '" width="520" height="300"></canvas><h2>' + PN.esc(sc.title) + '</h2><p>' + PN.esc(sc.blurb) + '</p><div class="row"><button class="act prim" data-go="' + code + '">Zacznij w ' + sc.start.year + ' r.</button>' + (hasSave(code) ? '<button class="act" data-load="' + code + '">Wczytaj zapis</button>' : '') + '</div></div>';
+      const best = PN.bestScore(code);
+      return '<div class="scen" data-code="' + code + '"><canvas class="thumb" data-thumb="' + code + '" width="520" height="300"></canvas><h2>' + PN.esc(sc.title) + '</h2><p>' + PN.esc(sc.blurb) + '</p>' + (best ? '<p class="best">Twój najlepszy wynik: ' + UI.starsHtml(best.stars) + ' <b>' + Math.round(best.score) + ' pkt</b> · ' + PN.esc(best.title) + '</p>' : '') + '<div class="row"><button class="act prim" data-go="' + code + '">Zacznij w ' + sc.start.year + ' r.</button>' + (hasSave(code) ? '<button class="act" data-load="' + code + '">Wczytaj zapis</button>' : '') + '</div></div>';
     };
-    st.innerHTML = '<div class="start-in"><header><h1>Pod Napięciem</h1><p class="sub">kronika sieci elektroenergetycznej · od pierwszej żarówki do fuzji</p></header><div class="scens">' + card('PL') + card('US') + '</div><p class="foot">Buduj elektrownie i kopalnie, prowadź linie od średniego po najwyższe napięcie, elektryfikuj miasta i wsie. Technologie, ceny i wydarzenia idą za prawdziwą historią Polski i USA, a po 2026 r. – za ogłoszonymi planami. <button class="linkish" data-help="1">Jak grać</button> · <button class="linkish" data-theme-toggle="1">Dzień / noc</button></p></div>';
+    st.innerHTML = '<div class="start-in"><header><h1>Pod Napięciem</h1><p class="sub">kronika sieci elektroenergetycznej · od pierwszej żarówki do fuzji</p></header><div class="scens">' + card('PL') + card('US') + '</div><p class="foot"><b>Cel:</b> daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto – i wypadnij lepiej niż prawdziwa historia. Siedem rozdziałów, każdy z oceną, na koniec ocena końcowa. Buduj elektrownie i kopalnie, prowadź linie od średniego po najwyższe napięcie, elektryfikuj miasta i wsie. Technologie, ceny i wydarzenia idą za prawdziwą historią Polski i USA, a po 2026 r. – za ogłoszonymi planami. <button class="linkish" data-help="1">Jak grać</button> · <button class="linkish" data-theme-toggle="1">Dzień / noc</button></p></div>';
     st.onclick = (e) => {
       const go = e.target.closest('[data-go]'); if (go) { startNew(go.dataset.go); return; }
       const ld = e.target.closest('[data-load]'); if (ld) { PN.loadGame(ld.dataset.load); return; }
@@ -110,6 +117,8 @@
       ? 'Jest ' + G.y + ' rok. Warszawa, Łódź i Kraków świecą lampami gazowymi i naftowymi – lampa Łukasiewicza ma już ponad trzydzieści lat. Ziemie polskie są podzielone między trzy mocarstwa, ale prąd nie zna granic. Masz kapitał na pierwszą elektrownię.'
       : 'Jest ' + G.y + ' rok. Manhattan oświetlają lampy gazowe, a Thomas Edison przygotowuje elektrownię przy Pearl Street. Kto pierwszy da miastu tani i bezpieczny prąd, zdobędzie rynek.') + '</p>';
     if (pro.length) html += '<h3>Wcześniej</h3><ul class="pro">' + pro.map((e) => '<li><span class="d">' + e.date.slice(0, 4) + '</span> ' + PN.esc(e.title) + '</li>').join('') + '</ul>';
+    const ch0 = (G.sc.chapters || [])[0];
+    html += '<h3>Cel gry</h3><p>Daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Kronika ma ' + (G.sc.chapters || []).length + ' rozdziałów; po każdym dostaniesz ocenę w porównaniu z prawdziwą historią' + (ch0 ? ' (pierwszy: <b>' + PN.esc(ch0.name) + '</b>, do ' + Math.floor(ch0.to) + ' r.)' : '') + '. Wskaźniki są na górze Przeglądu.</p>';
     if (ms) html += '<h3>Pierwsze zadanie</h3><p><b>' + PN.esc(ms.title) + '</b>: ' + PN.esc(ms.text) + '</p>';
     const tutDone = PN.Tutorial && PN.Tutorial.done();
     html += '<p class="note">' + (tutDone ? 'Wybierz <b>Elektrownie → ' + PN.esc(PN.TECH.steam_dc.name) + '</b> i kliknij w obrębie miasta. Potem puść czas przyciskiem 1×.' : 'Pierwszy raz? Samouczek krok po kroku przeprowadzi Cię przez pierwszą elektrownię, czas, panel miasta, linie i warstwy mapy.') + '</p><div class="row end"><button class="act" data-m="help">Jak grać</button>' +

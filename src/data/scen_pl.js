@@ -5,7 +5,7 @@
   PN.SCEN = PN.SCEN || {};
 
   PN.SCEN.PL = {
-    code: 'PL', name: 'Polska', title: 'Polska 1888–2050',
+    code: 'PL', name: 'Polska', title: 'Polska 1888–2060',
     blurb: 'Od pierwszych lamp łukowych w zaborach, przez Powiśle, elektryfikację wsi i Bełchatów, po morskie farmy wiatrowe, atom, centra danych i fuzję.',
     cur: 'zł', fx: 4.0,
     proj: { lon0: 19.2, lat0: 52.0, lat1: 50.0, lat2: 54.0 }, tileKm: 8, mapBox: [13.4, 48.7, 24.9, 55.85],
@@ -30,6 +30,20 @@
       uranium: [[1957, 9], [1980, 12], [2000, 5], [2020, 6.5], [2050, 7]],
       fusion: [[2040, 4], [2060, 3]],
     },
+    /* ---- the goal: seven chapters of history, each graded on access, reliability, cost and climate ---- */
+    chapters: [
+      { id: 'zabory', name: 'Pod zaborami', from: 1888, to: 1914.6 },
+      { id: 'iirp', name: 'Wielka Wojna i II Rzeczpospolita', from: 1914.6, to: 1939.67 },
+      { id: 'odbudowa', name: 'Wojna i odbudowa', from: 1939.67, to: 1956 },
+      { id: 'prl', name: 'PRL: elektryfikacja i wielkie bloki', from: 1956, to: 1989.5 },
+      { id: 'transformacja', name: 'Transformacja ustrojowa', from: 1989.5, to: 2004.33 },
+      { id: 'ue', name: 'W Unii Europejskiej', from: 2004.33, to: 2025 },
+      { id: 'przyszlosc', name: 'Transformacja energetyczna', from: 2025, to: 2060 },
+    ],
+    /* CO2 per kWh of the real Polish grid (g/kWh; KOBiZE, Ember), then the targets of PEP2040 and the EU */
+    co2Hist: [[1950, 1300], [1970, 1150], [1990, 1050], [2000, 950], [2010, 850], [2015, 780], [2020, 700], [2023, 650], [2025, 600], [2030, 420], [2040, 200], [2050, 80], [2060, 30]],
+    /* what society asked of the grid: weights of access, reliability, cost, climate */
+    scoreW: [[1888, [0.45, 0.3, 0.25, 0]], [1945, [0.4, 0.3, 0.3, 0]], [1970, [0.25, 0.3, 0.35, 0.1]], [1990, [0.15, 0.3, 0.35, 0.2]], [2005, [0.1, 0.3, 0.3, 0.3]], [2025, [0.05, 0.3, 0.3, 0.35]], [2060, [0.05, 0.3, 0.25, 0.4]]],
     co2: [[2004, 0], [2005, 25], [2006, 22], [2007, 1], [2008, 26], [2010, 18], [2012, 9], [2013, 5], [2017, 7], [2018, 18], [2019, 28], [2020, 28], [2021, 60], [2022, 90], [2023, 92], [2024, 72], [2025, 80], [2030, 120], [2040, 160], [2050, 200]],
     interest: [[1880, 0.06], [1946, 0.04], [1989, 0.04], [1991, 0.12], [2000, 0.08], [2010, 0.05], [2020, 0.03], [2023, 0.06], [2030, 0.05]],
     distCost: [[1880, 2000], [1900, 1300], [1920, 800], [1950, 550], [1980, 450], [2000, 450], [2020, 550], [2050, 550]],

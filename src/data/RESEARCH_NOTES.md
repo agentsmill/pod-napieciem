@@ -1,6 +1,6 @@
 # Research notes – historical events data (Pod Napięciem)
 
-Files: `events_pl.js` (70 events, 7 speculative), `events_us.js` (70 events, 6 speculative).
+Files: `events_pl.js` (96 events, 7 speculative), `events_us.js` (99 events, 6 speculative). See section (e) for the November 2026 audit.
 Every event lists 1–2 URLs used for verification. `certainty: "medium"` = month not known (date set to `-06`
 or best season estimate) or sources disagree. Effect magnitudes (loads, subsidies, prosumer growth) are
 gameplay estimates scaled from the cited facts, not measured values.
@@ -115,3 +115,28 @@ https://en.wikipedia.org/wiki/History_of_electric_power_transmission ; AEP https
   a stricter design would unlock it with the Dec 2025 EU state-aid approval instead.
 - The US IRA wind/solar subsidies run for 65 months (to end-2027), matching the 2025 OBBBA phase-out.
 - Paper names are only set where the title existed at that date and place; omitted where unsure.
+
+## (e) Audit and extension, November 2026
+
+**Corrections to existing events** (ids kept, so saved games stay valid):
+
+| Event | Was | Now | Source |
+|---|---|---|---|
+| `pl_1948_linia_220kv` | 1948-06 | **1947-11**: power flowed 30 Nov 1947 on Łagisza–Janów (161 km), first run at 110 kV | Przegląd Elektrotechniczny 1948 z. 7/8; SEP chronology |
+| `pl_1965_turow_adamow` | Adamów 600 MW in 1965 | Turów 1400 MW (1965) correct; Adamów's 5th unit only in Sept 1966 | ZE PAK |
+| `pl_1906_krakow` | "newly started" plant in 1906 | plant built 1904–05, theatre switched 1906 | krakow.pl, Krakowski Szlak Techniki |
+| `pl_1939_wojna` | German attack only | adds the Soviet invasion of 17 Sept 1939 | Wikipedia (Soviet invasion of Poland) |
+| `pl_2022_kryzys_energetyczny` | coal ×2.5, gas ×3 for 12 months | coal ×1.4, gas ×1.3 for 9 months (the fuel curves already carry the 2022 spike) | balance |
+| `us_1907_linia_110kv` | 1907-06 (dam not yet built) | **1908-07**: line energised 18 Jul 1908 | The Central Station, Feb 1909 |
+| `us_1965_wielka_awaria` | "first 500 kV from Mount Storm" | TVA's first 500 kV line in service 15 May 1965 | Wikipedia (TVA) |
+| `us_2003_blackout` | unlocked `cable_sea` | no unlock (Cross-Sound is HVDC; AC sea cables open in 2016) | DOE order 202-03-1 |
+| `us_1886_great_barrington` | 500 V at customers | 500 V generator, 3000 V line, 100 V at customers | IEEE Milestone |
+| `us_1953_linia_345kv` | "first EHV line in the world" | first 345 kV line; Sweden had 380 kV in 1952 | AEP; Wikipedia |
+| `us_1973_embargo_naftowe`, `us_2012_gaz_lupkowy` | oil ×3, gas ×0.6 | oil ×1.4, gas ×0.8 (curves already contain the moves) | balance |
+
+**New topics** (each event cites 1–2 sources in its `sources` field):
+- Poland: Polish–Soviet war 1920; PRL crises (1980 Jastrzębie agreement and the 20th supply degree), 1989 Round Table, 1990 Balcerowicz plan and PSE; EU ETS (2007 collapse, 2018 rally and the price freeze, Fit for 55, 2023 reform with CBAM and ETS2); ESG (banks leaving coal 2019, EU taxonomy 2020, CSRD 2024); 2008 crisis; 2009 gas war; Świnoujście LNG; COVID-19; PEP2040 and the 2021 miners' agreement; Russia's invasion of Ukraine, Gazprom's cut-off, the 2023 price cap, aid to Ukraine's grid; Westinghouse; the 2026 Gulf war and Qatar's LNG force majeure (verified: CNBC 19 Mar 2026, Al Jazeera 24 Mar 2026).
+- USA, the American counterparts: WWII production boom; oil shocks 1979, 1990, Iraq 2003, Israel–Iran 2025 and the 2026 Iran war (oil is <1% of US power – effects kept small); Acid Rain Program, RGGI, California cap-and-trade (new `carbon` effect, a nationwide-average adder of 0.3 and 1.2 USD/t); Paris in/out, Clean Power Plan, West Virginia v. EPA, EPA 2024 standards and the 2025 repeal proposal; ESG (Fink 2020, Texas 2022, the 2025 retreat – new `esg` effect); Katrina, PG&E shutoffs, Maui, Los Angeles 2025; ARRA, IIJA, FERC Order 2023; COVID-19; LNG exports and the 2022 gas spike.
+
+**Engine semantics used by events:** `fuel`, `subsidy` and `esg` replace an earlier effect of the same kind (latest wins); `carbon` effects add up. Events are sorted by date when a game starts.
+

@@ -133,6 +133,34 @@ kbd { font-family: var(--f-data); font-size: 12px; border: 1px solid var(--ink);
 .bar { height: 9px; border: 1.5px solid var(--ink); border-radius: var(--r3); overflow: hidden; margin-bottom: 3px; }
 .bar i { display: block; height: 100%; background-image: repeating-linear-gradient(-38deg, var(--volt) 0 2px, transparent 2px 5px); }
 .offer { border: 1.5px dashed var(--water); border-radius: var(--r3); padding: 6px 9px; margin: 6px 0; font-size: 14px; }
+.goal { border: 1.8px solid var(--ink); border-radius: var(--r3); padding: 6px 10px 4px; margin: 6px 0 10px; }
+.goal-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 14px; }
+.goal-t { height: 4px; margin: 4px 0 6px; border-radius: 2px; background: var(--rule); overflow: hidden; }
+.goal-t i { display: block; height: 100%; background: var(--ink-2); }
+.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+.pl { display: grid; grid-template-columns: 1fr auto; gap: 1px 6px; font-size: 13px; align-items: baseline; }
+.pl small { font-family: var(--f-data); font-size: 10.5px; color: var(--ink-2); }
+.pl b { font-family: var(--f-data); font-size: 13.5px; }
+.pl i { grid-column: 1 / -1; display: block; height: 6px; border: 1px solid var(--ink); border-radius: 3px; overflow: hidden; }
+.pl i em { display: block; height: 100%; background-image: repeating-linear-gradient(-38deg, var(--volt) 0 2px, transparent 2px 5px); }
+.pl.low b { color: var(--red); } .pl.low i { border-color: var(--red); }
+.pl.off { opacity: .45; }
+.goal-d { font-size: 12.5px; color: var(--ink-2); margin: 6px 0 2px !important; line-height: 1.35 !important; }
+.goal-tip { font-size: 13px; border-left: 3px solid var(--orange); padding-left: 7px; margin: 6px 0 2px !important; }
+.goal .note { margin: 4px 0 2px !important; }
+.stars { color: var(--volt); letter-spacing: 1px; font-size: 15px; white-space: nowrap; }
+.stars i { font-style: normal; color: var(--rule); }
+.stars.big { font-size: 34px; letter-spacing: 3px; }
+.chapters { list-style: none; padding: 0; margin: 6px 0; }
+.chapters li { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--rule); font-size: 13.5px; }
+.chapters li b { font-family: var(--f-data); font-size: 13px; min-width: 2.2em; text-align: right; }
+.chapters li.next { color: var(--ink-2); }
+.chapters li.on span { font-weight: 700; }
+.report .k { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-2); }
+.report .grade { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 10px; }
+.report .grade b { font-family: var(--f-hand); font-size: 32px; }
+.report .grade span:last-child { font-size: 15px; color: var(--ink-2); }
+.scen .best { margin: -4px 0 10px; font-size: 14px; }
 .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; margin: 4px 0; }
 .advice { margin: 2px 0 6px; padding-left: 18px; font-size: 13.5px; line-height: 1.4; }
 .advice li { margin: 3px 0; }
@@ -792,7 +820,7 @@ PN.bus = {
   PN.SCEN = PN.SCEN || {};
 
   PN.SCEN.PL = {
-    code: 'PL', name: 'Polska', title: 'Polska 1888–2050',
+    code: 'PL', name: 'Polska', title: 'Polska 1888–2060',
     blurb: 'Od pierwszych lamp łukowych w zaborach, przez Powiśle, elektryfikację wsi i Bełchatów, po morskie farmy wiatrowe, atom, centra danych i fuzję.',
     cur: 'zł', fx: 4.0,
     proj: { lon0: 19.2, lat0: 52.0, lat1: 50.0, lat2: 54.0 }, tileKm: 8, mapBox: [13.4, 48.7, 24.9, 55.85],
@@ -817,6 +845,20 @@ PN.bus = {
       uranium: [[1957, 9], [1980, 12], [2000, 5], [2020, 6.5], [2050, 7]],
       fusion: [[2040, 4], [2060, 3]],
     },
+    /* ---- the goal: seven chapters of history, each graded on access, reliability, cost and climate ---- */
+    chapters: [
+      { id: 'zabory', name: 'Pod zaborami', from: 1888, to: 1914.6 },
+      { id: 'iirp', name: 'Wielka Wojna i II Rzeczpospolita', from: 1914.6, to: 1939.67 },
+      { id: 'odbudowa', name: 'Wojna i odbudowa', from: 1939.67, to: 1956 },
+      { id: 'prl', name: 'PRL: elektryfikacja i wielkie bloki', from: 1956, to: 1989.5 },
+      { id: 'transformacja', name: 'Transformacja ustrojowa', from: 1989.5, to: 2004.33 },
+      { id: 'ue', name: 'W Unii Europejskiej', from: 2004.33, to: 2025 },
+      { id: 'przyszlosc', name: 'Transformacja energetyczna', from: 2025, to: 2060 },
+    ],
+    /* CO2 per kWh of the real Polish grid (g/kWh; KOBiZE, Ember), then the targets of PEP2040 and the EU */
+    co2Hist: [[1950, 1300], [1970, 1150], [1990, 1050], [2000, 950], [2010, 850], [2015, 780], [2020, 700], [2023, 650], [2025, 600], [2030, 420], [2040, 200], [2050, 80], [2060, 30]],
+    /* what society asked of the grid: weights of access, reliability, cost, climate */
+    scoreW: [[1888, [0.45, 0.3, 0.25, 0]], [1945, [0.4, 0.3, 0.3, 0]], [1970, [0.25, 0.3, 0.35, 0.1]], [1990, [0.15, 0.3, 0.35, 0.2]], [2005, [0.1, 0.3, 0.3, 0.3]], [2025, [0.05, 0.3, 0.3, 0.35]], [2060, [0.05, 0.3, 0.25, 0.4]]],
     co2: [[2004, 0], [2005, 25], [2006, 22], [2007, 1], [2008, 26], [2010, 18], [2012, 9], [2013, 5], [2017, 7], [2018, 18], [2019, 28], [2020, 28], [2021, 60], [2022, 90], [2023, 92], [2024, 72], [2025, 80], [2030, 120], [2040, 160], [2050, 200]],
     interest: [[1880, 0.06], [1946, 0.04], [1989, 0.04], [1991, 0.12], [2000, 0.08], [2010, 0.05], [2020, 0.03], [2023, 0.06], [2030, 0.05]],
     distCost: [[1880, 2000], [1900, 1300], [1920, 800], [1950, 550], [1980, 450], [2000, 450], [2020, 550], [2050, 550]],
@@ -907,7 +949,7 @@ PN.bus = {
   PN.SCEN = PN.SCEN || {};
 
   PN.SCEN.US = {
-    code: 'US', name: 'Stany Zjednoczone', title: 'USA 1882–2050',
+    code: 'US', name: 'Stany Zjednoczone', title: 'USA 1882–2060',
     blurb: 'Od Pearl Street i wojny prądów, przez Niagarę, zaporę Hoovera i atom, po boom centrów danych AI i pierwsze elektrownie termojądrowe.',
     cur: '$', fx: 1.0,
     proj: { lon0: -96, lat0: 37.5, lat1: 29.5, lat2: 45.5 }, tileKm: 26, mapBox: [-125.6, 23.6, -65.6, 50.2],
@@ -935,6 +977,20 @@ PN.bus = {
       uranium: [[1957, 9], [1980, 12], [2000, 5], [2020, 6.5], [2050, 7]],
       fusion: [[2040, 4], [2060, 3]],
     },
+    /* ---- the goal: seven chapters of history, each graded on access, reliability, cost and climate ---- */
+    chapters: [
+      { id: 'pradow', name: 'Wojna prądów', from: 1882, to: 1900 },
+      { id: 'insull', name: 'Era Insulla', from: 1900, to: 1929.8 },
+      { id: 'newdeal', name: 'Kryzys, Nowy Ład i wojna', from: 1929.8, to: 1945.6 },
+      { id: 'zloty', name: 'Złoty wiek wzrostu', from: 1945.6, to: 1973.8 },
+      { id: 'kryzysy', name: 'Kryzysy naftowe i niezależni wytwórcy', from: 1973.8, to: 1996.3 },
+      { id: 'rynki', name: 'Rynki, łupki i odnawialne', from: 1996.3, to: 2020 },
+      { id: 'ai', name: 'Boom AI i przyszłość', from: 2020, to: 2060 },
+    ],
+    /* CO2 per kWh of the real US power sector (g/kWh; EIA), then announced decarbonisation paths */
+    co2Hist: [[1950, 900], [1960, 800], [1975, 720], [1990, 620], [2005, 580], [2010, 540], [2015, 480], [2020, 400], [2023, 370], [2030, 260], [2040, 120], [2050, 50], [2060, 20]],
+    /* what society asked of the grid: weights of access, reliability, cost, climate */
+    scoreW: [[1882, [0.45, 0.3, 0.25, 0]], [1935, [0.4, 0.3, 0.3, 0]], [1970, [0.2, 0.3, 0.35, 0.15]], [1990, [0.1, 0.3, 0.35, 0.25]], [2010, [0.05, 0.3, 0.3, 0.35]], [2060, [0.05, 0.3, 0.25, 0.4]]],
     co2: [[1880, 0]],
     interest: [[1880, 0.06], [1930, 0.05], [1950, 0.04], [1980, 0.10], [1990, 0.08], [2010, 0.04], [2020, 0.03], [2023, 0.055], [2030, 0.045]],
     distCost: [[1882, 2000], [1900, 1300], [1920, 800], [1950, 550], [1980, 450], [2000, 450], [2020, 550], [2050, 550]],
@@ -1647,14 +1703,12 @@ window.PN_EVENTS_PL = [
     date: "1906-06",
     title: "Kraków przechodzi na prąd z miejskiej elektrowni",
     paper: "Czas",
-    text: "Teatr Miejski w Krakowie wyłącza własną elektrownię prądu stałego z urządzeniami praskiej firmy Františka Křižíka i zaczyna pobierać energię z nowo uruchomionej Elektrowni Miejskiej na Kazimierzu. Po krakowskich ulicach od 1901 r. jeżdżą już tramwaje elektryczne.",
+    text: "W 1906 r. Teatr Miejski w Krakowie wyłącza własną elektrownię prądu stałego z urządzeniami praskiej firmy Františka Křižíka i zaczyna pobierać energię z Elektrowni Miejskiej na Kazimierzu, zbudowanej w latach 1904–1905 przy miejskiej gazowni. Po krakowskich ulicach od 1901 r. jeżdżą już tramwaje elektryczne.",
     hint: "Miasta wolą kupować prąd od jednej dużej elektrowni niż utrzymywać dziesiątki małych.",
     icon: "plant",
-    effects: [
-      { type: "load", name: "Tramwaje elektryczne w Krakowie", lat: 50.06, lon: 19.94, mw: 0.5, growToMw: 3, years: 15, kind: "tram" }
-    ],
+    effects: [{ type: "load", name: "Tramwaje elektryczne w Krakowie", lat: 50.06, lon: 19.94, mw: 0.5, growToMw: 3, years: 15, kind: "tram" }],
     sources: [
-      "https://u.profitroom.com/2019-wielopole-pl/uploads/pdf/Krakowskiszlaktechniki.pdf",
+      "https://krakow.pl/zalacznik/287448",
       "https://en.wikipedia.org/wiki/List_of_town_tramway_systems_in_Poland"
     ],
     certainty: "medium",
@@ -1758,6 +1812,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://pl.wikipedia.org/wiki/Za%C5%9Blubiny_Polski_z_morzem",
       "https://bazhum.muzhp.pl/media/texts/kwartalnik-historii-nauki-i-techniki/1974-tom-19-numer-1/kwartalnik_historii_nauki_i_techniki-r1974-t19-n1-s29-44.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1920_bitwa_warszawska",
+    date: "1920-08",
+    title: "Bolszewicy pod Warszawą. Cud nad Wisłą",
+    paper: "Kurier Warszawski",
+    text: "W sierpniu 1920 r. Armia Czerwona dociera na kilkanaście kilometrów od Warszawy, a jej oddziały idą na Płock i Włocławek; Białystok jest zajęty od 28 lipca. Kontrofensywa znad Wieprza, rozpoczęta 16 sierpnia, przesądza o zwycięstwie w bitwie warszawskiej (12–25 sierpnia). Wojna rujnuje finanse państwa: wydatki wojskowe wyjęto spod kontroli Ministerstwa Skarbu, a inflacja zmierza ku hiperinflacji.",
+    hint: "Na czas walk o stolicę nowe budowy stają na trzy miesiące, a na zajętym przez bolszewików północnym wschodzie spada popyt na prąd.",
+    icon: "war",
+    effects: [{ type: "freeze", months: 3 }, { type: "demand", mult: 0.8, months: 3, region: { lat: 53.3, lon: 22, radiusKm: 120 } }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Battle_of_Warsaw_(1920)",
+      "https://aop.vse.cz/pdfs/aop/2007/07/20.pdf"
     ],
     certainty: "high",
     speculative: false
@@ -1885,17 +1955,15 @@ window.PN_EVENTS_PL = [
   {
     id: "pl_1939_wojna",
     date: "1939-09",
-    title: "Wojna! Bomby spadają na elektrownię Powiśle",
+    title: "Wojna! Niemcy i Sowieci napadają na Polskę",
     paper: "Kurier Warszawski",
-    text: "1 września 1939 r. Niemcy napadają na Polskę. Ostrzeliwana elektrownia na Powiślu pracuje do 23 września, gdy bomby niszczą kotłownię i halę maszyn. 14 września Niemcy zajmują Stalową Wolę wraz z elektrownią zbudowaną dla COP w latach 1938–1939.",
-    hint: "Okupacja: przez lata nie zbudujesz nic nowego, a część elektrowni legnie w gruzach.",
+    text: "1 września 1939 r. Niemcy napadają na Polskę, a 17 września od wschodu wkracza Armia Czerwona – na mocy tajnego protokołu paktu Ribbentrop–Mołotow kraj zostaje podzielony. Ostrzeliwana elektrownia na Powiślu pracuje do 23 września, gdy bomby niszczą kotłownię i halę maszyn. 14 września Niemcy zajęli Stalową Wolę wraz z elektrownią zbudowaną dla COP w latach 1938–1939.",
+    hint: "Dwie okupacje: przez lata nie zbudujesz nic nowego, a część elektrowni legnie w gruzach.",
     icon: "war",
-    effects: [
-      { type: "freeze", months: 64 },
-      { type: "damage", region: { lat: 52.23, lon: 21.01, radiusKm: 15 }, target: "plants", share: 0.5 }
-    ],
+    effects: [{ type: "freeze", months: 64 }, { type: "damage", region: { lat: 52.23, lon: 21.01, radiusKm: 15 }, target: "plants", share: 0.5 }],
     sources: [
       "https://pl.wikipedia.org/wiki/Elektrownia_Powi%C5%9Ble",
+      "https://en.wikipedia.org/wiki/Soviet_invasion_of_Poland",
       "https://defence24.pl/sily-zbrojne/ukrasc-goeringowi-acht-komma-acht"
     ],
     certainty: "high",
@@ -1953,10 +2021,10 @@ window.PN_EVENTS_PL = [
   },
   {
     id: "pl_1948_linia_220kv",
-    date: "1948-06",
+    date: "1947-11",
     title: "Pierwsza polska linia 220 kV: Śląsk – Łódź",
     paper: "Życie Warszawy",
-    text: "Między Łagiszą na Śląsku a Janowem pod Łodzią powstała licząca ok. 161 km linia zbudowana na napięcie 220 kV – pierwszy odcinek krajowej sieci przesyłowej. Z braku transformatorów i niegotowych jeszcze elektrowni na Śląsku przez pewien czas będzie pracować pod napięciem 110 kV.",
+    text: "30 listopada 1947 r. popłynął prąd linią z Łagiszy pod Będzinem do Janowa pod Łodzią – pierwszym odcinkiem krajowej sieci przesyłowej zbudowanym na napięcie 220 kV. Licząca 161 km linia powstała w 384 dni od decyzji z 11 listopada 1946 r.; z braku transformatorów i niegotowych jeszcze elektrowni na Śląsku przez pewien czas pracuje pod napięciem 110 kV.",
     hint: "Odblokowano linie 220 kV – szkielet przyszłego systemu krajowego.",
     icon: "tower",
     effects: [{ type: "unlock", tech: "line_220" }],
@@ -1964,7 +2032,7 @@ window.PN_EVENTS_PL = [
       "https://www.dbc.wroc.pl//Content/113758/przeg_elektrotech_r24_1948_7_8.pdf",
       "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"
     ],
-    certainty: "medium",
+    certainty: "high",
     speculative: false
   },
   {
@@ -2036,13 +2104,16 @@ window.PN_EVENTS_PL = [
   {
     id: "pl_1965_turow_adamow",
     date: "1965-06",
-    title: "Turów osiąga 1400 MW, Adamów 600 MW",
+    title: "Turów osiąga 1400 MW, rośnie Adamów",
     paper: "Trybuna Ludu",
-    text: "Zakończono I etap budowy Elektrowni Turów: siedem bloków po 200 MW daje łącznie 1400 MW. Elektrownia Adamów osiągnęła projektowane 600 MW w pięciu blokach po 120 MW – węgiel brunatny staje się filarem systemu.",
+    text: "Zakończono I etap budowy Elektrowni Turów: siedem bloków po 200 MW daje łącznie 1400 MW. W Elektrowni Adamów pracują już pierwsze bloki po 120 MW – pierwszy zsynchronizowano z siecią w październiku 1964 r., a piąty, ostatni, ruszy we wrześniu 1966 r., dając łącznie 600 MW. Węgiel brunatny staje się filarem systemu.",
     hint: "Bloki 200 MW stają się standardem polskiej energetyki.",
     icon: "coal",
     effects: [],
-    sources: ["https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"],
+    sources: [
+      "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf",
+      "https://ri.zepak.com.pl/en/news/1111-the-end-of-production-at-elektrownia-adamow/"
+    ],
     certainty: "medium",
     speculative: false
   },
@@ -2086,6 +2157,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_1973_kryzys_naftowy",
+    date: "1973-10",
+    title: "Embargo naftowe wstrząsa Zachodem",
+    paper: "Trybuna Ludu",
+    text: "Po arabskim ataku na Izrael w październiku 1973 r. arabscy producenci ropy ogłaszają embargo wobec USA i państw, które je wspierają; w ciągu kilku miesięcy ropa na Zachodzie drożeje kilkukrotnie. PRL kupuje ropę niemal wyłącznie z ZSRR, po niższych cenach obowiązujących w RWPG, więc szok nie uderza w nią wprost. Skutki przyjdą pośrednio – przez droższe kredyty zachodnie, które pod koniec dekady pogłębią kryzys gospodarki PRL.",
+    hint: "Twoje elektrownie palą krajowy węgiel, więc droga ropa ich nie dotyka – kryzys dotrze do PRL okrężną drogą, przez długi.",
+    icon: "oil",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Comecon",
+      "https://www.auto-swiat.pl/wiadomosci/aktualnosci/czy-zabronia-nam-jezdzic-w-niedziele-tak-kiedys-kraje-walczyly-z-kryzysem-naftowym/vyc6dd9"
+    ],
+    certainty: "medium",
+    speculative: false
+  },
+  {
     id: "pl_1979_zima_stulecia",
     date: "1979-01",
     title: "Zima stulecia: węgiel zamarza, gasną światła",
@@ -2115,6 +2202,38 @@ window.PN_EVENTS_PL = [
     effects: [],
     sources: ["https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"],
     certainty: "medium",
+    speculative: false
+  },
+  {
+    id: "pl_1980_jastrzebie",
+    date: "1980-09",
+    title: "Porozumienie jastrzębskie: wolne soboty dla górników",
+    paper: "Trybuna Robotnicza",
+    text: "3 września 1980 r. w kopalni „Manifest Lipcowy” w Jastrzębiu-Zdroju komisja rządowa podpisała porozumienie ze strajkującymi górnikami. Górnicy wywalczyli m.in. wolne soboty i niedziele oraz zniesienie czterobrygadowego systemu pracy kopalń. Wydobycie węgla kamiennego, które w 1979 r. osiągnęło rekordowe 201 mln t, spadło do 193 mln t w 1980 r. i do 163 mln t w 1981 r.",
+    hint: "Węgla jest mniej i drożeje, a elektrownie PRL palą prawie wyłącznie węgiel – licz się z droższym paliwem przez ponad rok.",
+    icon: "coal",
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.25, months: 15 }],
+    sources: [
+      "https://dzieje.pl/node/11131",
+      "https://czasopisma.pan.pl//Content/132862/PDF/11_GSM_16_3_2000_Olkuski_Produkcja.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1980_20_stopien_zasilania",
+    date: "1980-12",
+    title: "Ogłoszono 20. stopień zasilania",
+    paper: "Życie Warszawy",
+    text: "1 grudnia 1980 r. Państwowa Dyspozycja Mocy ogłosiła 20. stopień zasilania: wytypowane zakłady przemysłowe w wyznaczonych godzinach przerywają produkcję, a wyłączenia w największych fabrykach sięgają 2860 MW. Na styczeń 1981 r. energetycy prognozują niedobór mocy rzędu 3 tys. MW. Planowe wyłączenia prądu trwały w PRL od drugiej połowy lat 70. do późnych lat 80.",
+    hint: "Mocy brakuje w szczycie: każdy sprawny blok i każda rezerwa są na wagę złota.",
+    icon: "factory",
+    effects: [{ type: "derate", techs: ["coal","lignite"], mult: 0.85, months: 3 }],
+    sources: [
+      "https://bc.radom.pl//Content/38042/energoimpulsy-1981-1.pdf",
+      "https://www.cire.pl/pliki/2/M_PE_3_historia.pdf"
+    ],
+    certainty: "high",
     speculative: false
   },
   {
@@ -2192,6 +2311,54 @@ window.PN_EVENTS_PL = [
       "https://www.pap.pl/aktualnosci/dawny-budowniczy-polskiej-elektrowni-jadrowej-katastrofa-w-czarnobylu-wplynela-na"
     ],
     certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1989_wybory",
+    date: "1989-06",
+    title: "Okrągły Stół i wybory 4 czerwca",
+    paper: "Gazeta Wyborcza",
+    text: "Obrady Okrągłego Stołu (6 lutego – 5 kwietnia 1989 r.), z osobnymi podzespołami m.in. do spraw górnictwa i ekologii, otworzyły drogę do częściowo wolnych wyborów. W głosowaniu 4 i 18 czerwca „Solidarność” zdobyła wszystkie 161 mandatów w Sejmie, o które mogła walczyć, i 99 ze 100 miejsc w Senacie. Wybory otwierają drogę do niekomunistycznego rządu Tadeusza Mazowieckiego.",
+    hint: "Kończy się PRL – wkrótce ruszy przebudowa gospodarki, a z nią energetyki.",
+    icon: "flag",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Polish_Round_Table_Agreement",
+      "https://en.wikipedia.org/wiki/1989_Polish_parliamentary_election"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1990_plan_balcerowicza",
+    date: "1990-01",
+    title: "Plan Balcerowicza: koniec tanich cen",
+    paper: "Gazeta Wyborcza",
+    text: "28 grudnia 1989 r. Sejm przyjął ustawy planu Balcerowicza: od początku 1990 r. większość cen jest wolna, a dotacje obcięte. Realna cena węgla dla elektrowni wzrosła na początku roku trzykrotnie i tyle samo w ciągu 1990 r. zdrożał prąd dla gospodarstw domowych. Produkcja przemysłowa spadła w 1990 r. o 24 proc., a w 1991 r. o kolejne 12 proc.",
+    hint: "Fabryki ograniczają produkcję – przez trzy lata popyt na prąd będzie wyraźnie niższy.",
+    icon: "money",
+    effects: [{ type: "demand", mult: 0.93, months: 36 }],
+    sources: [
+      "https://dzieje.pl/node/111758",
+      "https://eta-publications.lbl.gov/sites/default/files/lbl-33994.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1990_pse",
+    date: "1990-06",
+    title: "Powstają Polskie Sieci Elektroenergetyczne",
+    paper: "Rzeczpospolita",
+    text: "W 1990 r. zawiązano jednoosobową spółkę Skarbu Państwa Polskie Sieci Elektroenergetyczne SA, która przejęła większość sieci najwyższych napięć. Na początku lat 90. zlikwidowano okręgi energetyczne, a sektor podzielono na ponad 30 przedsiębiorstw wytwórczych, PSE i 33 zakłady energetyczne odpowiedzialne za dystrybucję. Rozdrobnienie sektora na lata zahamowało budowę nowych mocy i ograniczyło inwestycje sieciowe.",
+    hint: "Szkielet przesyłowy ma jednego gospodarza, ale nowych elektrowni prawie nikt nie buduje – stare bloki muszą wystarczyć na dłużej.",
+    icon: "tower",
+    effects: [],
+    sources: [
+      "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf",
+      "https://www.cire.pl/pliki/2/2020/elektroenergetyka_polska_w_latach_1990_2020_olga_fasieckazm.pdf"
+    ],
+    certainty: "medium",
     speculative: false
   },
   {
@@ -2330,6 +2497,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2007_ets_krach",
+    date: "2007-03",
+    title: "CO₂ za grosze, ale Bruksela tnie polski limit",
+    paper: "Rzeczpospolita",
+    text: "W 2005 r. ruszył unijny system handlu uprawnieniami do emisji CO₂ (EU ETS), ale uprawnień rozdano za dużo: w kwietniu 2006 r. tona kosztowała ok. 30 euro, a w 2007 r. uprawnienia z pierwszego okresu potaniały niemal do zera. 26 marca 2007 r. Komisja Europejska ograniczyła polski przydział na lata 2008–2012 do 208,5 mln t CO₂ rocznie – o 26,7 proc. mniej, niż proponował rząd.",
+    hint: "Na razie emisje kosztują niewiele, ale limity dla polskich elektrowni będą coraz ciaśniejsze.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/European_Union_Emissions_Trading_System",
+      "https://ekolist.cz/cz/zpravodajstvi/tiskove-zpravy/obchodovani-s-emisemi-komise-rozhodla-o-ceskem-a-polskem-narodnim-alokacnim-planu-na-obdobi-2008-2012"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2008_szczecin_blackout",
     date: "2008-04",
     title: "Szczecin bez prądu. Największa awaria od wojny",
@@ -2341,6 +2524,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.money.pl/gospodarka/blackout-w-polsce-zdarzyl-sie-naprawde-dekade-temu-zgasl-caly-szczecin-nie-bylo-niczego-6396070270957185a.html",
       "https://www.gramwzielone.pl/trendy/102789/blackout-co-oznacza-najglosniejsze-przypadki-i-jak-sie-przed-nim-ochronic"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2008_kryzys_finansowy",
+    date: "2008-11",
+    title: "Kryzys finansowy: przemysł zużywa mniej prądu",
+    paper: "Puls Biznesu",
+    text: "Światowy kryzys finansowy dociera do polskich fabryk: od listopada 2008 r. zużycie prądu jest co miesiąc o ok. 6 proc. niższe niż przed rokiem, najmocniej w hutnictwie, chemii, przemyśle szklarskim i cementowniach. W całym 2009 r. krajowe zużycie energii elektrycznej wyniosło 148,7 TWh, o blisko 4 proc. mniej niż rok wcześniej; w 2010 r. wróciło niemal do poziomu z 2008 r.",
+    hint: "Przez ponad rok popyt jest niższy – z nowymi blokami można poczekać.",
+    icon: "money",
+    effects: [{ type: "demand", mult: 0.96, months: 14 }],
+    sources: [
+      "https://forsal.pl/artykuly/119379,szybko-spada-zuzycie-pradu-w-polsce.html",
+      "https://www.gov.pl/documents/33372/436746/DE_1_OcenaPEP2030_05_2015-08-03.doc/41976df9-b307-1a9d-055e-93ef4631cd74"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2009_kryzys_gazowy",
+    date: "2009-01",
+    title: "Wojna gazowa: tranzyt przez Ukrainę wstrzymany",
+    paper: "Gazeta Wyborcza",
+    text: "W sporze o ceny Rosja 1 stycznia 2009 r. odcięła gaz dla Ukrainy, a 7 stycznia wstrzymała cały tranzyt przez jej terytorium; dostawy wznowiono dopiero 20 stycznia. Do Polski dociera o jedną trzecią mniej rosyjskiego gazu, więc rząd pozwala ograniczać pobór wielkim zakładom – głównie azotowym w Puławach i Tarnowie, Policom i Orlenowi – chroniąc gospodarstwa domowe.",
+    hint: "Gaz bywa bronią polityczną – przez miesiąc elektrownie gazowe pracują z ograniczoną mocą.",
+    icon: "gas",
+    effects: [{ type: "derate", techs: ["gas_ccgt","gas_ocgt"], mult: 0.7, months: 1 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/2009_Russia%E2%80%93Ukraine_gas_dispute",
+      "https://forsal.pl/artykuly/104022,kryzys-gazowy-uderza-w-polskie-firmy.html"
     ],
     certainty: "high",
     speculative: false
@@ -2410,6 +2625,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2015_gazoport",
+    date: "2015-12",
+    title: "Pierwszy gazowiec w Świnoujściu",
+    paper: "Rzeczpospolita",
+    text: "11 grudnia 2015 r. do terminalu LNG w Świnoujściu, zainaugurowanego 12 października, dotarła pierwsza dostawa skroplonego gazu. Terminal może przyjąć 5 mld m³ gazu rocznie i ma pomóc uniezależnić Polskę od gazu z Rosji. Po aneksji Krymu w 2014 r. premier Donald Tusk zaproponował unię energetyczną, w której jeden europejski podmiot kupowałby gaz dla całej UE.",
+    hint: "Gaz może teraz przypłynąć statkiem z dowolnego miejsca na świecie – dostawy są pewniejsze, choć nie tańsze.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/%C5%9Awinouj%C5%9Bcie_LNG_terminal",
+      "https://www.themoscowtimes.com/2014/04/22/polish-prime-minister-proposes-european-energy-union"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2016_ustawa_10h",
     date: "2016-07",
     title: "Ustawa 10H blokuje nowe wiatraki",
@@ -2421,6 +2652,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://eli.gov.pl/eli/DU/2016/961/ogl",
       "https://www.prawo.pl/biznes/przepisy-o-lokalizacji-elektrowni-wiatrowych-juz-obowiazuja,166767.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2018_co2_zamrozenie_cen",
+    date: "2018-12",
+    title: "CO₂ drożeje, rząd zamraża ceny prądu",
+    paper: "Rzeczpospolita",
+    text: "Reforma unijnego handlu emisjami z rezerwą stabilności rynku (MSR), działającą od 2019 r., wywindowała cenę uprawnień z ok. 4 euro za tonę w połowie 2017 r. do ponad 20 euro latem 2018 r., a hurtowe ceny prądu w Polsce skoczyły ze 170 do 270–280 zł za MWh. Ustawą z 28 grudnia 2018 r. ceny dla odbiorców zamrożono na 2019 r. na poziomie taryf i umów z 30 czerwca 2018 r., akcyzę obniżono z 20 do 5 zł za MWh, a opłatę przejściową o 95 proc.",
+    hint: "Uprawnienia do emisji stają się jednym z największych kosztów bloków węglowych, a rachunki odbiorców – sprawą polityczną.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://forsal.pl/artykuly/1357004,drogi-klimat-europejski-unijna-polityka-podnosi-nam-ceny-energii.html",
+      "https://www.podatki.biz/artykuly/podatki-2019-prezydent-podpisal-nowele-zmniejszajaca-opodatkowanie-pradu_16_39880.htm"
     ],
     certainty: "high",
     speculative: false
@@ -2442,6 +2689,86 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2019_banki_wegiel",
+    date: "2019-11",
+    title: "Banki odwracają się od węgla",
+    paper: "Puls Biznesu",
+    text: "14 listopada 2019 r. Europejski Bank Inwestycyjny ogłosił, że od końca 2021 r. przestanie finansować projekty energetyczne oparte na paliwach kopalnych, także gazowe. Od węgla odwracają się też banki komercyjne: mBank od 1 kwietnia 2019 r. nie finansuje w Polsce budowy nowych kopalń ani bloków węglowych.",
+    hint: "Kredyt na elektrownie kopalne drożeje – im większy udział węgla i gazu w Twoim systemie, tym wyższe odsetki.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.01, months: 72 }],
+    sources: [
+      "https://www.eib.org/en/press/all/2019-313-eu-bank-launches-ambitious-new-climate-strategy-and-energy-lending-policy",
+      "https://spidersweb.pl/2019/04/wegiel-fundusz-ratunkowy.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2020_covid",
+    date: "2020-03",
+    title: "Pandemia: fabryki zwalniają, popyt na prąd spada",
+    paper: "Gazeta Wyborcza",
+    text: "Wiosną 2020 r. pandemia COVID-19 i lockdowny hamują gospodarkę: w maju krajowe zużycie prądu było o 8 proc. niższe niż przed rokiem, a w całym drugim kwartale o 9 proc. Jesienią popyt wrócił do normy i w całym 2020 r. zużycie energii elektrycznej spadło tylko o ok. 2 proc.",
+    hint: "Na kilka miesięcy popyt wyraźnie spada – w słoneczne, puste dni sieć może mieć nadmiar energii.",
+    icon: "factory",
+    effects: [{ type: "demand", mult: 0.93, months: 4 }],
+    sources: [
+      "https://old.jagiellonski.pl/mFile/7.pdf",
+      "https://enerad.pl/jak-lockdown-w-czasach-covid-wplynal-na-zuzycie-pradu-w-polsce/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2020_taksonomia",
+    date: "2020-06",
+    title: "Unijna taksonomia: co jest „zielone”, a co nie",
+    paper: "Rzeczpospolita",
+    text: "18 czerwca 2020 r. Parlament Europejski przyjął rozporządzenie o taksonomii, które od 12 lipca określa kryteria działalności gospodarczej zgodnej z drogą do neutralności klimatycznej w 2050 r. W 2022 r. dopisano do niej, pod ścisłymi warunkami, wybrane działalności w energetyce jądrowej i gazowej, by przyspieszyć odchodzenie od węgla i innych paliw stałych lub ciekłych.",
+    hint: "Inwestycje w węgiel nie mogą liczyć na „zielone” finansowanie – kapitał na paliwa kopalne drożeje.",
+    icon: "law",
+    effects: [{ type: "esg", premium: 0.015, months: 240 }],
+    sources: [
+      "https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en",
+      "https://en.wikipedia.org/wiki/EU_taxonomy_for_sustainable_activities"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_pep2040",
+    date: "2021-02",
+    title: "Rząd przyjmuje politykę energetyczną do 2040 r.",
+    paper: "Rzeczpospolita",
+    text: "2 lutego 2021 r. Rada Ministrów przyjęła „Politykę energetyczną Polski do 2040 r.” (PEP2040), opartą na trzech filarach: sprawiedliwej transformacji, zeroemisyjnym systemie energetycznym i dobrej jakości powietrza. Zakłada ona m.in. ok. 5,9 GW morskich farm wiatrowych w 2030 r. i ok. 11 GW w 2040 r., pierwszy blok jądrowy o mocy 1–1,6 GW w 2033 r. (łącznie sześć bloków) oraz co najmniej 23 proc. OZE w końcowym zużyciu energii brutto w 2030 r.",
+    hint: "Rząd stawia na morski wiatr i atom, a węgiel ma stopniowo tracić udział.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://www.gov.pl/web/polski-atom/uchwala-w-sprawie-polityki-energetycznej-polski-do-2040-r",
+      "https://bank.pl/?p=358133"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_umowa_spoleczna",
+    date: "2021-05",
+    title: "Umowa społeczna: kopalnie do 2049 roku",
+    paper: "Dziennik Zachodni",
+    text: "28 maja 2021 r. w Katowicach przedstawiciele rządu i górniczych związków zawodowych podpisali umowę społeczną, zgodnie z którą kopalnie węgla energetycznego mają być wygaszane do 2049 r. Górnicy dostają gwarancje zatrudnienia do nabycia praw emerytalnych, a odchodzący – 120 tys. zł odprawy; pomoc publiczna dla kopalń wymaga jednak zgody Komisji Europejskiej.",
+    hint: "Krajowy węgiel będzie dotowany jeszcze przez lata, ale jego koniec ma już datę.",
+    icon: "coal",
+    effects: [],
+    sources: [
+      "https://forsal.pl/biznes/energetyka/artykuly/8176310,podpisano-umowe-spoleczna-ws-gornictwa-co-oznacza-ten-dokument.html",
+      "https://archiwum.radio.lublin.pl/2021/05/przedstawiciele-rzadu-i-zwiazkow-zawodowych-podpisali-umowe-spoleczna-dla-gornictwa"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2021_turow",
     date: "2021-09",
     title: "TSUE: 500 tys. euro kary dziennie za Turów",
@@ -2453,6 +2780,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.money.pl/gospodarka/kara-za-kopalnie-turow-polska-ma-placic-pol-miliona-euro-dziennie-6685256349075968a.html",
       "https://www.rmf24.pl/fakty/news-500-tys-euro-dziennej-kary-dla-polski-decyzja-tsue-ws-turowa,nId,5493994"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_fit_for_55",
+    date: "2021-12",
+    title: "Fit for 55 i drogie CO₂: rachunki w górę",
+    paper: "Dziennik Gazeta Prawna",
+    text: "W lipcu 2021 r. Komisja Europejska przedstawiła pakiet „Fit for 55”: co najmniej 55 proc. mniej emisji do 2030 r., ostrzejszy handel emisjami i osobny system dla budynków i transportu. Od maja 2019 r. do listopada 2021 r. tona CO₂ zdrożała ze 100 do 310 zł, a prąd w kontraktach na kolejny rok – w ciągu roku z ok. 242 do ok. 470 zł za MWh. W połowie grudnia URE zatwierdził taryfy, które od stycznia 2022 r. podnoszą rachunki gospodarstw domowych średnio o 24 proc.",
+    hint: "Każda tona CO₂ z Twoich bloków węglowych kosztuje coraz więcej, a odbiorcy coraz uważniej liczą rachunki.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/european-green-deal/delivering-european-green-deal_en",
+      "https://bank.pl/?p=394005"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_inwazja",
+    date: "2022-02",
+    title: "Rosja napada na Ukrainę",
+    paper: "Rzeczpospolita",
+    text: "24 lutego 2022 r. Rosja rozpoczęła pełnoskalową inwazję na Ukrainę; miliony Ukraińców uciekają przed wojną, co staje się największym kryzysem uchodźczym w Europie od II wojny światowej. Rynki energii ogarnia panika: 7 marca europejskie ceny gazu skoczyły w ciągu dnia o 79 proc., do rekordowych 345 euro za MWh.",
+    hint: "Wojna za wschodnią granicą wstrząsa rynkami paliw – pewność dostaw zaczyna liczyć się bardziej niż cena.",
+    icon: "war",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Russian_invasion_of_Ukraine",
+      "https://energyconnects.com/news/utilities/2022/march/european-gas-surges-79-as-market-mayhem-takes-prices-to-record"
     ],
     certainty: "high",
     speculative: false
@@ -2481,13 +2840,26 @@ window.PN_EVENTS_PL = [
     text: "Po rosyjskiej inwazji na Ukrainę Polska w kwietniu 2022 r. wprowadziła embargo na import węgla z Rosji. Na rynku ARA tona węgla energetycznego kosztuje w 2022 r. od 135 do 432 dolarów, a w ślad za nim drożeje gaz.",
     hint: "Paliwa kopalne przez rok kosztują wielokrotnie więcej – źródła bez paliwa zyskują.",
     icon: "crisis",
-    effects: [
-      { type: "fuel", fuel: "coal", mult: 2.5, months: 12 },
-      { type: "fuel", fuel: "gas", mult: 3, months: 12 }
-    ],
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.4, months: 9 }, { type: "fuel", fuel: "gas", mult: 1.3, months: 9 }],
     sources: [
       "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/8402211,ustawa-embargo-na-import-wegla-z-rosji-andrzej-duda-prezydent.html",
       "https://se.min-pan.krakow.pl/pelne_teksty35/k35_prezentacje/k35se_grudzinski.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_gazprom_stop",
+    date: "2022-04",
+    title: "Gazprom zakręca kurek Polsce",
+    paper: "Dziennik Gazeta Prawna",
+    text: "27 kwietnia 2022 r. o 8:00 Gazprom wstrzymał dostawy gazu do Polski w ramach kontraktu jamalskiego, a także do Bułgarii, bo PGNiG odmówiło płacenia w rublach. Odbiorcy dostają gaz bez przerw, a magazyny są zapełnione w ok. 80 proc.; szefowa Komisji Europejskiej Ursula von der Leyen nazwała ruch Rosji szantażem.",
+    hint: "Rosyjski gaz przestaje płynąć do Polski – liczy się każde inne źródło dostaw.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://bank.pl/rosja-zakrecila-polsce-kurek-z-gazem/",
+      "https://www.money.pl/gospodarka/stalo-sie-rosja-odciela-polske-od-dostaw-gazu-6762671986494272a.html"
     ],
     certainty: "high",
     speculative: false
@@ -2509,6 +2881,38 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2022_ceny_maksymalne",
+    date: "2022-10",
+    title: "Ceny maksymalne prądu na 2023 rok",
+    paper: "Rzeczpospolita",
+    text: "27 października 2022 r. uchwalono ustawę o środkach nadzwyczajnych ograniczających ceny energii elektrycznej. Sprzedawcy muszą stosować ceny nie wyższe niż 693 zł za MWh dla gospodarstw domowych, które przekroczą limit zużycia, i 785 zł za MWh dla małych i średnich firm, samorządów oraz podmiotów użyteczności publicznej; w zamian dostają rekompensaty z Funduszu Wypłaty Różnicy Ceny.",
+    hint: "Ceny dla odbiorców mają odgórny limit – różnicę sprzedawcom wyrównuje państwo.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://eli.gov.pl/eli/DU/2022/2243/ogl",
+      "https://globenergia.pl/sejm-przyjal-ustawe-w-sprawie-maksymalnych-cen-energii-elektrycznej/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_westinghouse",
+    date: "2022-11",
+    title: "Atom z Ameryki: wybrano Westinghouse",
+    paper: "Rzeczpospolita",
+    text: "2 listopada 2022 r. Rada Ministrów wybrała reaktory AP1000 amerykańskiej firmy Westinghouse dla pierwszej polskiej elektrowni jądrowej w lokalizacji Lubiatowo-Kopalino na Pomorzu. Elektrownia ma mieć trzy bloki, a cały program jądrowy zakłada 6–9 GW mocy w reaktorach wodnych ciśnieniowych; pierwszy blok miał ruszyć w 2033 r.",
+    hint: "Elektrownia jądrowa nad Bałtykiem nabiera kształtów – trzy bloki AP1000 mają dać stabilną, bezemisyjną moc.",
+    icon: "nuclear",
+    effects: [],
+    sources: [
+      "https://info.westinghousenuclear.com/news/poland-selects-wec-ap1000",
+      "https://www.parkiet.com/energetyka/art37341891-polacy-wybrali-amerykanow-jest-atomowa-uchwala"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2023_wiatraki_700m",
     date: "2023-04",
     title: "Wiatraki bliżej domów, PSE tną fotowoltaikę",
@@ -2520,6 +2924,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.dzp.pl/files/shares/Alerty/2023 04 27 DZP Alert Ustawa 10H.pdf",
       "https://www.pse.pl/documents/20182/51490/2023_06_01_Redysponowanie_nierynkowe_PV.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2023_reforma_ets",
+    date: "2023-04",
+    title: "Ostrzejszy handel emisjami, CBAM i ETS2",
+    paper: "Rzeczpospolita",
+    text: "25 kwietnia 2023 r. Rada UE ostatecznie przyjęła reformę handlu emisjami: sektory objęte EU ETS mają do 2030 r. zmniejszyć emisje o 62 proc. względem 2005 r., a darmowe uprawnienia dla branż objętych nowym granicznym mechanizmem CBAM będą wygaszane w latach 2026–2034. Przeciw CBAM głosowała tylko Polska; osobny system ETS2 dla budynków i transportu drogowego ma ruszyć w 2027 r. (lub w 2028 r., jeśli ceny energii będą wyjątkowo wysokie).",
+    hint: "Pula uprawnień będzie kurczyć się coraz szybciej – ceny CO₂ raczej nie wrócą do dawnych poziomów.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://icapcarbonaction.com/en/node/971",
+      "https://agenceurope.eu/en/bulletin/article/13169/34"
     ],
     certainty: "high",
     speculative: false
@@ -2539,6 +2959,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.gramwzielone.pl/magazynowanie-energii/20178042/najwiekszy-w-historii-portfel-magazynow-energii-zabezpieczony-na-rynku-mocy",
       "https://inzynieria.com/uploaded/articles/Wstepne_wyniki_aukcji_2021_do_publikacji_2018_11_20_6e18a94ded.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2024_pomoc_ukrainie",
+    date: "2024-03",
+    title: "Rosja bombarduje ukraińską energetykę, PSE śle prąd",
+    paper: "Rzeczpospolita",
+    text: "22 marca 2024 r. fala rosyjskich ataków z powietrza uszkodziła ukraińskie obiekty energetyczne i pozbawiła prądu ponad milion ludzi; PSE wysłały Ukrainie w ramach pomocy awaryjnej 300 MW. W całym 2024 r. Polska dostarczyła Ukrainie ok. 191 GWh energii awaryjnie i ok. 637 GWh w handlu, a koszty pomocy awaryjnej pokryło ukraińskie Ukrenergo.",
+    hint: "Połączenia transgraniczne to nie tylko handel – w kryzysie sąsiednie systemy ratują się nawzajem.",
+    icon: "tower",
+    effects: [],
+    sources: [
+      "https://ca.marketscreener.com/news/latest/Ukraine-energy-grid-getting-help-from-abroad-after-Russian-strikes-operator-says-46262534/",
+      "https://api.sejm.gov.pl/sejm/term10/interpellations/attachment/ATTDUXHMT/i15512-o1.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2024_csrd",
+    date: "2024-12",
+    title: "Raporty ESG obowiązkowe dla największych spółek",
+    paper: "Puls Biznesu",
+    text: "Ustawą z 6 grudnia 2024 r. Polska wdrożyła unijną dyrektywę CSRD: największe spółki, które dotąd publikowały raporty niefinansowe, w 2025 r. po raz pierwszy przedstawią za 2024 r. raporty zrównoważonego rozwoju poświadczone przez biegłego rewidenta. W kwietniu 2025 r. UE odłożyła o dwa lata ten obowiązek dla firm, które jeszcze nie zaczęły raportować.",
+    hint: "Banki i inwestorzy widzą teraz czarno na białym ślad węglowy Twojej firmy – kapitał na paliwa kopalne drożeje.",
+    icon: "law",
+    effects: [{ type: "esg", premium: 0.02, months: 300 }],
+    sources: [
+      "https://www.gov.pl/web/finanse/ustawa-csrd",
+      "https://www.garrigues.com/en_GB/new/stop-clock-directive-published-official-journal-european-union"
     ],
     certainty: "high",
     speculative: false
@@ -2587,8 +3039,24 @@ window.PN_EVENTS_PL = [
     icon: "nuclear",
     effects: [{ type: "subsidy", target: "nuclear", costMult: 0.7, months: 180 }],
     sources: [
-      "https://nucnet.herokuapp.com/news/europe-approves-state-aid-for-poland-nuclear-station-first-concrete-planned-for-2028-12-2-2025",
-      "https://www.europeaninterest.eu/?p=472580"
+      "https://notesfrompoland.com/2025/12/09/poland-to-launch-construction-of-first-nuclear-plant-after-eu-approves-e14bn-in-state-aid/",
+      "https://world-nuclear-news.org/articles/eu-approves-polish-state-aid-for-nuclear-plant"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2026_katar_lng",
+    date: "2026-03",
+    title: "Wojna w Zatoce: Katar wstrzymuje LNG",
+    paper: "Rzeczpospolita",
+    text: "Po amerykańsko-izraelskich nalotach na Iran z 28 lutego 2026 r. Iran dwukrotnie zaatakował katarski kompleks gazowy Ras Laffan, a żegluga przez cieśninę Ormuz została poważnie ograniczona. Katar wstrzymał produkcję LNG i ogłosił siłę wyższą wobec odbiorców, w tym Orlenu – katarski gaz to ok. 20 proc. dostaw do Polski. 9 marca ceny gazu w Europie skoczyły w ciągu dnia nawet o 30 proc., do ok. 64 euro za MWh, a ropa Brent kosztuje ponad 100 dolarów za baryłkę.",
+    hint: "Gaz drożeje na wiele miesięcy – bloki gazowe stają się drogie, a źródła bez paliwa zyskują.",
+    icon: "gas",
+    effects: [{ type: "fuel", fuel: "gas", mult: 1.5, months: 6 }],
+    sources: [
+      "https://www.energyconnects.com/news/utilities/2026/march/european-gas-prices-surge-30-as-middle-east-war-roils-markets",
+      "https://portalstoczniowy.pl/en/ostatni-lng-katar-swinoujscie-transport-przed-konfliktem/"
     ],
     certainty: "high",
     speculative: false
@@ -2598,13 +3066,13 @@ window.PN_EVENTS_PL = [
     date: "2026-07",
     title: "Pierwszy prąd z morskich wiatraków na Bałtyku",
     paper: "Rzeczpospolita",
-    text: "10 lipca 2026 r. energia z farmy Baltic Power – wspólnej inwestycji Orlenu i Northland Power – po raz pierwszy popłynęła do krajowej sieci przez stację w Choczewie. Docelowo 76 turbin Vestas po 15 MW, ustawionych ok. 23 km od brzegu koło Łeby, da ok. 1,2 GW.",
+    text: "10 lipca 2026 r. energia z farmy Baltic Power – wspólnej inwestycji Orlenu i Northland Power – po raz pierwszy popłynęła do krajowej sieci przez stację elektroenergetyczną w gminie Choczewo. Docelowo 76 turbin Vestas po 15 MW, ustawionych ok. 23 km od brzegu koło Łeby, da ok. 1,1–1,2 GW.",
     hint: "Odblokowano morskie farmy wiatrowe – potrzebują mocnych linii z wybrzeża w głąb kraju.",
     icon: "wind",
     effects: [{ type: "unlock", tech: "wind_offshore" }],
     sources: [
-      "https://www.energyglobal.com/wind/13072026/baltic-power-offshore-wind-farm-produces-and-delivers-first-electricity-to-polish-grid/",
-      "https://globenergia.pl/pierwsza-energia-z-polskiego-offshore-trafila-do-sieci-baltic-power-zaczyna-zasilac-krajowy-system/"
+      "https://www.orlen.pl/en/about-the-company/media/press-releases/current/2026/July-2026/a-historic-milestone-the-wind-farm-in-the-baltic-sea-delivers-first-power-to-the-polish-grid",
+      "https://www.offshorewind.biz/2026/07/10/poland-receives-its-first-electricity-from-offshore-wind-as-baltic-power-starts-delivering/"
     ],
     certainty: "high",
     speculative: false
@@ -2783,11 +3251,13 @@ window.PN_EVENTS_US = [
     date: "1886-03",
     title: "Prąd przemienny zasila Great Barrington",
     paper: "The New York Times",
-    text: "20 marca 1886 r. William Stanley, pracujący dla George'a Westinghouse'a, zasilił sklepy i biura przy Main Street w Great Barrington prądem przemiennym. Napięcie z prądnicy firmy Siemens podwyższano do przesyłu i obniżano transformatorami do 500 V u odbiorców.",
+    text: "20 marca 1886 r. William Stanley, pracujący dla George'a Westinghouse'a, zasilił sklepy i biura przy Main Street w Great Barrington prądem przemiennym. Napięcie 500 V z prądnicy firmy Siemens podwyższano transformatorami do 3000 V, a u odbiorców obniżano do 100 V.",
     hint: "Transformator pozwala przesyłać prąd przemienny dalej niż stały – to początek przewagi AC.",
     icon: "tower",
     effects: [],
-    sources: ["https://ethw.org/Milestones:Alternating_Current_Electrification,_1886"],
+    sources: [
+      "https://ethw.org/Milestones:Alternating_Current_Electrification,_1886"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -2919,19 +3389,6 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
-    id: "us_1907_linia_110kv",
-    date: "1907-06",
-    title: "Michigan: pierwsza linia 110 kV",
-    paper: "Chicago Tribune",
-    text: "Między zaporą Croton a Grand Rapids w stanie Michigan uruchomiono pierwszą trójfazową linię przesyłową o napięciu 110 kV. Wyższe napięcie pozwala przesyłać energię z elektrowni wodnych na duże odległości przy niewielkich stratach.",
-    hint: "Odblokowano linie 110 kV.",
-    icon: "tower",
-    effects: [{ type: "unlock", tech: "line_110" }],
-    sources: ["https://en.wikipedia.org/wiki/History_of_electric_power_transmission"],
-    certainty: "medium",
-    speculative: false
-  },
-  {
     id: "us_1907_komisje_stanowe",
     date: "1907-07",
     title: "Stany biorą elektrownie pod nadzór",
@@ -2943,6 +3400,22 @@ window.PN_EVENTS_US = [
     sources: [
       "https://www.wicourts.gov/courts/history/article32.htm",
       "https://www.archives.nysed.gov/node/361057"
+    ],
+    certainty: "medium",
+    speculative: false
+  },
+  {
+    id: "us_1907_linia_110kv",
+    date: "1908-07",
+    title: "Michigan: pierwsza linia 110 kV",
+    paper: "Chicago Tribune",
+    text: "18 lipca 1908 r. Grand Rapids-Muskegon Power Company podała napięcie na liczącą ok. 80 km linię z elektrowni wodnej przy zaporze Croton na rzece Muskegon do Grand Rapids w stanie Michigan. Linia zaprojektowana na 110 kV jest najwyżej napiętą linią przesyłową świata; według części źródeł pełne 110 kV osiągnięto dopiero na początku 1909 r.",
+    hint: "Odblokowano linie 110 kV.",
+    icon: "tower",
+    effects: [{ type: "unlock", tech: "line_110" }],
+    sources: [
+      "https://reference.insulators.info/publications/view/?id=10497",
+      "https://en.wikipedia.org/wiki/Croton_Dam_(Michigan)"
     ],
     certainty: "medium",
     speculative: false
@@ -3102,6 +3575,22 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_1942_produkcja_wojenna",
+    date: "1942-01",
+    title: "Ameryka przestawia się na wojnę",
+    paper: "The New York Times",
+    text: "Po ataku na Pearl Harbor 7 grudnia 1941 r. USA przystąpiły do wojny, a w styczniu 1942 r. Roosevelt powołał Zarząd Produkcji Wojennej, który rozdziela surowce i wstrzymuje zbędną produkcję cywilną. Huty aluminium, stocznie i fabryki broni pracują bez przerwy: już w 1941 r. elektrownie zawodowe wytworzyły 165 mld kWh, o 16 proc. więcej niż rok wcześniej.",
+    hint: "Zbrojenia pochłaniają prąd – przez kilka lat wojny popyt będzie wyraźnie wyższy niż zwykle.",
+    icon: "war",
+    effects: [{ type: "demand", mult: 1.12, months: 42 }],
+    sources: [
+      "https://fred.stlouisfed.org/series/M0128AUSM247NNBR",
+      "https://en.wikipedia.org/wiki/War_Production_Board"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_1943_projekt_manhattan",
     date: "1943-06",
     title: "Tajne zakłady w Oak Ridge pożerają prąd",
@@ -3139,13 +3628,13 @@ window.PN_EVENTS_US = [
     date: "1953-06",
     title: "AEP uruchamia pierwszą na świecie linię 345 kV",
     paper: "The Wall Street Journal",
-    text: "American Electric Power uruchomił pierwszą na świecie linię przesyłową bardzo wysokiego napięcia, łączącą elektrownie Sporn i Kanawha River w Wirginii Zachodniej. Jej napięcie podawane jest jako 330–345 kV.",
+    text: "American Electric Power uruchomił pierwszą na świecie linię 345 kV, łączącą elektrownie Sporn i Kanawha River w Wirginii Zachodniej; jej napięcie podawane jest jako 330–345 kV. Pierwszą linią bardzo wysokiego napięcia w ogóle była jednak szwedzka linia 380 kV z 1952 r.",
     hint: "Odblokowano linie 345 kV – kręgosłup amerykańskiej sieci przesyłowej.",
     icon: "tower",
     effects: [{ type: "unlock", tech: "line_345" }],
     sources: [
       "https://www.aep.com/news/stories/view/882",
-      "https://sites.utexas.edu/energy-week/files/2015/07/Crowder.pdf"
+      "https://en.wikipedia.org/wiki/History_of_electric_power_transmission"
     ],
     certainty: "medium",
     speculative: false
@@ -3216,18 +3705,15 @@ window.PN_EVENTS_US = [
     date: "1965-11",
     title: "Wielka awaria: 30 milionów ludzi bez prądu",
     paper: "The New York Times",
-    text: "9 listopada 1965 r. zbyt czule nastawiony przekaźnik na linii w Ontario wywołał kaskadową awarię, która pozbawiła prądu ok. 30 mln ludzi w północno-wschodnich USA i Kanadzie; Nowy Jork był ciemny przez ponad 13 godzin. Sieci rosną szybciej niż ich koordynacja, a energetyka wchodzi już na napięcie 500 kV – pierwsze takie linie biegną z Mount Storm w Wirginii Zachodniej.",
+    text: "9 listopada 1965 r. zbyt czule nastawiony przekaźnik na linii w Ontario wywołał kaskadową awarię, która pozbawiła prądu ok. 30 mln ludzi w północno-wschodnich USA i Kanadzie; Nowy Jork był ciemny przez ponad 13 godzin. Sieci rosną szybciej niż ich koordynacja, a energetyka wchodzi już na napięcie 500 kV – pierwszą taką linię Tennessee Valley Authority włączyła 15 maja 1965 r.",
     hint: "Odblokowano linie 500 kV; połączone sieci dzielą rezerwy, ale też awarie.",
     icon: "blackout",
-    effects: [
-      { type: "unlock", tech: "line_500" },
-      { type: "outage", region: { lat: 42.5, lon: -75.0, radiusKm: 450 }, months: 1 }
-    ],
+    effects: [{ type: "unlock", tech: "line_500" }, { type: "outage", region: { lat: 42.5, lon: -75, radiusKm: 450 }, months: 1 }],
     sources: [
       "https://www.nerc.com/globalassets/who-we-are/march-2023-nerc-timeline.pdf",
-      "https://dewberry.com/projects/dominion-power-551-transmission-line-survey"
+      "https://en.wikipedia.org/wiki/Tennessee_Valley_Authority"
     ],
-    certainty: "medium",
+    certainty: "high",
     speculative: false
   },
   {
@@ -3286,8 +3772,10 @@ window.PN_EVENTS_US = [
     text: "W październiku 1973 r. arabscy producenci zrzeszeni w OAPEC ogłosili embargo na dostawy ropy do USA. Cena baryłki gwałtownie rośnie, a elektrownie opalane olejem opałowym płacą za paliwo kilka razy więcej.",
     hint: "Elektrownie olejowe stają się nieopłacalne – czas na węgiel, atom i gaz.",
     icon: "oil",
-    effects: [{ type: "fuel", fuel: "oil", mult: 3, months: 18 }],
-    sources: ["https://en.wikipedia.org/wiki/1973_oil_crisis"],
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.4, months: 18 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/1973_oil_crisis"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -3325,6 +3813,22 @@ window.PN_EVENTS_US = [
     sources: [
       "https://webarchive.library.unt.edu/eot2008/20081009071108/http://edocket.access.gpo.gov/2003/03-21401.htm",
       "https://en.wikipedia.org/wiki/Public_Utility_Regulatory_Policies_Act"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_1979_iran",
+    date: "1979-01",
+    title: "Rewolucja w Iranie: drugi szok naftowy",
+    paper: "The Wall Street Journal",
+    text: "Rewolucja w Iranie sparaliżowała tamtejsze pola naftowe: do stycznia 1979 r. wydobycie spadło o 4,8 mln baryłek dziennie, czyli o ok. 7 proc. światowej produkcji. Ceny ropy znów idą w górę, a elektrownie opalane olejem, które w 1978 r. dały ok. 16 proc. prądu w USA, muszą płacić za paliwo coraz więcej.",
+    hint: "Olej opałowy drożeje – zastępuj elektrownie olejowe węglem, atomem lub gazem.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.15, months: 15 }],
+    sources: [
+      "https://www.federalreservehistory.org/essays/oil-shock-of-1978-79",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
     ],
     certainty: "high",
     speculative: false
@@ -3410,6 +3914,22 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_1990_kuwejt",
+    date: "1990-08",
+    title: "Irak zajmuje Kuwejt, ropa drożeje",
+    paper: "The Wall Street Journal",
+    text: "2 sierpnia 1990 r. wojska irackie wkroczyły do Kuwejtu, a rynek zaczął się obawiać o dostawy z całej Zatoki Perskiej. Ropa, w lipcu średnio po 17 dolarów za baryłkę, gwałtownie drożeje. Amerykańska energetyka odczuje to jednak słabo: ropa daje już tylko ok. 5 proc. prądu w USA, wobec 17 proc. w 1973 r.",
+    hint: "Skok cen ropy potrwa kilka miesięcy – dla sieci opartej na węglu, gazie i atomie to raczej ciekawostka niż kryzys.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.6, months: 5 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/1990_oil_price_shock",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_1992_epact",
     date: "1992-10",
     title: "Ustawa o polityce energetycznej: ulga za wiatr",
@@ -3419,6 +3939,22 @@ window.PN_EVENTS_US = [
     icon: "law",
     effects: [{ type: "subsidy", target: "wind", costMult: 0.85, months: 120 }],
     sources: ["https://en.wikipedia.org/wiki/Energy_Policy_Act_of_1992"],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_1995_kwasne_deszcze",
+    date: "1995-01",
+    title: "Rusza handel uprawnieniami do emisji SO₂",
+    paper: "The Washington Post",
+    text: "1 stycznia 1995 r. ruszyła pierwsza faza programu przeciw kwaśnym deszczom z nowelizacji ustawy o czystym powietrzu z listopada 1990 r. Odtąd 263 bloki w 110 elektrowniach, głównie węglowych, muszą mieć uprawnienie na każdą tonę dwutlenku siarki i mogą handlować nadwyżkami. Od 2000 r. limit obejmie ponad 2000 bloków i spadnie docelowo do 8,95 mln ton rocznie – połowy emisji energetyki z 1980 r.",
+    hint: "Spalanie zasiarczonego węgla nieco drożeje – opłaca się odsiarczanie albo węgiel niskosiarkowy.",
+    icon: "law",
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.05, months: 120 }],
+    sources: [
+      "https://www.epa.gov/acidrain/acid-rain-program",
+      "https://www.epa.gov/clean-air-act-overview/1990-clean-air-act-amendment-summary"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -3452,17 +3988,30 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2003_irak",
+    date: "2003-03",
+    title: "Wojna w Iraku, a ropa tanieje",
+    paper: "The Wall Street Journal",
+    text: "20 marca 2003 r. wojska USA i Wielkiej Brytanii zaatakowały Irak. Ropa, która jeszcze kilka tygodni wcześniej kosztowała blisko 40 dolarów za baryłkę, w przeddzień wojny spadła poniżej 30 dolarów, bo rynek liczy na szybkie zwycięstwo bez przerw w dostawach. Dla amerykańskich elektrowni to niemal bez znaczenia – z ropy pochodzi tylko ok. 2,5 proc. prądu w USA.",
+    hint: "Wojny na Bliskim Wschodzie mocniej podnoszą ceny benzyny niż prądu – sieci opartej na węglu, gazie i atomie prawie nie dotyczą.",
+    icon: "oil",
+    effects: [],
+    sources: [
+      "https://www.voanews.com/a/a-13-a-2003-03-19-47-crude/298121.html",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2003_blackout",
     date: "2003-08",
     title: "Blackout: 55 milionów ludzi w ciemnościach",
     paper: "The New York Times",
     text: "14 sierpnia 2003 r. przeciążone linie FirstEnergy w Ohio zetknęły się z nieprzyciętymi drzewami, a kaskadowa awaria pozbawiła prądu ok. 55 mln mieszkańców północnego wschodu USA i Ontario. Jeszcze tego dnia Departament Energii nakazał uruchomić zablokowany przez spory podmorski kabel Cross-Sound (330 MW) między Connecticut a Long Island.",
-    hint: "Odblokowano kable podmorskie; przycinaj drzewa pod liniami – to też część niezawodności.",
+    hint: "Przycinaj drzewa pod liniami i dbaj o połączenia z sąsiednimi systemami – w kryzysie każde łącze się liczy.",
     icon: "blackout",
-    effects: [
-      { type: "unlock", tech: "cable_sea" },
-      { type: "outage", region: { lat: 41.5, lon: -80.0, radiusKm: 500 }, months: 1 }
-    ],
+    effects: [{ type: "outage", region: { lat: 41.5, lon: -80, radiusKm: 500 }, months: 1 }],
     sources: [
       "https://en.wikipedia.org/wiki/Northeast_blackout_of_2003",
       "https://www.energy.gov/node/366235"
@@ -3487,6 +4036,63 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2005_katrina",
+    date: "2005-08",
+    title: "Katrina: Nowy Orlean pod wodą i bez prądu",
+    paper: "The Times-Picayune",
+    text: "29 sierpnia 2005 r. huragan Katrina uderzył w wybrzeże Luizjany i Missisipi; bez prądu zostało ok. 3 mln ludzi, a zalany Nowy Orlean pogrążył się w ciemności. Z pól w Zatoce Meksykańskiej przestało płynąć ponad 8 mld stóp sześciennych gazu dziennie, a cena w hubie Henry wzrosła w tydzień o 2,70 dolara, do 12,70 dolara za mln BTU.",
+    hint: "Linie i stacje na nizinnym wybrzeżu Zatoki są narażone na huragany, a drogi gaz uderza w elektrownie gazowe w całym kraju.",
+    icon: "storm",
+    effects: [
+      { type: "outage", region: { lat: 30.2, lon: -89.9, radiusKm: 250 }, months: 1 },
+      { type: "damage", region: { lat: 30, lon: -89.9, radiusKm: 120 }, target: "lines", share: 0.15 },
+      { type: "fuel", fuel: "gas", mult: 1.4, months: 4 }
+    ],
+    sources: [
+      "https://en.wikipedia.org/wiki/Hurricane_Katrina",
+      "https://www.eia.gov/naturalgas/weekly/archivenew_ngwu/2005/09_01/ngupdate.asp"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2009_rggi",
+    date: "2009-01",
+    title: "RGGI: emisja CO₂ zaczyna kosztować",
+    paper: "The Boston Globe",
+    text: "1 stycznia 2009 r. ruszyła Regional Greenhouse Gas Initiative (RGGI) – wspólny system handlu uprawnieniami do emisji CO₂ dziesięciu stanów od Maine po Maryland. Elektrownie na paliwa kopalne o mocy od 25 MW muszą oddać uprawnienie za każdą tonę CO₂; limit na lata 2009–2011 to 188 mln uprawnień, sprzedawanych na aukcjach.",
+    hint: "Emisja CO₂ zaczyna kosztować – na razie mało i tylko w części kraju, więc w skali USA to niewielka dopłata.",
+    icon: "law",
+    effects: [{ type: "carbon", price: 0.3, months: 612 }],
+    sources: [
+      "https://www.rggi.org/program-overview-and-design/elements",
+      "https://en.wikipedia.org/wiki/Regional_Greenhouse_Gas_Initiative"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2009_recesja_arra",
+    date: "2009-02",
+    title: "Recesja i pakiet stymulacyjny",
+    paper: "The Washington Post",
+    text: "Po upadku banku Lehman Brothers we wrześniu 2008 r. USA są w recesji, a fabryki ograniczają produkcję – zużycie prądu w przemyśle spada najszybciej. 17 lutego 2009 r. Barack Obama podpisał ustawę ARRA, która daje ponad 90 mld dolarów na czystą energię, m.in. dotacje gotówkowe zamiast ulg podatkowych dla farm wiatrowych i słonecznych oraz środki na inteligentne sieci.",
+    hint: "Popyt na prąd przez ponad rok jest o kilka procent niższy, ale wiatr, słońce i modernizacja sieci są wyraźnie tańsze.",
+    icon: "money",
+    effects: [
+      { type: "demand", mult: 0.96, months: 14 },
+      { type: "subsidy", target: "wind", costMult: 0.8, months: 84 },
+      { type: "subsidy", target: "solar", costMult: 0.8, months: 84 },
+      { type: "subsidy", target: "grid", costMult: 0.9, months: 36 }
+    ],
+    sources: [
+      "https://obamawhitehouse.archives.gov/the-press-office/2016/02/25/fact-sheet-recovery-act-made-largest-single-investment-clean-energy",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.06"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2012_gaz_lupkowy",
     date: "2012-04",
     title: "Gaz łupkowy najtańszy od ponad dekady",
@@ -3494,7 +4100,7 @@ window.PN_EVENTS_US = [
     text: "W kwietniu 2012 r. cena gazu w hubie Henry spadła poniżej 2 dolarów za mln BTU – średnio do 1,95 dolara, najniżej od grudnia 2001 r. Łagodna zima, wysokie zapasy i szybki wzrost wydobycia z łupków Marcellus sprawiają, że elektrownie gazowe wypierają węglowe.",
     hint: "Tani gaz przez kilka lat – bloki gazowe wygrywają z węglem.",
     icon: "gas",
-    effects: [{ type: "fuel", fuel: "gas", mult: 0.6, months: 36 }],
+    effects: [{ type: "fuel", fuel: "gas", mult: 0.8, months: 36 }],
     sources: [
       "https://www.eia.gov/todayinenergy/detail.php?id=15811",
       "https://www.eia.gov/todayinEnergy/detail.php?id=7470"
@@ -3522,17 +4128,64 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2013_kalifornia_co2",
+    date: "2013-01",
+    title: "Kalifornia uruchamia handel emisjami",
+    paper: "Los Angeles Times",
+    text: "Od 1 stycznia 2013 r. elektrownie zasilające Kalifornię – także te spoza stanu – i duże zakłady przemysłowe muszą mieć uprawnienie na każdą tonę emitowanych gazów cieplarnianych. Na pierwszej aukcji w listopadzie 2012 r. tona kosztowała 10,09 dolara; później system obejmie też dostawców paliw, a emisje stanu mają spaść do 427 mln ton w 2020 r.",
+    hint: "Kalifornijska cena CO₂ podnosi średni koszt emisji w USA – wciąż skromnie, ale węgiel znów traci na opłacalności.",
+    icon: "law",
+    effects: [{ type: "carbon", price: 1.2, months: 576 }],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=9310"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2013_san_onofre",
+    date: "2013-06",
+    title: "San Onofre zamknięte na zawsze",
+    paper: "Los Angeles Times",
+    text: "7 czerwca 2013 r. Southern California Edison ogłosiła zamknięcie elektrowni jądrowej San Onofre (2150 MW), której bloki stoją od stycznia 2012 r. po wycieku w wytwornicy pary. Razem z Crystal River i Kewaunee to cztery reaktory skazane na zamknięcie od jesieni 2012 r. – pierwsze takie decyzje od 1998 r. Po Fukushimie NRC nakazała ponadto wszystkim 104 reaktorom dodatkowe zabezpieczenia.",
+    hint: "Reaktor to inwestycja na dziesięciolecia – jedna wadliwa część i tani gaz mogą przedwcześnie zakończyć jego pracę.",
+    icon: "nuclear",
+    effects: [],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=11931",
+      "https://govexec.com/technology/2012/03/nuclear-commission-issues-first-fukushima-safety-orders/41429"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2014_crez",
-    date: "2014-01",
+    date: "2013-12",
     title: "Teksas kończy autostradę dla wiatru",
     paper: "Houston Chronicle",
-    text: "Na przełomie 2013 i 2014 r. ukończono program CREZ: ok. 3600 mil (5800 km) linii 345 kV za ok. 7 mld dolarów, łączących wietrzny zachód Teksasu z miastami. Nowa sieć może odebrać ok. 18,5 GW mocy z farm wiatrowych.",
+    text: "Do końca 2013 r. pod napięciem znalazły się wszystkie linie programu CREZ: ok. 3600 mil (5800 km) linii, głównie 345 kV, za ok. 7 mld dolarów, łączących wietrzny zachód Teksasu z miastami. Nowa sieć może odebrać ok. 18,5 GW mocy z farm wiatrowych.",
     hint: "Wiatr bez linii przesyłowych się marnuje – rozbudowa sieci jest przez dwa lata tańsza.",
     icon: "tower",
     effects: [{ type: "subsidy", target: "grid", costMult: 0.85, months: 24 }],
     sources: [
       "https://www.cleanenergyministerial.org/policy-brief-cesc/united-states-texas-competitive-renewable-energy-zones-and-transmission-expansion-to-support-scaled-up-wind-investment/",
       "https://www.eia.gov/todayinenergy/detail.php?id=16831"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2016_paryz_cpp",
+    date: "2016-02",
+    title: "Paryż tak, Clean Power Plan – stop",
+    paper: "The Washington Post",
+    text: "W grudniu 2015 r. USA przyjęły porozumienie paryskie, a Kongres przedłużył o pięć lat, ze stopniowym wygaszaniem, ulgi podatkowe dla wiatru i słońca. Filarem zobowiązań miał być Clean Power Plan – ogłoszony w sierpniu 2015 r. plan cięcia emisji CO₂ z elektrowni o 32 proc. do 2030 r. względem 2005 r. – ale 9 lutego 2016 r. Sąd Najwyższy go wstrzymał.",
+    hint: "Federalne limity CO₂ dla elektrowni utknęły w sądzie, ale ulgi dla wiatru i słońca działają jeszcze kilka lat.",
+    icon: "law",
+    effects: [{ type: "subsidy", target: "wind", costMult: 0.85, months: 60 }, { type: "subsidy", target: "solar", costMult: 0.8, months: 60 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Clean_Power_Plan",
+      "https://www.eia.gov/todayinenergy/detail.php?id=26492"
     ],
     certainty: "high",
     speculative: false
@@ -3554,15 +4207,32 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2017_paryz_wyjscie",
+    date: "2017-06",
+    title: "Trump wycofuje USA z porozumienia paryskiego",
+    paper: "The New York Times",
+    text: "1 czerwca 2017 r. prezydent Donald Trump ogłosił, że Stany Zjednoczone wystąpią z porozumienia paryskiego. Zgodnie z jego zasadami wyjście może nastąpić najwcześniej 4 listopada 2020 r., dzień po kolejnych wyborach prezydenckich.",
+    hint: "Federalna polityka klimatyczna się cofa, ale o tym, co się buduje, wciąż decydują głównie ceny gazu, wiatru i słońca.",
+    icon: "flag",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/United_States_withdrawal_from_the_Paris_Agreement"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2017_huragan_maria",
     date: "2017-09",
     title: "Huragan Maria: Portoryko bez prądu",
     paper: "The New York Times",
-    text: "20 września 2017 r. huragan Maria zniszczył sieć energetyczną Portoryko – prądu pozbawieni zostali wszyscy 3,4 mln mieszkańców wyspy. Miesiąc później bez zasilania wciąż było 88 proc. wyspy.",
+    text: "20 września 2017 r. huragan Maria zniszczył sieć energetyczną Portoryko – prądu pozbawieni zostali wszyscy 3,4 mln mieszkańców wyspy. Miesiąc później bez zasilania wciąż było ponad 80 proc. odbiorców.",
     hint: "Wyspiarska sieć bez połączeń z lądem odbudowuje się miesiącami.",
     icon: "storm",
     effects: [],
-    sources: ["https://en.wikipedia.org/wiki/Effects_of_Hurricane_Maria_in_Puerto_Rico"],
+    sources: [
+      "https://en.wikipedia.org/wiki/Effects_of_Hurricane_Maria_in_Puerto_Rico"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -3585,6 +4255,54 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2019_pge",
+    date: "2019-10",
+    title: "PG&E wyłącza prąd, by nie wzniecić pożarów",
+    paper: "San Francisco Chronicle",
+    text: "29 stycznia 2019 r. Pacific Gas and Electric ogłosiła upadłość, przytłoczona roszczeniami za pożary z lat 2017–2018, szacowanymi na ok. 30 mld dolarów. 9 października, by linie nie wznieciły kolejnych pożarów podczas suchego, porywistego wiatru, spółka wyłączyła prąd ok. 800 tys. odbiorców – ok. 2,5 mln ludzi w północnej Kalifornii – a pod koniec miesiąca – kolejnym 940 tys.",
+    hint: "W suchym i wietrznym klimacie bezpieczna sieć wymaga wycinki, kabli ziemnych i wyłączeń prewencyjnych – każda z tych opcji kosztuje.",
+    icon: "blackout",
+    effects: [{ type: "outage", region: { lat: 38.7, lon: -121.9, radiusKm: 250 }, months: 1 }],
+    sources: [
+      "https://abc7.com/business/pg-e-officially-files-for-chapter-11-bankruptcy/5111100/",
+      "https://en.wikipedia.org/wiki/2019_California_power_shutoffs"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2020_fink",
+    date: "2020-01",
+    title: "BlackRock: ryzyko klimatyczne to ryzyko inwestycyjne",
+    paper: "The Wall Street Journal",
+    text: "14 stycznia 2020 r. Larry Fink, szef BlackRock – największego zarządzającego aktywami na świecie, z ok. 7 bln dolarów – ogłosił w liście do prezesów „fundamentalną przebudowę finansów”, bo ryzyko klimatyczne staje się ryzykiem inwestycyjnym. Do połowy 2020 r. BlackRock wycofa z aktywnie zarządzanych portfeli spółki czerpiące ponad 25 proc. przychodów z węgla energetycznego.",
+    hint: "Inwestorzy zaczynają wyceniać ryzyko klimatyczne – im więcej prądu z paliw kopalnych, tym droższy kredyt.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.015, months: 61 }],
+    sources: [
+      "https://www.blackrock.com/corporate/investor-relations/2020-larry-fink-ceo-letter",
+      "https://www.aljazeera.com/ajimpact/moment-blackrock-pledges-tough-stance-climate-200114201901297.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2020_covid",
+    date: "2020-04",
+    title: "Pandemia: biura puste, popyt na prąd spada",
+    paper: "The Wall Street Journal",
+    text: "Wiosną 2020 r. stany zamykają biura, szkoły, sklepy i część fabryk, by spowolnić pandemię COVID-19. W kwietniu sprzedaż energii elektrycznej w USA była o ok. 4 proc. niższa niż przed rokiem: handel i usługi zużyły ok. 11 proc. mniej, przemysł ok. 10 proc. mniej, za to gospodarstwa domowe, w których pracuje się i uczy zdalnie, o 8 proc. więcej.",
+    hint: "Spadek popytu potrwa kilka miesięcy – nie zamykaj elektrowni pochopnie, odbiorcy szybko wrócą.",
+    icon: "factory",
+    effects: [{ type: "demand", mult: 0.95, months: 6 }],
+    sources: [
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.06",
+      "https://www.eia.gov/todayinenergy/detail.php?id=47397"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2020_moss_landing",
     date: "2020-12",
     title: "Moss Landing: największa bateria świata",
@@ -3594,8 +4312,24 @@ window.PN_EVENTS_US = [
     icon: "plant",
     effects: [{ type: "unlock", tech: "battery" }],
     sources: [
-      "https://www.energy-storage.news/at-300mw-1200mwh-the-worlds-largest-battery-storage-system-so-far-is-up-and-running/",
-      "https://www.spglobal.com/market-intelligence/en/news-insights/articles/2021/1/vistra-connects-300-mw-battery-to-grid-in-california-61998078"
+      "https://investor.vistracorp.com/2021-01-06-Vistra-Brings-Worlds-Largest-Utility-Scale-Battery-Energy-Storage-System-Online",
+      "https://www.energy-storage.news/at-300mw-1200mwh-the-worlds-largest-battery-storage-system-so-far-is-up-and-running/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2021_paryz_powrot",
+    date: "2021-01",
+    title: "USA wracają do porozumienia paryskiego",
+    paper: "The Washington Post",
+    text: "Wyjście USA z porozumienia paryskiego weszło w życie 4 listopada 2020 r., ale 20 stycznia 2021 r., w dniu zaprzysiężenia, prezydent Joe Biden zdecydował o powrocie – USA znów będą stroną porozumienia od 19 lutego. 27 stycznia nowy prezydent wyznaczył cel: energetyka wolna od emisji CO₂ do 2035 r. i gospodarka neutralna klimatycznie do 2050 r.",
+    hint: "Polityka federalna znów sprzyja czystej energii – ale konkretne pieniądze przyjdą dopiero z ustaw Kongresu.",
+    icon: "handshake",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/United_States_withdrawal_from_the_Paris_Agreement",
+      "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2021/01/27/fact-sheet-president-biden-takes-executive-actions-to-tackle-the-climate-crisis-at-home-and-abroad-create-jobs-and-restore-scientific-integrity-across-federal-government/"
     ],
     certainty: "high",
     speculative: false
@@ -3614,6 +4348,38 @@ window.PN_EVENTS_US = [
       { type: "derate", techs: ["gas_ocgt", "gas_ccgt", "coal", "wind", "nuclear"], mult: 0.7, months: 1 }
     ],
     sources: ["https://en.wikipedia.org/wiki/2021_Texas_power_crisis"],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2021_iija",
+    date: "2021-11",
+    title: "Ustawa infrastrukturalna: miliardy na sieci",
+    paper: "The New York Times",
+    text: "15 listopada 2021 r. prezydent Biden podpisał ustawę infrastrukturalną (Infrastructure Investment and Jobs Act) o wartości ok. 1,2 bln dolarów. Ponad 65 mld dolarów pójdzie na sieci elektroenergetyczne – według Białego Domu to największa w historii USA inwestycja w przesył czystej energii, obejmująca tysiące mil nowych linii.",
+    hint: "Budowa linii przesyłowych i modernizacja sieci są przez kilka lat tańsze.",
+    icon: "tower",
+    effects: [{ type: "subsidy", target: "grid", costMult: 0.9, months: 60 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Infrastructure_Investment_and_Jobs_Act",
+      "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2021/11/06/fact-sheet-the-bipartisan-infrastructure-deal/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2022_west_virginia",
+    date: "2022-06",
+    title: "Sąd Najwyższy: EPA nie może wymusić zmiany miksu",
+    paper: "The Washington Post",
+    text: "30 czerwca 2022 r. Sąd Najwyższy w sprawie West Virginia v. EPA orzekł 6:3, że ustawa o czystym powietrzu nie pozwala EPA wymuszać przesunięcia produkcji prądu z węgla na gaz i OZE, na czym opierał się Clean Power Plan. EPA może dalej regulować emisje samych elektrowni, ale tak daleko idące zmiany wymagają wyraźnej zgody Kongresu (tzw. doktryna ważnych kwestii).",
+    hint: "Federalne ograniczenia emisji będą skromniejsze – o transformacji decydują ulgi podatkowe, stany i rynek.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/West_Virginia_v._EPA",
+      "https://en.wikipedia.org/wiki/Clean_Power_Plan"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -3657,6 +4423,38 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2022_gaz_lng",
+    date: "2022-08",
+    title: "Wojna w Europie podbija ceny gazu w USA",
+    paper: "The Wall Street Journal",
+    text: "22 sierpnia 2022 r. gaz w hubie Henry kosztował 9,85 dolara za mln BTU – ok. 60 proc. więcej niż na początku roku. Po rosyjskiej inwazji na Ukrainę Europa zastępuje gaz z Rosji amerykańskim LNG i kupuje już większość ładunków z USA, a upały podbijają zużycie gazu w elektrowniach.",
+    hint: "Eksport LNG wiąże amerykańskie ceny gazu ze światowymi – przez kilka miesięcy elektrownie gazowe pracują drożej.",
+    icon: "gas",
+    effects: [{ type: "fuel", fuel: "gas", mult: 1.5, months: 5 }],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=55119",
+      "https://www.eia.gov/todayinenergy/detail.php?id=55920"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2022_teksas_esg",
+    date: "2022-08",
+    title: "Teksas wpisuje BlackRock na czarną listę",
+    paper: "The Dallas Morning News",
+    text: "24 sierpnia 2022 r. kontroler stanu Teksas Glenn Hegar ogłosił listę dziesięciu instytucji finansowych – BlackRock i dziewięciu firm europejskich – oraz ok. 350 funduszy, które jego zdaniem „bojkotują” przemysł naftowy i gazowy. Na mocy ustawy SB 13 z 2021 r. stanowe agencje i samorządy muszą się z nich wycofać i nie mogą zawierać z nimi umów.",
+    hint: "Presja ESG ma przeciwników – w części stanów odcinanie się od paliw kopalnych też kosztuje.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://www.click2houston.com/news/texas/2022/08/24/texas-bans-local-state-government-entities-from-doing-business-with-firms-that-boycott-fossil-fuels/",
+      "https://www.texastribune.org/2025/06/03/texas-comptroller-blackrock-boycott-energy/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2022_nif_zaplon",
     date: "2022-12",
     title: "Zapłon! Fuzja daje więcej energii niż laser",
@@ -3684,6 +4482,70 @@ window.PN_EVENTS_US = [
     sources: [
       "https://www.clickondetroit.com/business/2023/07/31/first-american-nuclear-reactor-built-from-scratch-in-decades-enters-commercial-operation-in-georgia/",
       "https://11alive.com/article/news/state/plant-vogtle-georgia-unit-four-commercial-operation/85-77cd499a-fbc8-4704-ae3b-87cbc3706078"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2023_ferc_2023",
+    date: "2023-07",
+    title: "FERC porządkuje kolejki przyłączeniowe",
+    paper: "The New York Times",
+    text: "27 lipca 2023 r. Federalna Komisja Regulacji Energetyki jednogłośnie przyjęła reformę przyłączania elektrowni i magazynów (Order No. 2023). W kolejkach stoi ponad 2000 GW projektów, a przyłączenie trwa nawet pięć lat; operatorzy będą badać wnioski grupami według zasady „kto pierwszy gotowy, ten pierwszy obsłużony”, a za spóźnienia zapłacą kary.",
+    hint: "Przyłączenie nowej elektrowni trwa latami – planuj linie i stacje z wyprzedzeniem.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://ecoblock.berkeley.edu/2023/08/ferc-approves-critical-path-for-integrating-renewable-energy-resources-into-the-grid/",
+      "https://www.theregreview.org/2023/10/03/coffey-supercharging-electric-grid-interconnection/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2023_maui",
+    date: "2023-08",
+    title: "Lahaina w płomieniach",
+    paper: "Honolulu Star-Advertiser",
+    text: "8 sierpnia 2023 r. porywisty wiatr, wzmocniony przez wyż na północy i huragan Dora na południu, rozniósł na Maui pożar, który zniszczył ponad 2000 budynków w Lahainie; zginęło ponad 100 osób. Hawaiian Electric przyznała, że poranny pożar wywołały najpewniej zerwane linie, ale twierdzi, że gdy wybuchł popołudniowy ogień, jej sieć była od sześciu godzin wyłączona.",
+    hint: "Linie napowietrzne w suchym, wietrznym terenie to ryzyko pożaru – wyłączenia prewencyjne i kable ziemne kosztują, ale chronią.",
+    icon: "heat",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/2023_Hawaii_wildfires",
+      "https://www.kpbs.org/news/environment/2023/08/28/hawaii-power-utility-takes-responsibility-for-first-fire-on-maui-but-faults-county-firefighters"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2024_lng_morze_czerwone",
+    date: "2024-01",
+    title: "Ameryka największym eksporterem LNG",
+    paper: "Houston Chronicle",
+    text: "W 2023 r. USA wyeksportowały najwięcej LNG na świecie – średnio 11,9 mld stóp sześciennych dziennie, z czego dwie trzecie trafiły do Europy, zastępującej gaz z rosyjskich rurociągów. Ataki jemeńskich Huti na statki na Morzu Czerwonym zmuszają tymczasem tankowce LNG z Kataru do opływania Afryki, co wydłuża rejs do Wielkiej Brytanii z 18 do ok. 27 dni.",
+    hint: "Gaz z łupków jest w USA wciąż tani, ale eksport LNG coraz mocniej wiąże jego cenę ze światowymi kryzysami.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=61683",
+      "https://gcaptain.com/lng-carriers-divert-from-red-sea-as-qatar-warns-of-escalation"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2024_epa_co2",
+    date: "2024-04",
+    title: "EPA: wychwyt CO₂ albo zamknięcie",
+    paper: "The Washington Post",
+    text: "25 kwietnia 2024 r. EPA ogłosiła nowe normy emisji CO₂ dla elektrowni: bloki węglowe, które mają pracować po 2039 r., muszą do 2032 r. wychwytywać 90 proc. dwutlenku węgla, a ten sam wymóg obejmie nowe bloki gazowe pracujące w podstawie. Przepisy dla istniejących elektrowni gazowych odłożono na później.",
+    hint: "Nowe bloki węglowe nie mają przyszłości – praca po 2039 r. wymagałaby drogiego wychwytu CO₂.",
+    icon: "coal",
+    effects: [],
+    sources: [
+      "https://www.power-eng.com/news/epa-leans-on-carbon-capture-as-it-releases-final-power-plant-pollution-rules/",
+      "https://www.epa.gov/stationary-sources-air-pollution/greenhouse-gas-standards-and-guidelines-fossil-fuel-fired-power"
     ],
     certainty: "high",
     speculative: false
@@ -3741,17 +4603,100 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2025_pozary_la",
+    date: "2025-01",
+    title: "Pożary pod Los Angeles, Edison pod lupą",
+    paper: "Los Angeles Times",
+    text: "7 stycznia 2025 r. wiatry Santa Ana, w porywach do 160 km/h, rozniosły pożary Palisades i Eaton, które zniszczyły lub uszkodziły ok. 18 tys. budynków; zginęło 31 osób. Bez prądu było ok. 414 tys. odbiorców Southern California Edison, a pierwsze pozwy zarzucają spółce, że pożar Eaton wybuchł pod jej wieżami przesyłowymi; firma odpowiada, że przyczyna wciąż jest badana.",
+    hint: "Wiatr Santa Ana i linie napowietrzne to groźne połączenie – w sezonie pożarów licz się z wyłączeniami i kosztowną odbudową.",
+    icon: "crisis",
+    effects: [
+      { type: "damage", region: { lat: 34.12, lon: -118.35, radiusKm: 40 }, target: "lines", share: 0.1 },
+      { type: "outage", region: { lat: 34.1, lon: -118, radiusKm: 90 }, months: 1 }
+    ],
+    sources: [
+      "https://en.wikipedia.org/wiki/January_2025_Southern_California_wildfires",
+      "https://abc7.com/post/california-wildfires-2-lawsuits-filed-southern-edison-eaton-fire-pasadena-altadena/15796131/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_odwrot_esg",
+    date: "2025-03",
+    title: "Wall Street wycofuje się z sojuszy klimatycznych",
+    paper: "The Wall Street Journal",
+    text: "Na przełomie 2024 i 2025 r. największe banki USA, w tym JPMorgan Chase, opuściły Net-Zero Banking Alliance, a BlackRock – ten od listu z 2020 r. – wystąpił z sojuszu Net Zero Asset Managers. 27 marca 2025 r. SEC przestała bronić w sądzie przepisów o ujawnianiu ryzyka klimatycznego, przyjętych w marcu 2024 r. i wkrótce potem zawieszonych.",
+    hint: "Presja finansowa na paliwa kopalne słabnie – kredyt dla elektrowni węglowych i gazowych tanieje, choć ryzyko klimatyczne nie znika z rachunków.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.005, months: 120 }],
+    sources: [
+      "https://www.ai-cio.com/news/net-zero-asset-managers-initiative-pauses-activities-following-blackrock-exit/",
+      "https://www.sec.gov/newsroom/press-releases/2025-58"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_epa_paryz",
+    date: "2025-06",
+    title: "EPA chce znieść limity CO₂ dla elektrowni",
+    paper: "The New York Times",
+    text: "11 czerwca 2025 r. EPA zaproponowała uchylenie norm emisji gazów cieplarnianych dla elektrowni na paliwa kopalne, w tym wymogu wychwytu CO₂ z 2024 r. To kolejny krok odwrotu od polityki klimatycznej: 20 stycznia prezydent Trump po raz drugi wypowiedział porozumienie paryskie, a wyjście wejdzie w życie w styczniu 2026 r.",
+    hint: "Federalne limity CO₂ prawdopodobnie znikną – emisje obciążają tylko programy stanowe, takie jak RGGI i kalifornijski.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://www.epa.gov/stationary-sources-air-pollution/greenhouse-gas-standards-and-guidelines-fossil-fuel-fired-power",
+      "https://en.wikipedia.org/wiki/Paris_Agreement"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_izrael_iran",
+    date: "2025-06",
+    title: "Wojna Izraela z Iranem, bomby USA na Fordo",
+    paper: "The Wall Street Journal",
+    text: "13 czerwca 2025 r. Izrael zaatakował irańskie obiekty jądrowe i wojskowe, a 22 czerwca USA zbombardowały ośrodki jądrowe w Fordo, Natanz i Isfahanie. Ropa Brent podrożała do najwyższego poziomu od pięciu miesięcy, ale po rozejmie 24 czerwca potaniała w jeden dzień o 6 proc., do 67 dolarów za baryłkę – poniżej poziomu sprzed wojny.",
+    hint: "Ropa daje dziś mniej niż 1 proc. prądu w USA – tę wojnę mocniej odczują kierowcy niż elektrownie.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.1, months: 1 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Twelve-Day_War",
+      "https://www.thestar.com.my/business/2025/06/25/oil-falls-6-as-israel-iran-ceasefire-cuts-mideast-supply-risk"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2025_obbba",
     date: "2025-07",
     title: "Koniec ulg dla wiatru i słońca",
     paper: "The Wall Street Journal",
     text: "4 lipca 2025 r. prezydent Donald Trump podpisał ustawę One Big Beautiful Bill Act. Farmy wiatrowe i słoneczne zachowają ulgi podatkowe tylko wtedy, gdy ich budowa ruszy do 4 lipca 2026 r. albo zostaną oddane do użytku do końca 2027 r.; magazyny energii zachowują wsparcie dla projektów rozpoczętych do 2033 r.",
-    hint: "Ulgi dla wiatru i słońca wygasają z końcem 2027 r. – magazyny energii nadal są wspierane.",
+    hint: "Nowe farmy wiatrowe i słoneczne dostaną ulgi tylko, jeśli ich budowa ruszy do lipca 2026 r. albo zostaną oddane do końca 2027 r.; magazyny energii są nadal wspierane.",
     icon: "law",
     effects: [],
     sources: [
       "https://www.projectfinance.law/publications/2025/july/effects-of-one-big-beautiful-bill-on-projects/",
       "https://www.gibsondunn.com/focus-on-clean-energy-tax-provisions-in-the-one-big-beautiful-bill-act/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2026_wojna_iran",
+    date: "2026-03",
+    title: "Wojna z Iranem: Ormuz zamknięty, ropa po 120 dolarów",
+    paper: "The Wall Street Journal",
+    text: "Po amerykańsko-izraelskich nalotach na Iran z 28 lutego 2026 r. Iran praktycznie zamknął cieśninę Ormuz, którą płynie ok. jednej piątej światowej ropy, i uderzył w katarski kompleks LNG Ras Laffan. Baryłka Brent skoczyła z ok. 70 do 119,50 dolara 9 marca, a średnia cena benzyny w USA przekroczyła 3,5 dolara za galon. Amerykański prąd prawie nie zależy od ropy – daje ona mniej niż 1 proc. produkcji.",
+    hint: "Dla Twojej sieci to głównie sygnał ostrzegawczy: przez kilka miesięcy drożeje ropa, a niezależność od importu paliw jest warta coraz więcej.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.3, months: 3 }],
+    sources: [
+      "https://wisconsinexaminer.com/2026/03/09/repub/gas-prices-spike-across-us-amid-iran-war/",
+      "https://www.cnbc.com/2026/03/19/iran-attack-qatar-lng-capacity.html"
     ],
     certainty: "high",
     speculative: false
@@ -5284,6 +6229,65 @@ window.PN_EVENTS_US = [
 
   /* --------------------------------------------------------- stats & history */
   function emptyStats() { return { y: 0, m: 0, rev: 0, profit: 0, servedE: 0, demandE: 0, unservedE: 0, co2t: 0, gen: {}, cap: {}, peak: 0, capTot: 0, price: 0 }; }
+  /* ------------------------------------------------------------- the goal */
+  /* What society asked of the grid, graded every month and averaged over seven chapters of history:
+     access (people with electricity vs. how many had it in real history), reliability (demand served),
+     cost (what 1 MWh really costs you, assets included, vs. the tariff of the time) and climate
+     (CO2 per kWh vs. the real grid of that year). The weights move with the era. */
+  const lerpW = (tab, y) => {
+    if (!tab || !tab.length) return [0.4, 0.3, 0.3, 0];
+    if (y <= tab[0][0]) return tab[0][1].slice();
+    for (let k = 1; k < tab.length; k++) if (y <= tab[k][0]) { const [y0, a] = tab[k - 1], [y1, b] = tab[k], f = (y - y0) / (y1 - y0); return a.map((v, j) => v + (b[j] - v) * f); }
+    return tab[tab.length - 1][1].slice();
+  };
+  PN.goalWeights = (G, y) => lerpW(G.sc.scoreW, y == null ? ym(G) : y);
+  PN.GOAL_NAMES = ['Dostęp', 'Niezawodność', 'Koszt', 'Klimat'];
+  PN.goalMonth = function (G, D, F) {
+    const y = ym(G);
+    let have = 0, could = 0;
+    for (const c of G.cities) { if (!PN.cityOwned(G, c)) continue; have += c.eU * c.pop + c.eR * c.popR; could += G.satU * c.pop + G.satR * c.popR; }
+    const access = could > 1 ? PN.clamp(have / could, 0, 1) : 1;
+    const q = D.cityDemE > 0 ? D.cityServedE / D.cityDemE : have > 0 ? 1 : 0;
+    const rel = PN.clamp((q - 0.9) / 0.099, 0, 1);
+    const cost = F.fuel + F.co2 + F.om + F.grid + F.dist + F.retail + F.imp + F.mine + F.penalty + (F.ipp || 0) + (assetValue(G) * 0.07) / 12;
+    const mwhCost = D.servedE > 0 ? cost / D.servedE : null;
+    const aff = mwhCost == null ? 0.5 : PN.clamp(0.5 + (1 - mwhCost / F.price), 0, 1);
+    const H = PN.helpers(G), g = H.co2g(), genE = G.months12.reduce((a, m) => a + (m.genE || 0), 0), gh = G.sc.co2Hist ? PN.curve(G.sc.co2Hist, y) : 0;
+    const clim = !(genE > 0) || !gh ? 0.5 : PN.clamp(0.5 + (0.5 * (gh - g)) / gh, 0, 1);
+    const w = PN.goalWeights(G, y), pil = [access, rel, aff, clim].map((v) => v * 100), wt = w.reduce((a, v) => a + v, 0) || 1;
+    return { pil, w, score: pil.reduce((a, v, k) => a + v * w[k], 0) / wt, have, could, q, mwhCost, price: F.price, g, gh };
+  };
+  PN.chapterAt = (G, y) => (G.sc.chapters || []).find((c) => y >= c.from && y < c.to) || null;
+  PN.stars = (score) => (score == null ? 0 : score >= 75 ? 3 : score >= 60 ? 2 : score >= 45 ? 1 : 0);
+  PN.goalTitle = (score) => (score >= 85 ? 'Legenda energetyki' : score >= 75 ? 'Architekt systemu' : score >= 60 ? 'Główny inżynier' : score >= 45 ? 'Inżynier ruchu' : 'Praktykant');
+  function goalTick(G, D, F) {
+    const chs = G.sc.chapters || []; if (!chs.length) return;
+    const y = ym(G), r = PN.goalMonth(G, D, F);
+    G.goal = G.goal || { done: {}, acc: null };
+    G.goalNow = r;
+    const a0 = G.goal.acc;
+    if (a0) { const c = chs.find((q) => q.id === a0.id); if (c && y >= c.to) closeChapter(G, c); }
+    const ch = PN.chapterAt(G, y); if (!ch || G.goal.done[ch.id]) return;
+    if (!G.goal.acc) G.goal.acc = { id: ch.id, n: 0, sum: 0, pil: [0, 0, 0, 0] };
+    if (G.fx.freezeUntil > y) return; // war and occupation are not graded
+    const a = G.goal.acc; a.n++; a.sum += r.score; r.pil.forEach((v, k) => (a.pil[k] += v));
+    a.last = { have: r.have, could: r.could, q: r.q, mwhCost: r.mwhCost, price: r.price, g: r.g, gh: r.gh };
+  }
+  function closeChapter(G, c) {
+    const a = G.goal.acc, n = Math.max(1, a.n);
+    const res = { id: c.id, name: c.name, from: c.from, to: c.to, score: a.n ? a.sum / n : null, pil: a.pil.map((v) => v / n), last: a.last || null, n: a.n, w: PN.goalWeights(G, (c.from + c.to) / 2) };
+    G.goal.done[c.id] = res; G.goal.acc = null;
+    PN.bus.emit('chapter', res);
+    return res;
+  }
+  /* final grade: the mean of graded chapters (the running one counts if the game ends inside it) */
+  PN.goalFinal = function (G) {
+    const chs = G.sc.chapters || [], g = G.goal || { done: {} }, list = [];
+    for (const c of chs) { const d = g.done[c.id]; if (d && d.score != null) list.push(d); else if (g.acc && g.acc.id === c.id && g.acc.n) list.push({ id: c.id, name: c.name, score: g.acc.sum / g.acc.n, partial: true }); }
+    const score = list.length ? list.reduce((a, d) => a + d.score, 0) / list.length : 0;
+    return { score, stars: PN.stars(score), title: PN.goalTitle(score), chapters: list, total: chs.length };
+  };
+
   function record(G, D, F) {
     const gen = {}, cap = {};
     let capTot = 0, resE = 0, cleanE = 0, genE = 0;
@@ -5302,6 +6306,7 @@ window.PN_EVENTS_US = [
     G.stats = st;
     G.months12.push({ rev: F.rev, profit: F.profit, resE, cleanE, genE, co2t: F.co2t, servedE: D.servedE, demandE: D.demandE });
     if (G.months12.length > 12) G.months12.shift();
+    goalTick(G, D, F);
     if (G.m === 11 || !G.hist.length) {
       const yr = G.months12.reduce((a, m) => { for (const k in m) a[k] = (a[k] || 0) + m[k]; return a; }, {});
       const h = { y: G.y, rev: yr.rev, profit: yr.profit, servedE: yr.servedE, demandE: yr.demandE, co2t: yr.co2t, genE: yr.genE, resE: yr.resE, cleanE: yr.cleanE, capTot, peak, money: G.money, rep: G.rep, cap: Object.assign({}, cap), gen: Object.assign({}, gen) };
@@ -5613,11 +6618,11 @@ window.PN_EVENTS_US = [
     const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; delete c.srcTop; delete c.dstTop; delete c._src; delete c._dst; return c; };
     return JSON.stringify({ v: 1, code: G.code, y: G.y, m: G.m, months: G.months, money: G.money, debt: G.debt, rep: G.rep, nodes: G.nodes.map(strip), lines: G.lines, nextId: G.nextId,
       unlocked: G.unlocked, rules: G.rules, terr: G.terr, regime: G.regime, fx: G.fx, lambda: G.lambda, prosumerMW: G.prosumerMW, prosumer: G.prosumer, fired: G.fired, missions: G.missions,
-      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
+      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, goal: G.goal, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
   };
   PN.deserialize = function (str) {
     const S = JSON.parse(str); const G = PN.newGame(S.code);
-    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
+    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'goal', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
     for (const k of keep) if (S[k] !== undefined) G[k] = S[k];
     G.rnd = PN.rng(G.seed + G.months);
     const cityByCi = {}; G.cities.forEach((c) => (cityByCi[c.ci] = c));
@@ -7264,6 +8269,7 @@ window.PN_EVENTS_US = [
     PN.bus.on('mission', () => { if (UI.tab === 'overview' || UI.tab === 'goals') UI.refreshInfo(true); });
     PN.bus.on('completed', (o) => { const n = o.a ? null : o; if (n && n.x != null) V.flash.push({ x: n.x, y: n.y, until: performance.now() + 900 }); });
     PN.bus.on('gameover', (k) => UI.gameOver(k));
+    PN.bus.on('chapter', (r) => UI.onChapter(r));
     PN.bus.on('month', () => { if (UI.sel) UI.V.trace = UI.traceFor(UI.sel); UI.refreshInfo(); if (PN.Cards) PN.Cards.sync(); if (UI.G.m === 0) PN.autosave && PN.autosave(); });
     PN.bus.on('tech', (ids) => { if (PN.Cards) { PN.Cards.tech(ids); PN.Cards.updateLayers(); } if (UI.flyCat && !$('#fly').hidden) UI.openFly(UI.flyCat); });
     PN.bus.on('ipp', (o) => { if (PN.Cards) PN.Cards.ipp(o); });
@@ -7450,9 +8456,46 @@ window.PN_EVENTS_US = [
   const row = (k, v, cls) => '<div class="kv' + (cls ? ' ' + cls : '') + '"><span>' + k + '</span><b>' + v + '</b></div>';
   const btn = (act, label, cost, dis, extra) => '<button class="act' + (dis ? ' dis' : '') + '" data-act="' + act + '"' + (dis ? ' disabled' : '') + (extra || '') + '>' + label + (cost != null ? ' <span class="c">' + PN.money(cost) + '</span>' : '') + '</button>';
 
+  const STARS = (n) => '<span class="stars" aria-label="' + n + ' z 3 gwiazdek">' + '★'.repeat(n) + '<i>' + '☆'.repeat(3 - n) + '</i></span>';
+  UI.starsHtml = STARS;
+  const HOW = [
+    'Doprowadź prąd do kolejnych miast, rozbudowuj sieci miejskie i uruchamiaj elektryfikację wsi.',
+    'Dobuduj moc i linie, trzymaj zapas mocy na awarie i mrozy.',
+    'Tańsze paliwo (własne kopalnie), sprawniejsze bloki, mniejsze straty w liniach i nic na zapas bez potrzeby.',
+    'Gaz zamiast węgla, odnawialne źródła i atom; najstarsze, najbrudniejsze bloki wyłączaj.',
+  ];
+  /* what we are playing for, always on top of the overview */
+  UI.goalHtml = function () {
+    const G = UI.G, y = PN.ym(G), chs = G.sc.chapters || [], ch = PN.chapterAt(G, y), r = G.goalNow;
+    if (!chs.length) return '';
+    if (!ch) return '<div class="goal"><div class="goal-h"><b>Kronika zakończona</b></div><p class="note">Ocena końcowa: ' + Math.round(PN.goalFinal(G).score) + ' pkt. Grasz dalej bez oceny.</p></div>';
+    const k = chs.indexOf(ch), a = G.goal && G.goal.acc && G.goal.acc.id === ch.id ? G.goal.acc : null, avg = a && a.n ? a.sum / a.n : null;
+    const w = PN.goalWeights(G), done = PN.clamp((y - ch.from) / (ch.to - ch.from), 0, 1);
+    let s = '<div class="goal"><div class="goal-h"><span>Rozdział ' + (k + 1) + ' z ' + chs.length + ': <b>' + esc(ch.name) + '</b></span>' + STARS(PN.stars(avg)) + '</div>';
+    s += '<div class="goal-t" title="Postęp rozdziału"><i style="width:' + Math.round(done * 100) + '%"></i></div>';
+    if (r) {
+      s += '<div class="pillars">';
+      PN.GOAL_NAMES.forEach((nmx, j) => {
+        if (w[j] < 0.005) { s += '<div class="pl off" title="W tej epoce jeszcze się nie liczy"><span>' + nmx + '</span><b>–</b></div>'; return; }
+        const v = Math.round(r.pil[j]);
+        s += '<div class="pl' + (v < 40 ? ' low' : '') + '"><span>' + nmx + ' <small>' + Math.round(w[j] * 100) + '%</small></span><b>' + v + '</b><i><em style="width:' + v + '%"></em></i></div>';
+      });
+      s += '</div>';
+      const det = [];
+      if (r.could > 1) det.push('prąd ma ' + PN.pct(r.have / r.could, 0) + ' tylu ludzi, co w historii');
+      if (r.mwhCost != null) det.push('Twój koszt ' + PN.price(r.mwhCost) + ', taryfa ' + PN.price(r.price));
+      if (w[3] >= 0.005 && r.gh) det.push(PN.nf(r.g, 0) + ' g CO₂/kWh (historycznie ' + PN.nf(r.gh, 0) + ')');
+      if (det.length) s += '<p class="goal-d">' + esc(det.join(' · ')) + '</p>';
+      let worst = -1, wv = 1e9; for (let j = 0; j < 4; j++) if (w[j] >= 0.1 && r.pil[j] < wv) { wv = r.pil[j]; worst = j; }
+      if (worst >= 0 && wv < 60) s += '<p class="goal-tip"><b>' + PN.GOAL_NAMES[worst] + ':</b> ' + esc(HOW[worst]) + '</p>';
+    }
+    s += '<p class="note">Ocena rozdziału: <b>' + (avg == null ? '–' : Math.round(avg) + ' pkt') + '</b> · koniec w ' + Math.floor(ch.to) + ' r.</p></div>';
+    return s;
+  };
   UI.overviewHtml = function () {
     const G = UI.G, st = G.stats || {}, y = PN.ym(G), H = PN.helpers(G);
     let s = '<h2>' + esc(G.sc.name) + ' · ' + G.y + '</h2><p class="era">' + esc(UI.era()) + '</p>';
+    s += UI.goalHtml();
     s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (PN.co2Price(G) > 0 ? row(G.code === 'PL' ? 'Cena uprawnień CO₂ (EU ETS)' : 'Cena CO₂ (programy stanowe)', PN.money(PN.co2Price(G)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
     const adv = UI.advice();
     if (adv.length) s += '<h3>Doradca</h3><ul class="advice">' + adv.map((a) => '<li' + (a.p >= 8 ? ' class="hot"' : '') + '>' + (a.id ? '<a href="#" data-goto="' + a.id + '">' + esc(a.t) + '</a>' : esc(a.t)) + '</li>').join('') + '</ul>';
@@ -7518,7 +8561,13 @@ window.PN_EVENTS_US = [
     return '<div class="mission ' + cls + '"><b>' + esc(m.title) + '</b> <small>do ' + m.deadline + '</small><p>' + esc(m.text) + '</p><div class="bar"><i style="width:' + Math.round(p * 100) + '%"></i></div><small>' + (st.state === 'done' ? 'Wykonane w ' + Math.floor(st.when) + ' r.' : st.state === 'failed' ? 'Nie udało się' : 'Postęp ' + PN.pct(p) + ' · nagroda ' + PN.money(m.reward.money || 0)) + '</small></div>';
   };
   UI.goalsHtml = function () {
-    const G = UI.G; let s = '<h2>Zadania</h2>';
+    const G = UI.G, chs = G.sc.chapters || [], y = PN.ym(G), cur = PN.chapterAt(G, y);
+    let s = '<h2>Cel gry</h2><p class="note">Daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Każdy rozdział historii dostaje ocenę z czterech wskaźników (dostęp, niezawodność, koszt, klimat) w porównaniu z prawdziwą historią. Na koniec kroniki: ocena końcowa.</p><ul class="chapters">';
+    for (const c of chs) {
+      const d = G.goal && G.goal.done[c.id], on = cur === c;
+      s += '<li class="' + (d ? 'done' : on ? 'on' : 'next') + '"><span>' + Math.floor(c.from) + '–' + Math.floor(c.to) + ' · ' + esc(c.name) + '</span>' + (d ? (d.score == null ? '<b>–</b>' : STARS(PN.stars(d.score)) + '<b>' + Math.round(d.score) + '</b>') : on ? '<b>trwa</b>' : '<b></b>') + '</li>';
+    }
+    s += '</ul><h2>Zadania</h2>';
     const list = G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state !== 'hidden');
     if (!list.length) s += '<p>Zadania pojawią się wraz z epokami.</p>';
     for (const m of list.slice().reverse()) s += UI.missionHtml(m);
@@ -7849,8 +8898,38 @@ window.PN_EVENTS_US = [
     const html = '<h2>Propozycja umowy</h2><canvas class="evicon" width="200" height="200" data-icon="data"></canvas><p><b>' + esc(o.company) + '</b> planuje ' + (o.ai ? 'centrum obliczeń sztucznej inteligencji' : 'centrum danych') + '. Lokalizacja: <b>' + esc(c ? PN.cityName(c, G.y) : '?') + '</b> i okolice.</p><div class="kvs">' + row('Moc docelowa', PN.mw(o.mw)) + row('Dojście do pełnej mocy', PN.months(o.years * 12)) + row('Taryfa', '+' + PN.pct(o.premium) + ' ponad cenę') + row('Warunek', 'zasilanie 24/7, kara za braki') + '</div><p class="note">Oferta czeka pół roku w zakładce Przegląd.</p><div class="row end"><button class="act" data-m="later">Później</button><button class="act" data-m="no">Odrzuć</button><button class="act prim" data-m="yes">Podpisz umowę</button></div>';
     UI.modal(html, { cls: 'offer', queue: true, pause: G.settings.pauseOnEvents, on: (k) => { if (k === 'yes') { const n = PN.acceptOffer(G, o); if (n) { UI.V.centerOn(n.x, n.y); UI.select(n); } } else if (k === 'no') PN.declineOffer(G, o); UI.refreshInfo(true); } });
   };
+  UI.onChapter = function (res) {
+    const G = UI.G; if (G.y >= G.sc.end || res.score == null) return; // the final report covers the last chapter
+    const chs = G.sc.chapters, next = chs[chs.findIndex((c) => c.id === res.id) + 1], st = PN.stars(res.score), L = res.last || {};
+    let html = '<div class="report"><div class="k">Rozdział zamknięty · ' + Math.floor(res.from) + '–' + Math.floor(res.to) + '</div><h2>' + esc(res.name) + '</h2><div class="grade">' + STARS(st).replace('stars', 'stars big') + '<b>' + Math.round(res.score) + ' pkt</b><span>' + esc(PN.goalTitle(res.score)) + '</span></div><div class="kvs">';
+    PN.GOAL_NAMES.forEach((nmx, j) => { if (res.w[j] >= 0.005) html += row(nmx + ' <small>(waga ' + Math.round(res.w[j] * 100) + '%)</small>', Math.round(res.pil[j]) + ' / 100', res.pil[j] < 40 ? 'neg' : res.pil[j] >= 70 ? 'pos' : ''); });
+    html += '</div><h3>Ty i historia</h3><ul class="help">';
+    if (L.could > 1) html += '<li>Prąd ma ' + PN.pct(L.have / L.could, 0) + ' tylu mieszkańców, ilu miało go naprawdę w ' + Math.floor(res.to) + ' r.</li>';
+    if (L.q != null) html += '<li>Zasilono ' + PN.pct(L.q, 1) + ' zapotrzebowania miast.</li>';
+    if (L.mwhCost != null) html += '<li>Twój koszt energii: ' + PN.price(L.mwhCost) + ' (z kosztem kapitału), historyczna taryfa: ' + PN.price(L.price) + '.</li>';
+    if (res.w[3] >= 0.005 && L.gh) html += '<li>Emisyjność ' + PN.nf(L.g, 0) + ' g CO₂/kWh, a w prawdziwej sieci ' + PN.nf(L.gh, 0) + ' g.</li>';
+    html += '</ul>';
+    if (next) {
+      const w0 = res.w, w1 = PN.goalWeights(G, (next.from + next.to) / 2), up = PN.GOAL_NAMES.map((n, j) => [n, w1[j] - w0[j], w1[j]]).filter((x) => x[1] > 0.04).sort((a, b) => b[1] - a[1]);
+      html += '<p class="lead">Następny rozdział: <b>' + esc(next.name) + '</b> (do ' + Math.floor(next.to) + ' r.).' + (up.length ? ' Bardziej liczy się teraz: ' + up.map((x) => x[0].toLowerCase() + ' (' + Math.round(x[2] * 100) + '%)').join(', ') + '.' : '') + '</p>';
+    }
+    html += '</div><div class="row end"><button class="act prim" data-m="ok">Dalej</button></div>';
+    UI.modal(html, { queue: true, cls: 'chapter' });
+  };
   UI.gameOver = function (kind) {
     const G = UI.G, H = PN.helpers(G);
+    if (G.sc.chapters) {
+      const f = PN.goalFinal(G), best = PN.bestScore && PN.bestScore(G.code);
+      if (kind === 'end' && PN.saveBest) PN.saveBest(G.code, f);
+      let html = '<div class="report"><div class="k">' + (kind === 'bankrupt' ? 'Kampania przerwana · ' + G.y : 'Koniec kroniki · ' + G.y) + '</div><h2>' + (kind === 'bankrupt' ? 'Bankructwo' : esc(f.title)) + '</h2>';
+      html += '<div class="grade">' + STARS(f.stars).replace('stars', 'stars big') + '<b>' + Math.round(f.score) + ' pkt</b><span>' + (kind === 'bankrupt' ? 'wierzyciele przejęli sieć' : 'ocena końcowa') + '</span></div><ul class="chapters">';
+      for (const c of G.sc.chapters) { const d = f.chapters.find((q) => q.id === c.id); html += '<li class="' + (d ? 'done' : 'next') + '"><span>' + Math.floor(c.from) + '–' + Math.floor(c.to) + ' · ' + esc(c.name) + (d && d.partial ? ' (niedokończony)' : '') + '</span>' + (d ? STARS(PN.stars(d.score)) + '<b>' + Math.round(d.score) + '</b>' : '<b>–</b>') + '</li>'; }
+      html += '</ul><div class="kvs">' + row('Energia dostarczona łącznie', PN.mwh(G.hist.reduce((s, q) => s + (q.servedE || 0), 0))) + row('Wykonane zadania', G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state === 'done').length + ' / ' + G.sc.missions.length) + row('Udział czystej energii', PN.pct(H.cleanShare())) + row('Emisyjność', PN.nf(H.co2g(), 0) + ' g CO₂/kWh') + '</div>';
+      if (best && kind === 'end') html += '<p class="note">' + (f.score >= best.score - 0.01 ? 'To Twój najlepszy wynik w tej kampanii!' : 'Twój najlepszy wynik: ' + Math.round(best.score) + ' pkt (' + esc(best.title) + ').') + '</p>';
+      html += '</div><div class="row end">' + (kind === 'end' ? '<button class="act" data-m="cont">Graj dalej</button>' : '') + '<button class="act prim" data-m="menu">Menu główne</button></div>';
+      UI.modal(html, { dismiss: false, cls: 'chapter', on: (k) => { if (k === 'cont') { G.over = false; G.sc = Object.assign({}, G.sc, { end: 2100 }); } else if (k === 'menu') PN.showStart(); } });
+      return;
+    }
     const score = Math.round(G.hist.reduce((s, q) => s + (q.servedE || 0), 0) / 1e3 * (G.rep / 60) + Math.max(0, G.money - G.debt) / 1e6);
     const done = G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state === 'done').length;
     const html = '<h2>' + (kind === 'bankrupt' ? 'Bankructwo' : 'Koniec kroniki: ' + G.y) + '</h2><p>' + (kind === 'bankrupt' ? 'Wierzyciele przejęli spółkę. Sieć przechodzi w inne ręce.' : 'Kronika dobiegła końca. Oto bilans Twojej sieci.') + '</p><div class="kvs">' + row('Energia dostarczona łącznie', PN.mwh(G.hist.reduce((s, q) => s + (q.servedE || 0), 0))) + row('Wykonane zadania', done + ' / ' + G.sc.missions.length) + row('Udział czystej energii', PN.pct(H.cleanShare())) + row('Emisyjność', PN.nf(H.co2g(), 0) + ' g CO₂/kWh') + row('Reputacja', PN.nf(G.rep, 0)) + row('Wynik', PN.nf(score, 0) + ' pkt') + '</div><div class="row end">' + (kind === 'end' ? '<button class="act" data-m="cont">Graj dalej</button>' : '') + '<button class="act prim" data-m="menu">Menu główne</button></div>';
@@ -7868,7 +8947,7 @@ window.PN_EVENTS_US = [
     } });
   };
   UI.help = function () {
-    UI.modal('<h2>Jak grać</h2><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Na początku są tylko parowe elektrownie w miastach. Kolejne wynalazki przychodzą same, razem z historią – w menu widzisz tylko to, co już istnieje, a nowość ogłasza gazeta.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: elektrownia w mieście zasila je wprost (kropkowana kreska nN). Kliknij miasto, by rozbudować sieć miejską; elektryfikacja wsi to program uruchamiany przyciskiem, gdy na wsi pojawią się chętni.</li><li><b>Skąd płynie prąd</b>: kliknij miasto albo elektrownię – panel pokaże udziały, a mapa drogę prądu.</li><li><b>Inwestorzy prywatni</b> pojawiają się po otwarciu rynku. Ich projekty przychodzą jako karty: przyłączasz je linią i kupujesz energię po cenie z umowy.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><p class="note">Pełna legenda linii i znaczków: przycisk „Legenda” w prawym dolnym rogu.</p><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
+    UI.modal('<h2>Jak grać</h2><p class="lead"><b>Cel:</b> daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Kronika ma siedem rozdziałów; każdy dostaje ocenę z czterech wskaźników (dostęp, niezawodność, koszt 1 MWh, emisyjność) w porównaniu z prawdziwą historią, a ich wagi zmieniają się z epoką. Na koniec kroniki – ocena końcowa i tytuł. Wskaźniki widzisz na górze Przeglądu.</p><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Na początku są tylko parowe elektrownie w miastach. Kolejne wynalazki przychodzą same, razem z historią – w menu widzisz tylko to, co już istnieje, a nowość ogłasza gazeta.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: elektrownia w mieście zasila je wprost (kropkowana kreska nN). Kliknij miasto, by rozbudować sieć miejską; elektryfikacja wsi to program uruchamiany przyciskiem, gdy na wsi pojawią się chętni.</li><li><b>Skąd płynie prąd</b>: kliknij miasto albo elektrownię – panel pokaże udziały, a mapa drogę prądu.</li><li><b>Inwestorzy prywatni</b> pojawiają się po otwarciu rynku. Ich projekty przychodzą jako karty: przyłączasz je linią i kupujesz energię po cenie z umowy.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><p class="note">Pełna legenda linii i znaczków: przycisk „Legenda” w prawym dolnym rogu.</p><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
   };
 
   /* small sketched icons for news clippings */
@@ -8111,9 +9190,9 @@ window.PN_EVENTS_US = [
       { title: 'Panel miasta', el: '#info', next: true,
         text: 'Tu widzisz elektryfikację miasta i wsi, sieć niskiego napięcia (nN) i zapotrzebowanie w szczycie. Sieć miejska rozbudowuje się sama, a wsie elektryfikujesz przyciskiem, gdy pojawią się chętni.' },
       { title: 'Przegląd i doradca', el: '#tabs button[data-tab="overview"]',
-        text: 'W „Przeglądzie” jest wykres doby – kto pokrywa zapotrzebowanie o każdej porze – i Doradca, który wskazuje problemy. Kliknij zakładkę Przegląd.',
+        text: 'Na górze Przeglądu jest cel gry: cztery wskaźniki rozdziału – dostęp, niezawodność, koszt i klimat – z oceną w gwiazdkach. Niżej Doradca wskazuje problemy, a wykres doby pokazuje, kto pokrywa zapotrzebowanie. Kliknij zakładkę Przegląd.',
         done: () => !UI.sel && UI.tab === 'overview' },
-      { title: 'Zadania', el: '#tabs button[data-tab="goals"]', text: 'Historia stawia cele, a za ich wykonanie dostajesz pieniądze i reputację. Zajrzyj do zakładki Zadania.',
+      { title: 'Zadania', el: '#tabs button[data-tab="goals"]', text: 'Tu są rozdziały historii z ocenami oraz zadania – za ich wykonanie dostajesz pieniądze i reputację. Zajrzyj do zakładki Zadania.',
         done: () => UI.tab === 'goals' },
       { title: 'Linie przesyłowe', el: '#tools button[data-cat="grid"]', next: true, enter: () => { if (phone()) UI.showPanel(false); },
         text: (lineYear > G.y ? 'Linii jeszcze nie wynaleziono – na razie każda elektrownia zasila tylko swoje miasto. Gdy się pojawią, gazeta da znać i pokaże, jak postawić pierwszą.' : 'W menu Sieć są linie.') + ' Linię stawiasz, wybierając napięcie i klikając dwa punkty: elektrownię, miasto albo puste pole (tam powstanie stacja). Wyższe napięcie to większa moc, dalszy zasięg i mniejsze straty.' },
@@ -8284,14 +9363,21 @@ window.PN_EVENTS_US = [
   const hasSave = (code) => { try { return !!localStorage.getItem('pn_save_' + code); } catch (e) { return false; } };
 
   /* ------------------------------------------------------- start screen */
+  /* best final grade per campaign, kept in this browser */
+  PN.bestScore = function (code) { try { return JSON.parse(localStorage.getItem('pn_best_' + code) || 'null'); } catch (e) { return null; } };
+  PN.saveBest = function (code, f) {
+    const old = PN.bestScore(code); if (old && old.score >= f.score) return;
+    try { localStorage.setItem('pn_best_' + code, JSON.stringify({ score: f.score, stars: f.stars, title: f.title, when: Date.now() })); } catch (e) { /* storage blocked */ }
+  };
   PN.showStart = function () {
     UI.closeModal && UI.closeModal();
     const st = $('#start'); st.hidden = false; document.body.classList.add('at-start');
     const card = (code) => {
       const sc = PN.SCEN[code];
-      return '<div class="scen" data-code="' + code + '"><canvas class="thumb" data-thumb="' + code + '" width="520" height="300"></canvas><h2>' + PN.esc(sc.title) + '</h2><p>' + PN.esc(sc.blurb) + '</p><div class="row"><button class="act prim" data-go="' + code + '">Zacznij w ' + sc.start.year + ' r.</button>' + (hasSave(code) ? '<button class="act" data-load="' + code + '">Wczytaj zapis</button>' : '') + '</div></div>';
+      const best = PN.bestScore(code);
+      return '<div class="scen" data-code="' + code + '"><canvas class="thumb" data-thumb="' + code + '" width="520" height="300"></canvas><h2>' + PN.esc(sc.title) + '</h2><p>' + PN.esc(sc.blurb) + '</p>' + (best ? '<p class="best">Twój najlepszy wynik: ' + UI.starsHtml(best.stars) + ' <b>' + Math.round(best.score) + ' pkt</b> · ' + PN.esc(best.title) + '</p>' : '') + '<div class="row"><button class="act prim" data-go="' + code + '">Zacznij w ' + sc.start.year + ' r.</button>' + (hasSave(code) ? '<button class="act" data-load="' + code + '">Wczytaj zapis</button>' : '') + '</div></div>';
     };
-    st.innerHTML = '<div class="start-in"><header><h1>Pod Napięciem</h1><p class="sub">kronika sieci elektroenergetycznej · od pierwszej żarówki do fuzji</p></header><div class="scens">' + card('PL') + card('US') + '</div><p class="foot">Buduj elektrownie i kopalnie, prowadź linie od średniego po najwyższe napięcie, elektryfikuj miasta i wsie. Technologie, ceny i wydarzenia idą za prawdziwą historią Polski i USA, a po 2026 r. – za ogłoszonymi planami. <button class="linkish" data-help="1">Jak grać</button> · <button class="linkish" data-theme-toggle="1">Dzień / noc</button></p></div>';
+    st.innerHTML = '<div class="start-in"><header><h1>Pod Napięciem</h1><p class="sub">kronika sieci elektroenergetycznej · od pierwszej żarówki do fuzji</p></header><div class="scens">' + card('PL') + card('US') + '</div><p class="foot"><b>Cel:</b> daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto – i wypadnij lepiej niż prawdziwa historia. Siedem rozdziałów, każdy z oceną, na koniec ocena końcowa. Buduj elektrownie i kopalnie, prowadź linie od średniego po najwyższe napięcie, elektryfikuj miasta i wsie. Technologie, ceny i wydarzenia idą za prawdziwą historią Polski i USA, a po 2026 r. – za ogłoszonymi planami. <button class="linkish" data-help="1">Jak grać</button> · <button class="linkish" data-theme-toggle="1">Dzień / noc</button></p></div>';
     st.onclick = (e) => {
       const go = e.target.closest('[data-go]'); if (go) { startNew(go.dataset.go); return; }
       const ld = e.target.closest('[data-load]'); if (ld) { PN.loadGame(ld.dataset.load); return; }
@@ -8356,6 +9442,8 @@ window.PN_EVENTS_US = [
       ? 'Jest ' + G.y + ' rok. Warszawa, Łódź i Kraków świecą lampami gazowymi i naftowymi – lampa Łukasiewicza ma już ponad trzydzieści lat. Ziemie polskie są podzielone między trzy mocarstwa, ale prąd nie zna granic. Masz kapitał na pierwszą elektrownię.'
       : 'Jest ' + G.y + ' rok. Manhattan oświetlają lampy gazowe, a Thomas Edison przygotowuje elektrownię przy Pearl Street. Kto pierwszy da miastu tani i bezpieczny prąd, zdobędzie rynek.') + '</p>';
     if (pro.length) html += '<h3>Wcześniej</h3><ul class="pro">' + pro.map((e) => '<li><span class="d">' + e.date.slice(0, 4) + '</span> ' + PN.esc(e.title) + '</li>').join('') + '</ul>';
+    const ch0 = (G.sc.chapters || [])[0];
+    html += '<h3>Cel gry</h3><p>Daj prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto. Kronika ma ' + (G.sc.chapters || []).length + ' rozdziałów; po każdym dostaniesz ocenę w porównaniu z prawdziwą historią' + (ch0 ? ' (pierwszy: <b>' + PN.esc(ch0.name) + '</b>, do ' + Math.floor(ch0.to) + ' r.)' : '') + '. Wskaźniki są na górze Przeglądu.</p>';
     if (ms) html += '<h3>Pierwsze zadanie</h3><p><b>' + PN.esc(ms.title) + '</b>: ' + PN.esc(ms.text) + '</p>';
     const tutDone = PN.Tutorial && PN.Tutorial.done();
     html += '<p class="note">' + (tutDone ? 'Wybierz <b>Elektrownie → ' + PN.esc(PN.TECH.steam_dc.name) + '</b> i kliknij w obrębie miasta. Potem puść czas przyciskiem 1×.' : 'Pierwszy raz? Samouczek krok po kroku przeprowadzi Cię przez pierwszą elektrownię, czas, panel miasta, linie i warstwy mapy.') + '</p><div class="row end"><button class="act" data-m="help">Jak grać</button>' +

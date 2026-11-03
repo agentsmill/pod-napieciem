@@ -18,10 +18,24 @@ Powstają trzy pliki:
 
 Przy pierwszym uruchomieniu gra proponuje **samouczek**: notatka na marginesie prowadzi przez pierwszą elektrownię, upływ czasu, panel miasta, zadania, linie i warstwy mapy, a sama przechodzi dalej, gdy wykonasz polecenie. Można go powtórzyć z menu ☰.
 
+## Cel gry
+
+Dać prąd jak największej liczbie ludzi – bez przerw, tanio, a z czasem czysto – i wypaść lepiej niż prawdziwa historia. Kronika ma siedem rozdziałów (w Polsce: zabory, II RP, wojna i odbudowa, PRL, transformacja, Unia, transformacja energetyczna). Co miesiąc gra liczy cztery wskaźniki:
+
+| Wskaźnik | Co mierzy | Punkt odniesienia |
+|---|---|---|
+| Dostęp | ilu ludzi ma prąd | tylu, ilu miało go naprawdę w tym roku |
+| Niezawodność | jaką część zapotrzebowania miast pokryłeś | 99,9% = pełna ocena, 90% = zero |
+| Koszt | ile kosztuje Cię 1 MWh (paliwo, CO₂, eksploatacja, sieci, zakup energii i 7% rocznie od majątku) | taryfa z tamtych lat |
+| Klimat | g CO₂ na kWh | emisyjność prawdziwej sieci w tym roku (Polska: KOBiZE/Ember, USA: EIA) |
+
+Wagi zmieniają się z epoką: na początku liczy się głównie dostęp, od lat 70. coraz bardziej klimat. Miesiące wojny i okupacji nie są oceniane. Po każdym rozdziale przychodzi raport (0–3 gwiazdki) z porównaniem do historii, na koniec kroniki (2060 r.) – ocena końcowa i tytuł, od „Praktykanta” po „Legendę energetyki”. Najlepszy wynik widać na ekranie startowym.
+
 ## Świat zmienia się sam
 
 - **Technologie przychodzą z historią.** Nie ma drzewka badań: w menu budowy widać tylko to, co już wynaleziono. Nowość ogłasza karta „Nowa technologia” z opisem, co zmienia; pierwsza linia przesyłowa ma własny krótki samouczek.
-- **Wycinki zamiast przestojów.** Zwykłe wydarzenia przychodzą jako wycinki z gazety po lewej stronie i nie zatrzymują gry. Czas staje tylko przy wojnach, zmianach granic i ustroju, wielkich awariach i kryzysach (w Polsce 14 takich chwil, w USA 13). Przy prędkości 1× do współczesności dochodzi się w ok. 40 minut gry bez pauz.
+- **Historia** to 96 wydarzeń w Polsce i 99 w USA, każde ze źródłem: od wojny prądów i zaborów, przez wojnę polsko-bolszewicką, II wojnę, PRL i Solidarność, kryzysy naftowe i wojny na Bliskim Wschodzie, po EU ETS i jego amerykańskie odpowiedniki (handel SO₂, RGGI, Kalifornia), ESG, pandemię, wojnę w Ukrainie i wojnę z Iranem w 2026 r. Szczegóły i poprawki: `src/data/RESEARCH_NOTES.md`.
+- **Wycinki zamiast przestojów.** Zwykłe wydarzenia przychodzą jako wycinki z gazety po lewej stronie i nie zatrzymują gry. Czas staje tylko przy wojnach, zmianach granic i ustroju, wielkich awariach i kryzysach (w Polsce 16 takich chwil, w USA 17). Przy prędkości 1× do współczesności dochodzi się w ok. 40 minut gry bez pauz.
 - **Transformacja.** Po otwarciu rynku (Polska: Prawo energetyczne 1997; USA: PURPA 1978 dla małych źródeł, Order 888 w 1996 dla wszystkich) prywatni inwestorzy zgłaszają własne elektrownie: gaz, wiatr, słońce, magazyny, morski wiatr, SMR. Gracz decyduje o przyłączeniu, buduje do nich linie (rok na przyłączenie) i kupuje ich energię po cenie z umowy. Im później, tym projektów więcej i są większe.
 - **Warstwy mapy** pojawiają się razem z technologią: Wiatr i Słońce dopiero, gdy istnieją elektrownie wiatrowe i słoneczne. Na warstwie Zasoby złoża dostępne dziś są wyraźne, a przyszłe – blade, z rokiem historycznego wydobycia.
 

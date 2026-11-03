@@ -5,7 +5,7 @@
   PN.SCEN = PN.SCEN || {};
 
   PN.SCEN.US = {
-    code: 'US', name: 'Stany Zjednoczone', title: 'USA 1882–2050',
+    code: 'US', name: 'Stany Zjednoczone', title: 'USA 1882–2060',
     blurb: 'Od Pearl Street i wojny prądów, przez Niagarę, zaporę Hoovera i atom, po boom centrów danych AI i pierwsze elektrownie termojądrowe.',
     cur: '$', fx: 1.0,
     proj: { lon0: -96, lat0: 37.5, lat1: 29.5, lat2: 45.5 }, tileKm: 26, mapBox: [-125.6, 23.6, -65.6, 50.2],
@@ -33,6 +33,20 @@
       uranium: [[1957, 9], [1980, 12], [2000, 5], [2020, 6.5], [2050, 7]],
       fusion: [[2040, 4], [2060, 3]],
     },
+    /* ---- the goal: seven chapters of history, each graded on access, reliability, cost and climate ---- */
+    chapters: [
+      { id: 'pradow', name: 'Wojna prądów', from: 1882, to: 1900 },
+      { id: 'insull', name: 'Era Insulla', from: 1900, to: 1929.8 },
+      { id: 'newdeal', name: 'Kryzys, Nowy Ład i wojna', from: 1929.8, to: 1945.6 },
+      { id: 'zloty', name: 'Złoty wiek wzrostu', from: 1945.6, to: 1973.8 },
+      { id: 'kryzysy', name: 'Kryzysy naftowe i niezależni wytwórcy', from: 1973.8, to: 1996.3 },
+      { id: 'rynki', name: 'Rynki, łupki i odnawialne', from: 1996.3, to: 2020 },
+      { id: 'ai', name: 'Boom AI i przyszłość', from: 2020, to: 2060 },
+    ],
+    /* CO2 per kWh of the real US power sector (g/kWh; EIA), then announced decarbonisation paths */
+    co2Hist: [[1950, 900], [1960, 800], [1975, 720], [1990, 620], [2005, 580], [2010, 540], [2015, 480], [2020, 400], [2023, 370], [2030, 260], [2040, 120], [2050, 50], [2060, 20]],
+    /* what society asked of the grid: weights of access, reliability, cost, climate */
+    scoreW: [[1882, [0.45, 0.3, 0.25, 0]], [1935, [0.4, 0.3, 0.3, 0]], [1970, [0.2, 0.3, 0.35, 0.15]], [1990, [0.1, 0.3, 0.35, 0.25]], [2010, [0.05, 0.3, 0.3, 0.35]], [2060, [0.05, 0.3, 0.25, 0.4]]],
     co2: [[1880, 0]],
     interest: [[1880, 0.06], [1930, 0.05], [1950, 0.04], [1980, 0.10], [1990, 0.08], [2010, 0.04], [2020, 0.03], [2023, 0.055], [2030, 0.045]],
     distCost: [[1882, 2000], [1900, 1300], [1920, 800], [1950, 550], [1980, 450], [2000, 450], [2020, 550], [2050, 550]],

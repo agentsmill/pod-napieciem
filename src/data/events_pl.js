@@ -74,14 +74,12 @@ window.PN_EVENTS_PL = [
     date: "1906-06",
     title: "Kraków przechodzi na prąd z miejskiej elektrowni",
     paper: "Czas",
-    text: "Teatr Miejski w Krakowie wyłącza własną elektrownię prądu stałego z urządzeniami praskiej firmy Františka Křižíka i zaczyna pobierać energię z nowo uruchomionej Elektrowni Miejskiej na Kazimierzu. Po krakowskich ulicach od 1901 r. jeżdżą już tramwaje elektryczne.",
+    text: "W 1906 r. Teatr Miejski w Krakowie wyłącza własną elektrownię prądu stałego z urządzeniami praskiej firmy Františka Křižíka i zaczyna pobierać energię z Elektrowni Miejskiej na Kazimierzu, zbudowanej w latach 1904–1905 przy miejskiej gazowni. Po krakowskich ulicach od 1901 r. jeżdżą już tramwaje elektryczne.",
     hint: "Miasta wolą kupować prąd od jednej dużej elektrowni niż utrzymywać dziesiątki małych.",
     icon: "plant",
-    effects: [
-      { type: "load", name: "Tramwaje elektryczne w Krakowie", lat: 50.06, lon: 19.94, mw: 0.5, growToMw: 3, years: 15, kind: "tram" }
-    ],
+    effects: [{ type: "load", name: "Tramwaje elektryczne w Krakowie", lat: 50.06, lon: 19.94, mw: 0.5, growToMw: 3, years: 15, kind: "tram" }],
     sources: [
-      "https://u.profitroom.com/2019-wielopole-pl/uploads/pdf/Krakowskiszlaktechniki.pdf",
+      "https://krakow.pl/zalacznik/287448",
       "https://en.wikipedia.org/wiki/List_of_town_tramway_systems_in_Poland"
     ],
     certainty: "medium",
@@ -185,6 +183,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://pl.wikipedia.org/wiki/Za%C5%9Blubiny_Polski_z_morzem",
       "https://bazhum.muzhp.pl/media/texts/kwartalnik-historii-nauki-i-techniki/1974-tom-19-numer-1/kwartalnik_historii_nauki_i_techniki-r1974-t19-n1-s29-44.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1920_bitwa_warszawska",
+    date: "1920-08",
+    title: "Bolszewicy pod Warszawą. Cud nad Wisłą",
+    paper: "Kurier Warszawski",
+    text: "W sierpniu 1920 r. Armia Czerwona dociera na kilkanaście kilometrów od Warszawy, a jej oddziały idą na Płock i Włocławek; Białystok jest zajęty od 28 lipca. Kontrofensywa znad Wieprza, rozpoczęta 16 sierpnia, przesądza o zwycięstwie w bitwie warszawskiej (12–25 sierpnia). Wojna rujnuje finanse państwa: wydatki wojskowe wyjęto spod kontroli Ministerstwa Skarbu, a inflacja zmierza ku hiperinflacji.",
+    hint: "Na czas walk o stolicę nowe budowy stają na trzy miesiące, a na zajętym przez bolszewików północnym wschodzie spada popyt na prąd.",
+    icon: "war",
+    effects: [{ type: "freeze", months: 3 }, { type: "demand", mult: 0.8, months: 3, region: { lat: 53.3, lon: 22, radiusKm: 120 } }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Battle_of_Warsaw_(1920)",
+      "https://aop.vse.cz/pdfs/aop/2007/07/20.pdf"
     ],
     certainty: "high",
     speculative: false
@@ -312,17 +326,15 @@ window.PN_EVENTS_PL = [
   {
     id: "pl_1939_wojna",
     date: "1939-09",
-    title: "Wojna! Bomby spadają na elektrownię Powiśle",
+    title: "Wojna! Niemcy i Sowieci napadają na Polskę",
     paper: "Kurier Warszawski",
-    text: "1 września 1939 r. Niemcy napadają na Polskę. Ostrzeliwana elektrownia na Powiślu pracuje do 23 września, gdy bomby niszczą kotłownię i halę maszyn. 14 września Niemcy zajmują Stalową Wolę wraz z elektrownią zbudowaną dla COP w latach 1938–1939.",
-    hint: "Okupacja: przez lata nie zbudujesz nic nowego, a część elektrowni legnie w gruzach.",
+    text: "1 września 1939 r. Niemcy napadają na Polskę, a 17 września od wschodu wkracza Armia Czerwona – na mocy tajnego protokołu paktu Ribbentrop–Mołotow kraj zostaje podzielony. Ostrzeliwana elektrownia na Powiślu pracuje do 23 września, gdy bomby niszczą kotłownię i halę maszyn. 14 września Niemcy zajęli Stalową Wolę wraz z elektrownią zbudowaną dla COP w latach 1938–1939.",
+    hint: "Dwie okupacje: przez lata nie zbudujesz nic nowego, a część elektrowni legnie w gruzach.",
     icon: "war",
-    effects: [
-      { type: "freeze", months: 64 },
-      { type: "damage", region: { lat: 52.23, lon: 21.01, radiusKm: 15 }, target: "plants", share: 0.5 }
-    ],
+    effects: [{ type: "freeze", months: 64 }, { type: "damage", region: { lat: 52.23, lon: 21.01, radiusKm: 15 }, target: "plants", share: 0.5 }],
     sources: [
       "https://pl.wikipedia.org/wiki/Elektrownia_Powi%C5%9Ble",
+      "https://en.wikipedia.org/wiki/Soviet_invasion_of_Poland",
       "https://defence24.pl/sily-zbrojne/ukrasc-goeringowi-acht-komma-acht"
     ],
     certainty: "high",
@@ -380,10 +392,10 @@ window.PN_EVENTS_PL = [
   },
   {
     id: "pl_1948_linia_220kv",
-    date: "1948-06",
+    date: "1947-11",
     title: "Pierwsza polska linia 220 kV: Śląsk – Łódź",
     paper: "Życie Warszawy",
-    text: "Między Łagiszą na Śląsku a Janowem pod Łodzią powstała licząca ok. 161 km linia zbudowana na napięcie 220 kV – pierwszy odcinek krajowej sieci przesyłowej. Z braku transformatorów i niegotowych jeszcze elektrowni na Śląsku przez pewien czas będzie pracować pod napięciem 110 kV.",
+    text: "30 listopada 1947 r. popłynął prąd linią z Łagiszy pod Będzinem do Janowa pod Łodzią – pierwszym odcinkiem krajowej sieci przesyłowej zbudowanym na napięcie 220 kV. Licząca 161 km linia powstała w 384 dni od decyzji z 11 listopada 1946 r.; z braku transformatorów i niegotowych jeszcze elektrowni na Śląsku przez pewien czas pracuje pod napięciem 110 kV.",
     hint: "Odblokowano linie 220 kV – szkielet przyszłego systemu krajowego.",
     icon: "tower",
     effects: [{ type: "unlock", tech: "line_220" }],
@@ -391,7 +403,7 @@ window.PN_EVENTS_PL = [
       "https://www.dbc.wroc.pl//Content/113758/przeg_elektrotech_r24_1948_7_8.pdf",
       "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"
     ],
-    certainty: "medium",
+    certainty: "high",
     speculative: false
   },
   {
@@ -463,13 +475,16 @@ window.PN_EVENTS_PL = [
   {
     id: "pl_1965_turow_adamow",
     date: "1965-06",
-    title: "Turów osiąga 1400 MW, Adamów 600 MW",
+    title: "Turów osiąga 1400 MW, rośnie Adamów",
     paper: "Trybuna Ludu",
-    text: "Zakończono I etap budowy Elektrowni Turów: siedem bloków po 200 MW daje łącznie 1400 MW. Elektrownia Adamów osiągnęła projektowane 600 MW w pięciu blokach po 120 MW – węgiel brunatny staje się filarem systemu.",
+    text: "Zakończono I etap budowy Elektrowni Turów: siedem bloków po 200 MW daje łącznie 1400 MW. W Elektrowni Adamów pracują już pierwsze bloki po 120 MW – pierwszy zsynchronizowano z siecią w październiku 1964 r., a piąty, ostatni, ruszy we wrześniu 1966 r., dając łącznie 600 MW. Węgiel brunatny staje się filarem systemu.",
     hint: "Bloki 200 MW stają się standardem polskiej energetyki.",
     icon: "coal",
     effects: [],
-    sources: ["https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"],
+    sources: [
+      "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf",
+      "https://ri.zepak.com.pl/en/news/1111-the-end-of-production-at-elektrownia-adamow/"
+    ],
     certainty: "medium",
     speculative: false
   },
@@ -513,6 +528,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_1973_kryzys_naftowy",
+    date: "1973-10",
+    title: "Embargo naftowe wstrząsa Zachodem",
+    paper: "Trybuna Ludu",
+    text: "Po arabskim ataku na Izrael w październiku 1973 r. arabscy producenci ropy ogłaszają embargo wobec USA i państw, które je wspierają; w ciągu kilku miesięcy ropa na Zachodzie drożeje kilkukrotnie. PRL kupuje ropę niemal wyłącznie z ZSRR, po niższych cenach obowiązujących w RWPG, więc szok nie uderza w nią wprost. Skutki przyjdą pośrednio – przez droższe kredyty zachodnie, które pod koniec dekady pogłębią kryzys gospodarki PRL.",
+    hint: "Twoje elektrownie palą krajowy węgiel, więc droga ropa ich nie dotyka – kryzys dotrze do PRL okrężną drogą, przez długi.",
+    icon: "oil",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Comecon",
+      "https://www.auto-swiat.pl/wiadomosci/aktualnosci/czy-zabronia-nam-jezdzic-w-niedziele-tak-kiedys-kraje-walczyly-z-kryzysem-naftowym/vyc6dd9"
+    ],
+    certainty: "medium",
+    speculative: false
+  },
+  {
     id: "pl_1979_zima_stulecia",
     date: "1979-01",
     title: "Zima stulecia: węgiel zamarza, gasną światła",
@@ -542,6 +573,38 @@ window.PN_EVENTS_PL = [
     effects: [],
     sources: ["https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf"],
     certainty: "medium",
+    speculative: false
+  },
+  {
+    id: "pl_1980_jastrzebie",
+    date: "1980-09",
+    title: "Porozumienie jastrzębskie: wolne soboty dla górników",
+    paper: "Trybuna Robotnicza",
+    text: "3 września 1980 r. w kopalni „Manifest Lipcowy” w Jastrzębiu-Zdroju komisja rządowa podpisała porozumienie ze strajkującymi górnikami. Górnicy wywalczyli m.in. wolne soboty i niedziele oraz zniesienie czterobrygadowego systemu pracy kopalń. Wydobycie węgla kamiennego, które w 1979 r. osiągnęło rekordowe 201 mln t, spadło do 193 mln t w 1980 r. i do 163 mln t w 1981 r.",
+    hint: "Węgla jest mniej i drożeje, a elektrownie PRL palą prawie wyłącznie węgiel – licz się z droższym paliwem przez ponad rok.",
+    icon: "coal",
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.25, months: 15 }],
+    sources: [
+      "https://dzieje.pl/node/11131",
+      "https://czasopisma.pan.pl//Content/132862/PDF/11_GSM_16_3_2000_Olkuski_Produkcja.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1980_20_stopien_zasilania",
+    date: "1980-12",
+    title: "Ogłoszono 20. stopień zasilania",
+    paper: "Życie Warszawy",
+    text: "1 grudnia 1980 r. Państwowa Dyspozycja Mocy ogłosiła 20. stopień zasilania: wytypowane zakłady przemysłowe w wyznaczonych godzinach przerywają produkcję, a wyłączenia w największych fabrykach sięgają 2860 MW. Na styczeń 1981 r. energetycy prognozują niedobór mocy rzędu 3 tys. MW. Planowe wyłączenia prądu trwały w PRL od drugiej połowy lat 70. do późnych lat 80.",
+    hint: "Mocy brakuje w szczycie: każdy sprawny blok i każda rezerwa są na wagę złota.",
+    icon: "factory",
+    effects: [{ type: "derate", techs: ["coal","lignite"], mult: 0.85, months: 3 }],
+    sources: [
+      "https://bc.radom.pl//Content/38042/energoimpulsy-1981-1.pdf",
+      "https://www.cire.pl/pliki/2/M_PE_3_historia.pdf"
+    ],
+    certainty: "high",
     speculative: false
   },
   {
@@ -619,6 +682,54 @@ window.PN_EVENTS_PL = [
       "https://www.pap.pl/aktualnosci/dawny-budowniczy-polskiej-elektrowni-jadrowej-katastrofa-w-czarnobylu-wplynela-na"
     ],
     certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1989_wybory",
+    date: "1989-06",
+    title: "Okrągły Stół i wybory 4 czerwca",
+    paper: "Gazeta Wyborcza",
+    text: "Obrady Okrągłego Stołu (6 lutego – 5 kwietnia 1989 r.), z osobnymi podzespołami m.in. do spraw górnictwa i ekologii, otworzyły drogę do częściowo wolnych wyborów. W głosowaniu 4 i 18 czerwca „Solidarność” zdobyła wszystkie 161 mandatów w Sejmie, o które mogła walczyć, i 99 ze 100 miejsc w Senacie. Wybory otwierają drogę do niekomunistycznego rządu Tadeusza Mazowieckiego.",
+    hint: "Kończy się PRL – wkrótce ruszy przebudowa gospodarki, a z nią energetyki.",
+    icon: "flag",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Polish_Round_Table_Agreement",
+      "https://en.wikipedia.org/wiki/1989_Polish_parliamentary_election"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1990_plan_balcerowicza",
+    date: "1990-01",
+    title: "Plan Balcerowicza: koniec tanich cen",
+    paper: "Gazeta Wyborcza",
+    text: "28 grudnia 1989 r. Sejm przyjął ustawy planu Balcerowicza: od początku 1990 r. większość cen jest wolna, a dotacje obcięte. Realna cena węgla dla elektrowni wzrosła na początku roku trzykrotnie i tyle samo w ciągu 1990 r. zdrożał prąd dla gospodarstw domowych. Produkcja przemysłowa spadła w 1990 r. o 24 proc., a w 1991 r. o kolejne 12 proc.",
+    hint: "Fabryki ograniczają produkcję – przez trzy lata popyt na prąd będzie wyraźnie niższy.",
+    icon: "money",
+    effects: [{ type: "demand", mult: 0.93, months: 36 }],
+    sources: [
+      "https://dzieje.pl/node/111758",
+      "https://eta-publications.lbl.gov/sites/default/files/lbl-33994.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_1990_pse",
+    date: "1990-06",
+    title: "Powstają Polskie Sieci Elektroenergetyczne",
+    paper: "Rzeczpospolita",
+    text: "W 1990 r. zawiązano jednoosobową spółkę Skarbu Państwa Polskie Sieci Elektroenergetyczne SA, która przejęła większość sieci najwyższych napięć. Na początku lat 90. zlikwidowano okręgi energetyczne, a sektor podzielono na ponad 30 przedsiębiorstw wytwórczych, PSE i 33 zakłady energetyczne odpowiedzialne za dystrybucję. Rozdrobnienie sektora na lata zahamowało budowę nowych mocy i ograniczyło inwestycje sieciowe.",
+    hint: "Szkielet przesyłowy ma jednego gospodarza, ale nowych elektrowni prawie nikt nie buduje – stare bloki muszą wystarczyć na dłużej.",
+    icon: "tower",
+    effects: [],
+    sources: [
+      "https://www.ee.pw.edu.pl/sep-ow/PLI/konf/histEEn/RF-Kalendarium-28x09.pdf",
+      "https://www.cire.pl/pliki/2/2020/elektroenergetyka_polska_w_latach_1990_2020_olga_fasieckazm.pdf"
+    ],
+    certainty: "medium",
     speculative: false
   },
   {
@@ -757,6 +868,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2007_ets_krach",
+    date: "2007-03",
+    title: "CO₂ za grosze, ale Bruksela tnie polski limit",
+    paper: "Rzeczpospolita",
+    text: "W 2005 r. ruszył unijny system handlu uprawnieniami do emisji CO₂ (EU ETS), ale uprawnień rozdano za dużo: w kwietniu 2006 r. tona kosztowała ok. 30 euro, a w 2007 r. uprawnienia z pierwszego okresu potaniały niemal do zera. 26 marca 2007 r. Komisja Europejska ograniczyła polski przydział na lata 2008–2012 do 208,5 mln t CO₂ rocznie – o 26,7 proc. mniej, niż proponował rząd.",
+    hint: "Na razie emisje kosztują niewiele, ale limity dla polskich elektrowni będą coraz ciaśniejsze.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/European_Union_Emissions_Trading_System",
+      "https://ekolist.cz/cz/zpravodajstvi/tiskove-zpravy/obchodovani-s-emisemi-komise-rozhodla-o-ceskem-a-polskem-narodnim-alokacnim-planu-na-obdobi-2008-2012"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2008_szczecin_blackout",
     date: "2008-04",
     title: "Szczecin bez prądu. Największa awaria od wojny",
@@ -768,6 +895,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.money.pl/gospodarka/blackout-w-polsce-zdarzyl-sie-naprawde-dekade-temu-zgasl-caly-szczecin-nie-bylo-niczego-6396070270957185a.html",
       "https://www.gramwzielone.pl/trendy/102789/blackout-co-oznacza-najglosniejsze-przypadki-i-jak-sie-przed-nim-ochronic"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2008_kryzys_finansowy",
+    date: "2008-11",
+    title: "Kryzys finansowy: przemysł zużywa mniej prądu",
+    paper: "Puls Biznesu",
+    text: "Światowy kryzys finansowy dociera do polskich fabryk: od listopada 2008 r. zużycie prądu jest co miesiąc o ok. 6 proc. niższe niż przed rokiem, najmocniej w hutnictwie, chemii, przemyśle szklarskim i cementowniach. W całym 2009 r. krajowe zużycie energii elektrycznej wyniosło 148,7 TWh, o blisko 4 proc. mniej niż rok wcześniej; w 2010 r. wróciło niemal do poziomu z 2008 r.",
+    hint: "Przez ponad rok popyt jest niższy – z nowymi blokami można poczekać.",
+    icon: "money",
+    effects: [{ type: "demand", mult: 0.96, months: 14 }],
+    sources: [
+      "https://forsal.pl/artykuly/119379,szybko-spada-zuzycie-pradu-w-polsce.html",
+      "https://www.gov.pl/documents/33372/436746/DE_1_OcenaPEP2030_05_2015-08-03.doc/41976df9-b307-1a9d-055e-93ef4631cd74"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2009_kryzys_gazowy",
+    date: "2009-01",
+    title: "Wojna gazowa: tranzyt przez Ukrainę wstrzymany",
+    paper: "Gazeta Wyborcza",
+    text: "W sporze o ceny Rosja 1 stycznia 2009 r. odcięła gaz dla Ukrainy, a 7 stycznia wstrzymała cały tranzyt przez jej terytorium; dostawy wznowiono dopiero 20 stycznia. Do Polski dociera o jedną trzecią mniej rosyjskiego gazu, więc rząd pozwala ograniczać pobór wielkim zakładom – głównie azotowym w Puławach i Tarnowie, Policom i Orlenowi – chroniąc gospodarstwa domowe.",
+    hint: "Gaz bywa bronią polityczną – przez miesiąc elektrownie gazowe pracują z ograniczoną mocą.",
+    icon: "gas",
+    effects: [{ type: "derate", techs: ["gas_ccgt","gas_ocgt"], mult: 0.7, months: 1 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/2009_Russia%E2%80%93Ukraine_gas_dispute",
+      "https://forsal.pl/artykuly/104022,kryzys-gazowy-uderza-w-polskie-firmy.html"
     ],
     certainty: "high",
     speculative: false
@@ -837,6 +996,22 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2015_gazoport",
+    date: "2015-12",
+    title: "Pierwszy gazowiec w Świnoujściu",
+    paper: "Rzeczpospolita",
+    text: "11 grudnia 2015 r. do terminalu LNG w Świnoujściu, zainaugurowanego 12 października, dotarła pierwsza dostawa skroplonego gazu. Terminal może przyjąć 5 mld m³ gazu rocznie i ma pomóc uniezależnić Polskę od gazu z Rosji. Po aneksji Krymu w 2014 r. premier Donald Tusk zaproponował unię energetyczną, w której jeden europejski podmiot kupowałby gaz dla całej UE.",
+    hint: "Gaz może teraz przypłynąć statkiem z dowolnego miejsca na świecie – dostawy są pewniejsze, choć nie tańsze.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/%C5%9Awinouj%C5%9Bcie_LNG_terminal",
+      "https://www.themoscowtimes.com/2014/04/22/polish-prime-minister-proposes-european-energy-union"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2016_ustawa_10h",
     date: "2016-07",
     title: "Ustawa 10H blokuje nowe wiatraki",
@@ -848,6 +1023,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://eli.gov.pl/eli/DU/2016/961/ogl",
       "https://www.prawo.pl/biznes/przepisy-o-lokalizacji-elektrowni-wiatrowych-juz-obowiazuja,166767.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2018_co2_zamrozenie_cen",
+    date: "2018-12",
+    title: "CO₂ drożeje, rząd zamraża ceny prądu",
+    paper: "Rzeczpospolita",
+    text: "Reforma unijnego handlu emisjami z rezerwą stabilności rynku (MSR), działającą od 2019 r., wywindowała cenę uprawnień z ok. 4 euro za tonę w połowie 2017 r. do ponad 20 euro latem 2018 r., a hurtowe ceny prądu w Polsce skoczyły ze 170 do 270–280 zł za MWh. Ustawą z 28 grudnia 2018 r. ceny dla odbiorców zamrożono na 2019 r. na poziomie taryf i umów z 30 czerwca 2018 r., akcyzę obniżono z 20 do 5 zł za MWh, a opłatę przejściową o 95 proc.",
+    hint: "Uprawnienia do emisji stają się jednym z największych kosztów bloków węglowych, a rachunki odbiorców – sprawą polityczną.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://forsal.pl/artykuly/1357004,drogi-klimat-europejski-unijna-polityka-podnosi-nam-ceny-energii.html",
+      "https://www.podatki.biz/artykuly/podatki-2019-prezydent-podpisal-nowele-zmniejszajaca-opodatkowanie-pradu_16_39880.htm"
     ],
     certainty: "high",
     speculative: false
@@ -869,6 +1060,86 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2019_banki_wegiel",
+    date: "2019-11",
+    title: "Banki odwracają się od węgla",
+    paper: "Puls Biznesu",
+    text: "14 listopada 2019 r. Europejski Bank Inwestycyjny ogłosił, że od końca 2021 r. przestanie finansować projekty energetyczne oparte na paliwach kopalnych, także gazowe. Od węgla odwracają się też banki komercyjne: mBank od 1 kwietnia 2019 r. nie finansuje w Polsce budowy nowych kopalń ani bloków węglowych.",
+    hint: "Kredyt na elektrownie kopalne drożeje – im większy udział węgla i gazu w Twoim systemie, tym wyższe odsetki.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.01, months: 72 }],
+    sources: [
+      "https://www.eib.org/en/press/all/2019-313-eu-bank-launches-ambitious-new-climate-strategy-and-energy-lending-policy",
+      "https://spidersweb.pl/2019/04/wegiel-fundusz-ratunkowy.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2020_covid",
+    date: "2020-03",
+    title: "Pandemia: fabryki zwalniają, popyt na prąd spada",
+    paper: "Gazeta Wyborcza",
+    text: "Wiosną 2020 r. pandemia COVID-19 i lockdowny hamują gospodarkę: w maju krajowe zużycie prądu było o 8 proc. niższe niż przed rokiem, a w całym drugim kwartale o 9 proc. Jesienią popyt wrócił do normy i w całym 2020 r. zużycie energii elektrycznej spadło tylko o ok. 2 proc.",
+    hint: "Na kilka miesięcy popyt wyraźnie spada – w słoneczne, puste dni sieć może mieć nadmiar energii.",
+    icon: "factory",
+    effects: [{ type: "demand", mult: 0.93, months: 4 }],
+    sources: [
+      "https://old.jagiellonski.pl/mFile/7.pdf",
+      "https://enerad.pl/jak-lockdown-w-czasach-covid-wplynal-na-zuzycie-pradu-w-polsce/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2020_taksonomia",
+    date: "2020-06",
+    title: "Unijna taksonomia: co jest „zielone”, a co nie",
+    paper: "Rzeczpospolita",
+    text: "18 czerwca 2020 r. Parlament Europejski przyjął rozporządzenie o taksonomii, które od 12 lipca określa kryteria działalności gospodarczej zgodnej z drogą do neutralności klimatycznej w 2050 r. W 2022 r. dopisano do niej, pod ścisłymi warunkami, wybrane działalności w energetyce jądrowej i gazowej, by przyspieszyć odchodzenie od węgla i innych paliw stałych lub ciekłych.",
+    hint: "Inwestycje w węgiel nie mogą liczyć na „zielone” finansowanie – kapitał na paliwa kopalne drożeje.",
+    icon: "law",
+    effects: [{ type: "esg", premium: 0.015, months: 240 }],
+    sources: [
+      "https://finance.ec.europa.eu/sustainable-finance/tools-and-standards/eu-taxonomy-sustainable-activities_en",
+      "https://en.wikipedia.org/wiki/EU_taxonomy_for_sustainable_activities"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_pep2040",
+    date: "2021-02",
+    title: "Rząd przyjmuje politykę energetyczną do 2040 r.",
+    paper: "Rzeczpospolita",
+    text: "2 lutego 2021 r. Rada Ministrów przyjęła „Politykę energetyczną Polski do 2040 r.” (PEP2040), opartą na trzech filarach: sprawiedliwej transformacji, zeroemisyjnym systemie energetycznym i dobrej jakości powietrza. Zakłada ona m.in. ok. 5,9 GW morskich farm wiatrowych w 2030 r. i ok. 11 GW w 2040 r., pierwszy blok jądrowy o mocy 1–1,6 GW w 2033 r. (łącznie sześć bloków) oraz co najmniej 23 proc. OZE w końcowym zużyciu energii brutto w 2030 r.",
+    hint: "Rząd stawia na morski wiatr i atom, a węgiel ma stopniowo tracić udział.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://www.gov.pl/web/polski-atom/uchwala-w-sprawie-polityki-energetycznej-polski-do-2040-r",
+      "https://bank.pl/?p=358133"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_umowa_spoleczna",
+    date: "2021-05",
+    title: "Umowa społeczna: kopalnie do 2049 roku",
+    paper: "Dziennik Zachodni",
+    text: "28 maja 2021 r. w Katowicach przedstawiciele rządu i górniczych związków zawodowych podpisali umowę społeczną, zgodnie z którą kopalnie węgla energetycznego mają być wygaszane do 2049 r. Górnicy dostają gwarancje zatrudnienia do nabycia praw emerytalnych, a odchodzący – 120 tys. zł odprawy; pomoc publiczna dla kopalń wymaga jednak zgody Komisji Europejskiej.",
+    hint: "Krajowy węgiel będzie dotowany jeszcze przez lata, ale jego koniec ma już datę.",
+    icon: "coal",
+    effects: [],
+    sources: [
+      "https://forsal.pl/biznes/energetyka/artykuly/8176310,podpisano-umowe-spoleczna-ws-gornictwa-co-oznacza-ten-dokument.html",
+      "https://archiwum.radio.lublin.pl/2021/05/przedstawiciele-rzadu-i-zwiazkow-zawodowych-podpisali-umowe-spoleczna-dla-gornictwa"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2021_turow",
     date: "2021-09",
     title: "TSUE: 500 tys. euro kary dziennie za Turów",
@@ -880,6 +1151,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.money.pl/gospodarka/kara-za-kopalnie-turow-polska-ma-placic-pol-miliona-euro-dziennie-6685256349075968a.html",
       "https://www.rmf24.pl/fakty/news-500-tys-euro-dziennej-kary-dla-polski-decyzja-tsue-ws-turowa,nId,5493994"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2021_fit_for_55",
+    date: "2021-12",
+    title: "Fit for 55 i drogie CO₂: rachunki w górę",
+    paper: "Dziennik Gazeta Prawna",
+    text: "W lipcu 2021 r. Komisja Europejska przedstawiła pakiet „Fit for 55”: co najmniej 55 proc. mniej emisji do 2030 r., ostrzejszy handel emisjami i osobny system dla budynków i transportu. Od maja 2019 r. do listopada 2021 r. tona CO₂ zdrożała ze 100 do 310 zł, a prąd w kontraktach na kolejny rok – w ciągu roku z ok. 242 do ok. 470 zł za MWh. W połowie grudnia URE zatwierdził taryfy, które od stycznia 2022 r. podnoszą rachunki gospodarstw domowych średnio o 24 proc.",
+    hint: "Każda tona CO₂ z Twoich bloków węglowych kosztuje coraz więcej, a odbiorcy coraz uważniej liczą rachunki.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://commission.europa.eu/strategy-and-policy/priorities-2019-2024/european-green-deal/delivering-european-green-deal_en",
+      "https://bank.pl/?p=394005"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_inwazja",
+    date: "2022-02",
+    title: "Rosja napada na Ukrainę",
+    paper: "Rzeczpospolita",
+    text: "24 lutego 2022 r. Rosja rozpoczęła pełnoskalową inwazję na Ukrainę; miliony Ukraińców uciekają przed wojną, co staje się największym kryzysem uchodźczym w Europie od II wojny światowej. Rynki energii ogarnia panika: 7 marca europejskie ceny gazu skoczyły w ciągu dnia o 79 proc., do rekordowych 345 euro za MWh.",
+    hint: "Wojna za wschodnią granicą wstrząsa rynkami paliw – pewność dostaw zaczyna liczyć się bardziej niż cena.",
+    icon: "war",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/Russian_invasion_of_Ukraine",
+      "https://energyconnects.com/news/utilities/2022/march/european-gas-surges-79-as-market-mayhem-takes-prices-to-record"
     ],
     certainty: "high",
     speculative: false
@@ -908,13 +1211,26 @@ window.PN_EVENTS_PL = [
     text: "Po rosyjskiej inwazji na Ukrainę Polska w kwietniu 2022 r. wprowadziła embargo na import węgla z Rosji. Na rynku ARA tona węgla energetycznego kosztuje w 2022 r. od 135 do 432 dolarów, a w ślad za nim drożeje gaz.",
     hint: "Paliwa kopalne przez rok kosztują wielokrotnie więcej – źródła bez paliwa zyskują.",
     icon: "crisis",
-    effects: [
-      { type: "fuel", fuel: "coal", mult: 2.5, months: 12 },
-      { type: "fuel", fuel: "gas", mult: 3, months: 12 }
-    ],
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.4, months: 9 }, { type: "fuel", fuel: "gas", mult: 1.3, months: 9 }],
     sources: [
       "https://www.gazetaprawna.pl/wiadomosci/kraj/artykuly/8402211,ustawa-embargo-na-import-wegla-z-rosji-andrzej-duda-prezydent.html",
       "https://se.min-pan.krakow.pl/pelne_teksty35/k35_prezentacje/k35se_grudzinski.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_gazprom_stop",
+    date: "2022-04",
+    title: "Gazprom zakręca kurek Polsce",
+    paper: "Dziennik Gazeta Prawna",
+    text: "27 kwietnia 2022 r. o 8:00 Gazprom wstrzymał dostawy gazu do Polski w ramach kontraktu jamalskiego, a także do Bułgarii, bo PGNiG odmówiło płacenia w rublach. Odbiorcy dostają gaz bez przerw, a magazyny są zapełnione w ok. 80 proc.; szefowa Komisji Europejskiej Ursula von der Leyen nazwała ruch Rosji szantażem.",
+    hint: "Rosyjski gaz przestaje płynąć do Polski – liczy się każde inne źródło dostaw.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://bank.pl/rosja-zakrecila-polsce-kurek-z-gazem/",
+      "https://www.money.pl/gospodarka/stalo-sie-rosja-odciela-polske-od-dostaw-gazu-6762671986494272a.html"
     ],
     certainty: "high",
     speculative: false
@@ -936,6 +1252,38 @@ window.PN_EVENTS_PL = [
     speculative: false
   },
   {
+    id: "pl_2022_ceny_maksymalne",
+    date: "2022-10",
+    title: "Ceny maksymalne prądu na 2023 rok",
+    paper: "Rzeczpospolita",
+    text: "27 października 2022 r. uchwalono ustawę o środkach nadzwyczajnych ograniczających ceny energii elektrycznej. Sprzedawcy muszą stosować ceny nie wyższe niż 693 zł za MWh dla gospodarstw domowych, które przekroczą limit zużycia, i 785 zł za MWh dla małych i średnich firm, samorządów oraz podmiotów użyteczności publicznej; w zamian dostają rekompensaty z Funduszu Wypłaty Różnicy Ceny.",
+    hint: "Ceny dla odbiorców mają odgórny limit – różnicę sprzedawcom wyrównuje państwo.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://eli.gov.pl/eli/DU/2022/2243/ogl",
+      "https://globenergia.pl/sejm-przyjal-ustawe-w-sprawie-maksymalnych-cen-energii-elektrycznej/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2022_westinghouse",
+    date: "2022-11",
+    title: "Atom z Ameryki: wybrano Westinghouse",
+    paper: "Rzeczpospolita",
+    text: "2 listopada 2022 r. Rada Ministrów wybrała reaktory AP1000 amerykańskiej firmy Westinghouse dla pierwszej polskiej elektrowni jądrowej w lokalizacji Lubiatowo-Kopalino na Pomorzu. Elektrownia ma mieć trzy bloki, a cały program jądrowy zakłada 6–9 GW mocy w reaktorach wodnych ciśnieniowych; pierwszy blok miał ruszyć w 2033 r.",
+    hint: "Elektrownia jądrowa nad Bałtykiem nabiera kształtów – trzy bloki AP1000 mają dać stabilną, bezemisyjną moc.",
+    icon: "nuclear",
+    effects: [],
+    sources: [
+      "https://info.westinghousenuclear.com/news/poland-selects-wec-ap1000",
+      "https://www.parkiet.com/energetyka/art37341891-polacy-wybrali-amerykanow-jest-atomowa-uchwala"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "pl_2023_wiatraki_700m",
     date: "2023-04",
     title: "Wiatraki bliżej domów, PSE tną fotowoltaikę",
@@ -947,6 +1295,22 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.dzp.pl/files/shares/Alerty/2023 04 27 DZP Alert Ustawa 10H.pdf",
       "https://www.pse.pl/documents/20182/51490/2023_06_01_Redysponowanie_nierynkowe_PV.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2023_reforma_ets",
+    date: "2023-04",
+    title: "Ostrzejszy handel emisjami, CBAM i ETS2",
+    paper: "Rzeczpospolita",
+    text: "25 kwietnia 2023 r. Rada UE ostatecznie przyjęła reformę handlu emisjami: sektory objęte EU ETS mają do 2030 r. zmniejszyć emisje o 62 proc. względem 2005 r., a darmowe uprawnienia dla branż objętych nowym granicznym mechanizmem CBAM będą wygaszane w latach 2026–2034. Przeciw CBAM głosowała tylko Polska; osobny system ETS2 dla budynków i transportu drogowego ma ruszyć w 2027 r. (lub w 2028 r., jeśli ceny energii będą wyjątkowo wysokie).",
+    hint: "Pula uprawnień będzie kurczyć się coraz szybciej – ceny CO₂ raczej nie wrócą do dawnych poziomów.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://icapcarbonaction.com/en/node/971",
+      "https://agenceurope.eu/en/bulletin/article/13169/34"
     ],
     certainty: "high",
     speculative: false
@@ -966,6 +1330,38 @@ window.PN_EVENTS_PL = [
     sources: [
       "https://www.gramwzielone.pl/magazynowanie-energii/20178042/najwiekszy-w-historii-portfel-magazynow-energii-zabezpieczony-na-rynku-mocy",
       "https://inzynieria.com/uploaded/articles/Wstepne_wyniki_aukcji_2021_do_publikacji_2018_11_20_6e18a94ded.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2024_pomoc_ukrainie",
+    date: "2024-03",
+    title: "Rosja bombarduje ukraińską energetykę, PSE śle prąd",
+    paper: "Rzeczpospolita",
+    text: "22 marca 2024 r. fala rosyjskich ataków z powietrza uszkodziła ukraińskie obiekty energetyczne i pozbawiła prądu ponad milion ludzi; PSE wysłały Ukrainie w ramach pomocy awaryjnej 300 MW. W całym 2024 r. Polska dostarczyła Ukrainie ok. 191 GWh energii awaryjnie i ok. 637 GWh w handlu, a koszty pomocy awaryjnej pokryło ukraińskie Ukrenergo.",
+    hint: "Połączenia transgraniczne to nie tylko handel – w kryzysie sąsiednie systemy ratują się nawzajem.",
+    icon: "tower",
+    effects: [],
+    sources: [
+      "https://ca.marketscreener.com/news/latest/Ukraine-energy-grid-getting-help-from-abroad-after-Russian-strikes-operator-says-46262534/",
+      "https://api.sejm.gov.pl/sejm/term10/interpellations/attachment/ATTDUXHMT/i15512-o1.pdf"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2024_csrd",
+    date: "2024-12",
+    title: "Raporty ESG obowiązkowe dla największych spółek",
+    paper: "Puls Biznesu",
+    text: "Ustawą z 6 grudnia 2024 r. Polska wdrożyła unijną dyrektywę CSRD: największe spółki, które dotąd publikowały raporty niefinansowe, w 2025 r. po raz pierwszy przedstawią za 2024 r. raporty zrównoważonego rozwoju poświadczone przez biegłego rewidenta. W kwietniu 2025 r. UE odłożyła o dwa lata ten obowiązek dla firm, które jeszcze nie zaczęły raportować.",
+    hint: "Banki i inwestorzy widzą teraz czarno na białym ślad węglowy Twojej firmy – kapitał na paliwa kopalne drożeje.",
+    icon: "law",
+    effects: [{ type: "esg", premium: 0.02, months: 300 }],
+    sources: [
+      "https://www.gov.pl/web/finanse/ustawa-csrd",
+      "https://www.garrigues.com/en_GB/new/stop-clock-directive-published-official-journal-european-union"
     ],
     certainty: "high",
     speculative: false
@@ -1014,8 +1410,24 @@ window.PN_EVENTS_PL = [
     icon: "nuclear",
     effects: [{ type: "subsidy", target: "nuclear", costMult: 0.7, months: 180 }],
     sources: [
-      "https://nucnet.herokuapp.com/news/europe-approves-state-aid-for-poland-nuclear-station-first-concrete-planned-for-2028-12-2-2025",
-      "https://www.europeaninterest.eu/?p=472580"
+      "https://notesfrompoland.com/2025/12/09/poland-to-launch-construction-of-first-nuclear-plant-after-eu-approves-e14bn-in-state-aid/",
+      "https://world-nuclear-news.org/articles/eu-approves-polish-state-aid-for-nuclear-plant"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "pl_2026_katar_lng",
+    date: "2026-03",
+    title: "Wojna w Zatoce: Katar wstrzymuje LNG",
+    paper: "Rzeczpospolita",
+    text: "Po amerykańsko-izraelskich nalotach na Iran z 28 lutego 2026 r. Iran dwukrotnie zaatakował katarski kompleks gazowy Ras Laffan, a żegluga przez cieśninę Ormuz została poważnie ograniczona. Katar wstrzymał produkcję LNG i ogłosił siłę wyższą wobec odbiorców, w tym Orlenu – katarski gaz to ok. 20 proc. dostaw do Polski. 9 marca ceny gazu w Europie skoczyły w ciągu dnia nawet o 30 proc., do ok. 64 euro za MWh, a ropa Brent kosztuje ponad 100 dolarów za baryłkę.",
+    hint: "Gaz drożeje na wiele miesięcy – bloki gazowe stają się drogie, a źródła bez paliwa zyskują.",
+    icon: "gas",
+    effects: [{ type: "fuel", fuel: "gas", mult: 1.5, months: 6 }],
+    sources: [
+      "https://www.energyconnects.com/news/utilities/2026/march/european-gas-prices-surge-30-as-middle-east-war-roils-markets",
+      "https://portalstoczniowy.pl/en/ostatni-lng-katar-swinoujscie-transport-przed-konfliktem/"
     ],
     certainty: "high",
     speculative: false
@@ -1025,13 +1437,13 @@ window.PN_EVENTS_PL = [
     date: "2026-07",
     title: "Pierwszy prąd z morskich wiatraków na Bałtyku",
     paper: "Rzeczpospolita",
-    text: "10 lipca 2026 r. energia z farmy Baltic Power – wspólnej inwestycji Orlenu i Northland Power – po raz pierwszy popłynęła do krajowej sieci przez stację w Choczewie. Docelowo 76 turbin Vestas po 15 MW, ustawionych ok. 23 km od brzegu koło Łeby, da ok. 1,2 GW.",
+    text: "10 lipca 2026 r. energia z farmy Baltic Power – wspólnej inwestycji Orlenu i Northland Power – po raz pierwszy popłynęła do krajowej sieci przez stację elektroenergetyczną w gminie Choczewo. Docelowo 76 turbin Vestas po 15 MW, ustawionych ok. 23 km od brzegu koło Łeby, da ok. 1,1–1,2 GW.",
     hint: "Odblokowano morskie farmy wiatrowe – potrzebują mocnych linii z wybrzeża w głąb kraju.",
     icon: "wind",
     effects: [{ type: "unlock", tech: "wind_offshore" }],
     sources: [
-      "https://www.energyglobal.com/wind/13072026/baltic-power-offshore-wind-farm-produces-and-delivers-first-electricity-to-polish-grid/",
-      "https://globenergia.pl/pierwsza-energia-z-polskiego-offshore-trafila-do-sieci-baltic-power-zaczyna-zasilac-krajowy-system/"
+      "https://www.orlen.pl/en/about-the-company/media/press-releases/current/2026/July-2026/a-historic-milestone-the-wind-farm-in-the-baltic-sea-delivers-first-power-to-the-polish-grid",
+      "https://www.offshorewind.biz/2026/07/10/poland-receives-its-first-electricity-from-offshore-wind-as-baltic-power-starts-delivering/"
     ],
     certainty: "high",
     speculative: false

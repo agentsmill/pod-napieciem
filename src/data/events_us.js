@@ -55,11 +55,13 @@ window.PN_EVENTS_US = [
     date: "1886-03",
     title: "Prąd przemienny zasila Great Barrington",
     paper: "The New York Times",
-    text: "20 marca 1886 r. William Stanley, pracujący dla George'a Westinghouse'a, zasilił sklepy i biura przy Main Street w Great Barrington prądem przemiennym. Napięcie z prądnicy firmy Siemens podwyższano do przesyłu i obniżano transformatorami do 500 V u odbiorców.",
+    text: "20 marca 1886 r. William Stanley, pracujący dla George'a Westinghouse'a, zasilił sklepy i biura przy Main Street w Great Barrington prądem przemiennym. Napięcie 500 V z prądnicy firmy Siemens podwyższano transformatorami do 3000 V, a u odbiorców obniżano do 100 V.",
     hint: "Transformator pozwala przesyłać prąd przemienny dalej niż stały – to początek przewagi AC.",
     icon: "tower",
     effects: [],
-    sources: ["https://ethw.org/Milestones:Alternating_Current_Electrification,_1886"],
+    sources: [
+      "https://ethw.org/Milestones:Alternating_Current_Electrification,_1886"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -191,19 +193,6 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
-    id: "us_1907_linia_110kv",
-    date: "1907-06",
-    title: "Michigan: pierwsza linia 110 kV",
-    paper: "Chicago Tribune",
-    text: "Między zaporą Croton a Grand Rapids w stanie Michigan uruchomiono pierwszą trójfazową linię przesyłową o napięciu 110 kV. Wyższe napięcie pozwala przesyłać energię z elektrowni wodnych na duże odległości przy niewielkich stratach.",
-    hint: "Odblokowano linie 110 kV.",
-    icon: "tower",
-    effects: [{ type: "unlock", tech: "line_110" }],
-    sources: ["https://en.wikipedia.org/wiki/History_of_electric_power_transmission"],
-    certainty: "medium",
-    speculative: false
-  },
-  {
     id: "us_1907_komisje_stanowe",
     date: "1907-07",
     title: "Stany biorą elektrownie pod nadzór",
@@ -215,6 +204,22 @@ window.PN_EVENTS_US = [
     sources: [
       "https://www.wicourts.gov/courts/history/article32.htm",
       "https://www.archives.nysed.gov/node/361057"
+    ],
+    certainty: "medium",
+    speculative: false
+  },
+  {
+    id: "us_1907_linia_110kv",
+    date: "1908-07",
+    title: "Michigan: pierwsza linia 110 kV",
+    paper: "Chicago Tribune",
+    text: "18 lipca 1908 r. Grand Rapids-Muskegon Power Company podała napięcie na liczącą ok. 80 km linię z elektrowni wodnej przy zaporze Croton na rzece Muskegon do Grand Rapids w stanie Michigan. Linia zaprojektowana na 110 kV jest najwyżej napiętą linią przesyłową świata; według części źródeł pełne 110 kV osiągnięto dopiero na początku 1909 r.",
+    hint: "Odblokowano linie 110 kV.",
+    icon: "tower",
+    effects: [{ type: "unlock", tech: "line_110" }],
+    sources: [
+      "https://reference.insulators.info/publications/view/?id=10497",
+      "https://en.wikipedia.org/wiki/Croton_Dam_(Michigan)"
     ],
     certainty: "medium",
     speculative: false
@@ -374,6 +379,22 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_1942_produkcja_wojenna",
+    date: "1942-01",
+    title: "Ameryka przestawia się na wojnę",
+    paper: "The New York Times",
+    text: "Po ataku na Pearl Harbor 7 grudnia 1941 r. USA przystąpiły do wojny, a w styczniu 1942 r. Roosevelt powołał Zarząd Produkcji Wojennej, który rozdziela surowce i wstrzymuje zbędną produkcję cywilną. Huty aluminium, stocznie i fabryki broni pracują bez przerwy: już w 1941 r. elektrownie zawodowe wytworzyły 165 mld kWh, o 16 proc. więcej niż rok wcześniej.",
+    hint: "Zbrojenia pochłaniają prąd – przez kilka lat wojny popyt będzie wyraźnie wyższy niż zwykle.",
+    icon: "war",
+    effects: [{ type: "demand", mult: 1.12, months: 42 }],
+    sources: [
+      "https://fred.stlouisfed.org/series/M0128AUSM247NNBR",
+      "https://en.wikipedia.org/wiki/War_Production_Board"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_1943_projekt_manhattan",
     date: "1943-06",
     title: "Tajne zakłady w Oak Ridge pożerają prąd",
@@ -411,13 +432,13 @@ window.PN_EVENTS_US = [
     date: "1953-06",
     title: "AEP uruchamia pierwszą na świecie linię 345 kV",
     paper: "The Wall Street Journal",
-    text: "American Electric Power uruchomił pierwszą na świecie linię przesyłową bardzo wysokiego napięcia, łączącą elektrownie Sporn i Kanawha River w Wirginii Zachodniej. Jej napięcie podawane jest jako 330–345 kV.",
+    text: "American Electric Power uruchomił pierwszą na świecie linię 345 kV, łączącą elektrownie Sporn i Kanawha River w Wirginii Zachodniej; jej napięcie podawane jest jako 330–345 kV. Pierwszą linią bardzo wysokiego napięcia w ogóle była jednak szwedzka linia 380 kV z 1952 r.",
     hint: "Odblokowano linie 345 kV – kręgosłup amerykańskiej sieci przesyłowej.",
     icon: "tower",
     effects: [{ type: "unlock", tech: "line_345" }],
     sources: [
       "https://www.aep.com/news/stories/view/882",
-      "https://sites.utexas.edu/energy-week/files/2015/07/Crowder.pdf"
+      "https://en.wikipedia.org/wiki/History_of_electric_power_transmission"
     ],
     certainty: "medium",
     speculative: false
@@ -488,18 +509,15 @@ window.PN_EVENTS_US = [
     date: "1965-11",
     title: "Wielka awaria: 30 milionów ludzi bez prądu",
     paper: "The New York Times",
-    text: "9 listopada 1965 r. zbyt czule nastawiony przekaźnik na linii w Ontario wywołał kaskadową awarię, która pozbawiła prądu ok. 30 mln ludzi w północno-wschodnich USA i Kanadzie; Nowy Jork był ciemny przez ponad 13 godzin. Sieci rosną szybciej niż ich koordynacja, a energetyka wchodzi już na napięcie 500 kV – pierwsze takie linie biegną z Mount Storm w Wirginii Zachodniej.",
+    text: "9 listopada 1965 r. zbyt czule nastawiony przekaźnik na linii w Ontario wywołał kaskadową awarię, która pozbawiła prądu ok. 30 mln ludzi w północno-wschodnich USA i Kanadzie; Nowy Jork był ciemny przez ponad 13 godzin. Sieci rosną szybciej niż ich koordynacja, a energetyka wchodzi już na napięcie 500 kV – pierwszą taką linię Tennessee Valley Authority włączyła 15 maja 1965 r.",
     hint: "Odblokowano linie 500 kV; połączone sieci dzielą rezerwy, ale też awarie.",
     icon: "blackout",
-    effects: [
-      { type: "unlock", tech: "line_500" },
-      { type: "outage", region: { lat: 42.5, lon: -75.0, radiusKm: 450 }, months: 1 }
-    ],
+    effects: [{ type: "unlock", tech: "line_500" }, { type: "outage", region: { lat: 42.5, lon: -75, radiusKm: 450 }, months: 1 }],
     sources: [
       "https://www.nerc.com/globalassets/who-we-are/march-2023-nerc-timeline.pdf",
-      "https://dewberry.com/projects/dominion-power-551-transmission-line-survey"
+      "https://en.wikipedia.org/wiki/Tennessee_Valley_Authority"
     ],
-    certainty: "medium",
+    certainty: "high",
     speculative: false
   },
   {
@@ -558,8 +576,10 @@ window.PN_EVENTS_US = [
     text: "W październiku 1973 r. arabscy producenci zrzeszeni w OAPEC ogłosili embargo na dostawy ropy do USA. Cena baryłki gwałtownie rośnie, a elektrownie opalane olejem opałowym płacą za paliwo kilka razy więcej.",
     hint: "Elektrownie olejowe stają się nieopłacalne – czas na węgiel, atom i gaz.",
     icon: "oil",
-    effects: [{ type: "fuel", fuel: "oil", mult: 3, months: 18 }],
-    sources: ["https://en.wikipedia.org/wiki/1973_oil_crisis"],
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.4, months: 18 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/1973_oil_crisis"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -597,6 +617,22 @@ window.PN_EVENTS_US = [
     sources: [
       "https://webarchive.library.unt.edu/eot2008/20081009071108/http://edocket.access.gpo.gov/2003/03-21401.htm",
       "https://en.wikipedia.org/wiki/Public_Utility_Regulatory_Policies_Act"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_1979_iran",
+    date: "1979-01",
+    title: "Rewolucja w Iranie: drugi szok naftowy",
+    paper: "The Wall Street Journal",
+    text: "Rewolucja w Iranie sparaliżowała tamtejsze pola naftowe: do stycznia 1979 r. wydobycie spadło o 4,8 mln baryłek dziennie, czyli o ok. 7 proc. światowej produkcji. Ceny ropy znów idą w górę, a elektrownie opalane olejem, które w 1978 r. dały ok. 16 proc. prądu w USA, muszą płacić za paliwo coraz więcej.",
+    hint: "Olej opałowy drożeje – zastępuj elektrownie olejowe węglem, atomem lub gazem.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.15, months: 15 }],
+    sources: [
+      "https://www.federalreservehistory.org/essays/oil-shock-of-1978-79",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
     ],
     certainty: "high",
     speculative: false
@@ -682,6 +718,22 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_1990_kuwejt",
+    date: "1990-08",
+    title: "Irak zajmuje Kuwejt, ropa drożeje",
+    paper: "The Wall Street Journal",
+    text: "2 sierpnia 1990 r. wojska irackie wkroczyły do Kuwejtu, a rynek zaczął się obawiać o dostawy z całej Zatoki Perskiej. Ropa, w lipcu średnio po 17 dolarów za baryłkę, gwałtownie drożeje. Amerykańska energetyka odczuje to jednak słabo: ropa daje już tylko ok. 5 proc. prądu w USA, wobec 17 proc. w 1973 r.",
+    hint: "Skok cen ropy potrwa kilka miesięcy – dla sieci opartej na węglu, gazie i atomie to raczej ciekawostka niż kryzys.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.6, months: 5 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/1990_oil_price_shock",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_1992_epact",
     date: "1992-10",
     title: "Ustawa o polityce energetycznej: ulga za wiatr",
@@ -691,6 +743,22 @@ window.PN_EVENTS_US = [
     icon: "law",
     effects: [{ type: "subsidy", target: "wind", costMult: 0.85, months: 120 }],
     sources: ["https://en.wikipedia.org/wiki/Energy_Policy_Act_of_1992"],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_1995_kwasne_deszcze",
+    date: "1995-01",
+    title: "Rusza handel uprawnieniami do emisji SO₂",
+    paper: "The Washington Post",
+    text: "1 stycznia 1995 r. ruszyła pierwsza faza programu przeciw kwaśnym deszczom z nowelizacji ustawy o czystym powietrzu z listopada 1990 r. Odtąd 263 bloki w 110 elektrowniach, głównie węglowych, muszą mieć uprawnienie na każdą tonę dwutlenku siarki i mogą handlować nadwyżkami. Od 2000 r. limit obejmie ponad 2000 bloków i spadnie docelowo do 8,95 mln ton rocznie – połowy emisji energetyki z 1980 r.",
+    hint: "Spalanie zasiarczonego węgla nieco drożeje – opłaca się odsiarczanie albo węgiel niskosiarkowy.",
+    icon: "law",
+    effects: [{ type: "fuel", fuel: "coal", mult: 1.05, months: 120 }],
+    sources: [
+      "https://www.epa.gov/acidrain/acid-rain-program",
+      "https://www.epa.gov/clean-air-act-overview/1990-clean-air-act-amendment-summary"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -724,17 +792,30 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2003_irak",
+    date: "2003-03",
+    title: "Wojna w Iraku, a ropa tanieje",
+    paper: "The Wall Street Journal",
+    text: "20 marca 2003 r. wojska USA i Wielkiej Brytanii zaatakowały Irak. Ropa, która jeszcze kilka tygodni wcześniej kosztowała blisko 40 dolarów za baryłkę, w przeddzień wojny spadła poniżej 30 dolarów, bo rynek liczy na szybkie zwycięstwo bez przerw w dostawach. Dla amerykańskich elektrowni to niemal bez znaczenia – z ropy pochodzi tylko ok. 2,5 proc. prądu w USA.",
+    hint: "Wojny na Bliskim Wschodzie mocniej podnoszą ceny benzyny niż prądu – sieci opartej na węglu, gazie i atomie prawie nie dotyczą.",
+    icon: "oil",
+    effects: [],
+    sources: [
+      "https://www.voanews.com/a/a-13-a-2003-03-19-47-crude/298121.html",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.02A"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2003_blackout",
     date: "2003-08",
     title: "Blackout: 55 milionów ludzi w ciemnościach",
     paper: "The New York Times",
     text: "14 sierpnia 2003 r. przeciążone linie FirstEnergy w Ohio zetknęły się z nieprzyciętymi drzewami, a kaskadowa awaria pozbawiła prądu ok. 55 mln mieszkańców północnego wschodu USA i Ontario. Jeszcze tego dnia Departament Energii nakazał uruchomić zablokowany przez spory podmorski kabel Cross-Sound (330 MW) między Connecticut a Long Island.",
-    hint: "Odblokowano kable podmorskie; przycinaj drzewa pod liniami – to też część niezawodności.",
+    hint: "Przycinaj drzewa pod liniami i dbaj o połączenia z sąsiednimi systemami – w kryzysie każde łącze się liczy.",
     icon: "blackout",
-    effects: [
-      { type: "unlock", tech: "cable_sea" },
-      { type: "outage", region: { lat: 41.5, lon: -80.0, radiusKm: 500 }, months: 1 }
-    ],
+    effects: [{ type: "outage", region: { lat: 41.5, lon: -80, radiusKm: 500 }, months: 1 }],
     sources: [
       "https://en.wikipedia.org/wiki/Northeast_blackout_of_2003",
       "https://www.energy.gov/node/366235"
@@ -759,6 +840,63 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2005_katrina",
+    date: "2005-08",
+    title: "Katrina: Nowy Orlean pod wodą i bez prądu",
+    paper: "The Times-Picayune",
+    text: "29 sierpnia 2005 r. huragan Katrina uderzył w wybrzeże Luizjany i Missisipi; bez prądu zostało ok. 3 mln ludzi, a zalany Nowy Orlean pogrążył się w ciemności. Z pól w Zatoce Meksykańskiej przestało płynąć ponad 8 mld stóp sześciennych gazu dziennie, a cena w hubie Henry wzrosła w tydzień o 2,70 dolara, do 12,70 dolara za mln BTU.",
+    hint: "Linie i stacje na nizinnym wybrzeżu Zatoki są narażone na huragany, a drogi gaz uderza w elektrownie gazowe w całym kraju.",
+    icon: "storm",
+    effects: [
+      { type: "outage", region: { lat: 30.2, lon: -89.9, radiusKm: 250 }, months: 1 },
+      { type: "damage", region: { lat: 30, lon: -89.9, radiusKm: 120 }, target: "lines", share: 0.15 },
+      { type: "fuel", fuel: "gas", mult: 1.4, months: 4 }
+    ],
+    sources: [
+      "https://en.wikipedia.org/wiki/Hurricane_Katrina",
+      "https://www.eia.gov/naturalgas/weekly/archivenew_ngwu/2005/09_01/ngupdate.asp"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2009_rggi",
+    date: "2009-01",
+    title: "RGGI: emisja CO₂ zaczyna kosztować",
+    paper: "The Boston Globe",
+    text: "1 stycznia 2009 r. ruszyła Regional Greenhouse Gas Initiative (RGGI) – wspólny system handlu uprawnieniami do emisji CO₂ dziesięciu stanów od Maine po Maryland. Elektrownie na paliwa kopalne o mocy od 25 MW muszą oddać uprawnienie za każdą tonę CO₂; limit na lata 2009–2011 to 188 mln uprawnień, sprzedawanych na aukcjach.",
+    hint: "Emisja CO₂ zaczyna kosztować – na razie mało i tylko w części kraju, więc w skali USA to niewielka dopłata.",
+    icon: "law",
+    effects: [{ type: "carbon", price: 0.3, months: 612 }],
+    sources: [
+      "https://www.rggi.org/program-overview-and-design/elements",
+      "https://en.wikipedia.org/wiki/Regional_Greenhouse_Gas_Initiative"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2009_recesja_arra",
+    date: "2009-02",
+    title: "Recesja i pakiet stymulacyjny",
+    paper: "The Washington Post",
+    text: "Po upadku banku Lehman Brothers we wrześniu 2008 r. USA są w recesji, a fabryki ograniczają produkcję – zużycie prądu w przemyśle spada najszybciej. 17 lutego 2009 r. Barack Obama podpisał ustawę ARRA, która daje ponad 90 mld dolarów na czystą energię, m.in. dotacje gotówkowe zamiast ulg podatkowych dla farm wiatrowych i słonecznych oraz środki na inteligentne sieci.",
+    hint: "Popyt na prąd przez ponad rok jest o kilka procent niższy, ale wiatr, słońce i modernizacja sieci są wyraźnie tańsze.",
+    icon: "money",
+    effects: [
+      { type: "demand", mult: 0.96, months: 14 },
+      { type: "subsidy", target: "wind", costMult: 0.8, months: 84 },
+      { type: "subsidy", target: "solar", costMult: 0.8, months: 84 },
+      { type: "subsidy", target: "grid", costMult: 0.9, months: 36 }
+    ],
+    sources: [
+      "https://obamawhitehouse.archives.gov/the-press-office/2016/02/25/fact-sheet-recovery-act-made-largest-single-investment-clean-energy",
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.06"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2012_gaz_lupkowy",
     date: "2012-04",
     title: "Gaz łupkowy najtańszy od ponad dekady",
@@ -766,7 +904,7 @@ window.PN_EVENTS_US = [
     text: "W kwietniu 2012 r. cena gazu w hubie Henry spadła poniżej 2 dolarów za mln BTU – średnio do 1,95 dolara, najniżej od grudnia 2001 r. Łagodna zima, wysokie zapasy i szybki wzrost wydobycia z łupków Marcellus sprawiają, że elektrownie gazowe wypierają węglowe.",
     hint: "Tani gaz przez kilka lat – bloki gazowe wygrywają z węglem.",
     icon: "gas",
-    effects: [{ type: "fuel", fuel: "gas", mult: 0.6, months: 36 }],
+    effects: [{ type: "fuel", fuel: "gas", mult: 0.8, months: 36 }],
     sources: [
       "https://www.eia.gov/todayinenergy/detail.php?id=15811",
       "https://www.eia.gov/todayinEnergy/detail.php?id=7470"
@@ -794,17 +932,64 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2013_kalifornia_co2",
+    date: "2013-01",
+    title: "Kalifornia uruchamia handel emisjami",
+    paper: "Los Angeles Times",
+    text: "Od 1 stycznia 2013 r. elektrownie zasilające Kalifornię – także te spoza stanu – i duże zakłady przemysłowe muszą mieć uprawnienie na każdą tonę emitowanych gazów cieplarnianych. Na pierwszej aukcji w listopadzie 2012 r. tona kosztowała 10,09 dolara; później system obejmie też dostawców paliw, a emisje stanu mają spaść do 427 mln ton w 2020 r.",
+    hint: "Kalifornijska cena CO₂ podnosi średni koszt emisji w USA – wciąż skromnie, ale węgiel znów traci na opłacalności.",
+    icon: "law",
+    effects: [{ type: "carbon", price: 1.2, months: 576 }],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=9310"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2013_san_onofre",
+    date: "2013-06",
+    title: "San Onofre zamknięte na zawsze",
+    paper: "Los Angeles Times",
+    text: "7 czerwca 2013 r. Southern California Edison ogłosiła zamknięcie elektrowni jądrowej San Onofre (2150 MW), której bloki stoją od stycznia 2012 r. po wycieku w wytwornicy pary. Razem z Crystal River i Kewaunee to cztery reaktory skazane na zamknięcie od jesieni 2012 r. – pierwsze takie decyzje od 1998 r. Po Fukushimie NRC nakazała ponadto wszystkim 104 reaktorom dodatkowe zabezpieczenia.",
+    hint: "Reaktor to inwestycja na dziesięciolecia – jedna wadliwa część i tani gaz mogą przedwcześnie zakończyć jego pracę.",
+    icon: "nuclear",
+    effects: [],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=11931",
+      "https://govexec.com/technology/2012/03/nuclear-commission-issues-first-fukushima-safety-orders/41429"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2014_crez",
-    date: "2014-01",
+    date: "2013-12",
     title: "Teksas kończy autostradę dla wiatru",
     paper: "Houston Chronicle",
-    text: "Na przełomie 2013 i 2014 r. ukończono program CREZ: ok. 3600 mil (5800 km) linii 345 kV za ok. 7 mld dolarów, łączących wietrzny zachód Teksasu z miastami. Nowa sieć może odebrać ok. 18,5 GW mocy z farm wiatrowych.",
+    text: "Do końca 2013 r. pod napięciem znalazły się wszystkie linie programu CREZ: ok. 3600 mil (5800 km) linii, głównie 345 kV, za ok. 7 mld dolarów, łączących wietrzny zachód Teksasu z miastami. Nowa sieć może odebrać ok. 18,5 GW mocy z farm wiatrowych.",
     hint: "Wiatr bez linii przesyłowych się marnuje – rozbudowa sieci jest przez dwa lata tańsza.",
     icon: "tower",
     effects: [{ type: "subsidy", target: "grid", costMult: 0.85, months: 24 }],
     sources: [
       "https://www.cleanenergyministerial.org/policy-brief-cesc/united-states-texas-competitive-renewable-energy-zones-and-transmission-expansion-to-support-scaled-up-wind-investment/",
       "https://www.eia.gov/todayinenergy/detail.php?id=16831"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2016_paryz_cpp",
+    date: "2016-02",
+    title: "Paryż tak, Clean Power Plan – stop",
+    paper: "The Washington Post",
+    text: "W grudniu 2015 r. USA przyjęły porozumienie paryskie, a Kongres przedłużył o pięć lat, ze stopniowym wygaszaniem, ulgi podatkowe dla wiatru i słońca. Filarem zobowiązań miał być Clean Power Plan – ogłoszony w sierpniu 2015 r. plan cięcia emisji CO₂ z elektrowni o 32 proc. do 2030 r. względem 2005 r. – ale 9 lutego 2016 r. Sąd Najwyższy go wstrzymał.",
+    hint: "Federalne limity CO₂ dla elektrowni utknęły w sądzie, ale ulgi dla wiatru i słońca działają jeszcze kilka lat.",
+    icon: "law",
+    effects: [{ type: "subsidy", target: "wind", costMult: 0.85, months: 60 }, { type: "subsidy", target: "solar", costMult: 0.8, months: 60 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Clean_Power_Plan",
+      "https://www.eia.gov/todayinenergy/detail.php?id=26492"
     ],
     certainty: "high",
     speculative: false
@@ -826,15 +1011,32 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2017_paryz_wyjscie",
+    date: "2017-06",
+    title: "Trump wycofuje USA z porozumienia paryskiego",
+    paper: "The New York Times",
+    text: "1 czerwca 2017 r. prezydent Donald Trump ogłosił, że Stany Zjednoczone wystąpią z porozumienia paryskiego. Zgodnie z jego zasadami wyjście może nastąpić najwcześniej 4 listopada 2020 r., dzień po kolejnych wyborach prezydenckich.",
+    hint: "Federalna polityka klimatyczna się cofa, ale o tym, co się buduje, wciąż decydują głównie ceny gazu, wiatru i słońca.",
+    icon: "flag",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/United_States_withdrawal_from_the_Paris_Agreement"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2017_huragan_maria",
     date: "2017-09",
     title: "Huragan Maria: Portoryko bez prądu",
     paper: "The New York Times",
-    text: "20 września 2017 r. huragan Maria zniszczył sieć energetyczną Portoryko – prądu pozbawieni zostali wszyscy 3,4 mln mieszkańców wyspy. Miesiąc później bez zasilania wciąż było 88 proc. wyspy.",
+    text: "20 września 2017 r. huragan Maria zniszczył sieć energetyczną Portoryko – prądu pozbawieni zostali wszyscy 3,4 mln mieszkańców wyspy. Miesiąc później bez zasilania wciąż było ponad 80 proc. odbiorców.",
     hint: "Wyspiarska sieć bez połączeń z lądem odbudowuje się miesiącami.",
     icon: "storm",
     effects: [],
-    sources: ["https://en.wikipedia.org/wiki/Effects_of_Hurricane_Maria_in_Puerto_Rico"],
+    sources: [
+      "https://en.wikipedia.org/wiki/Effects_of_Hurricane_Maria_in_Puerto_Rico"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -857,6 +1059,54 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2019_pge",
+    date: "2019-10",
+    title: "PG&E wyłącza prąd, by nie wzniecić pożarów",
+    paper: "San Francisco Chronicle",
+    text: "29 stycznia 2019 r. Pacific Gas and Electric ogłosiła upadłość, przytłoczona roszczeniami za pożary z lat 2017–2018, szacowanymi na ok. 30 mld dolarów. 9 października, by linie nie wznieciły kolejnych pożarów podczas suchego, porywistego wiatru, spółka wyłączyła prąd ok. 800 tys. odbiorców – ok. 2,5 mln ludzi w północnej Kalifornii – a pod koniec miesiąca – kolejnym 940 tys.",
+    hint: "W suchym i wietrznym klimacie bezpieczna sieć wymaga wycinki, kabli ziemnych i wyłączeń prewencyjnych – każda z tych opcji kosztuje.",
+    icon: "blackout",
+    effects: [{ type: "outage", region: { lat: 38.7, lon: -121.9, radiusKm: 250 }, months: 1 }],
+    sources: [
+      "https://abc7.com/business/pg-e-officially-files-for-chapter-11-bankruptcy/5111100/",
+      "https://en.wikipedia.org/wiki/2019_California_power_shutoffs"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2020_fink",
+    date: "2020-01",
+    title: "BlackRock: ryzyko klimatyczne to ryzyko inwestycyjne",
+    paper: "The Wall Street Journal",
+    text: "14 stycznia 2020 r. Larry Fink, szef BlackRock – największego zarządzającego aktywami na świecie, z ok. 7 bln dolarów – ogłosił w liście do prezesów „fundamentalną przebudowę finansów”, bo ryzyko klimatyczne staje się ryzykiem inwestycyjnym. Do połowy 2020 r. BlackRock wycofa z aktywnie zarządzanych portfeli spółki czerpiące ponad 25 proc. przychodów z węgla energetycznego.",
+    hint: "Inwestorzy zaczynają wyceniać ryzyko klimatyczne – im więcej prądu z paliw kopalnych, tym droższy kredyt.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.015, months: 61 }],
+    sources: [
+      "https://www.blackrock.com/corporate/investor-relations/2020-larry-fink-ceo-letter",
+      "https://www.aljazeera.com/ajimpact/moment-blackrock-pledges-tough-stance-climate-200114201901297.html"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2020_covid",
+    date: "2020-04",
+    title: "Pandemia: biura puste, popyt na prąd spada",
+    paper: "The Wall Street Journal",
+    text: "Wiosną 2020 r. stany zamykają biura, szkoły, sklepy i część fabryk, by spowolnić pandemię COVID-19. W kwietniu sprzedaż energii elektrycznej w USA była o ok. 4 proc. niższa niż przed rokiem: handel i usługi zużyły ok. 11 proc. mniej, przemysł ok. 10 proc. mniej, za to gospodarstwa domowe, w których pracuje się i uczy zdalnie, o 8 proc. więcej.",
+    hint: "Spadek popytu potrwa kilka miesięcy – nie zamykaj elektrowni pochopnie, odbiorcy szybko wrócą.",
+    icon: "factory",
+    effects: [{ type: "demand", mult: 0.95, months: 6 }],
+    sources: [
+      "https://www.eia.gov/totalenergy/data/browser/?tbl=T07.06",
+      "https://www.eia.gov/todayinenergy/detail.php?id=47397"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2020_moss_landing",
     date: "2020-12",
     title: "Moss Landing: największa bateria świata",
@@ -866,8 +1116,24 @@ window.PN_EVENTS_US = [
     icon: "plant",
     effects: [{ type: "unlock", tech: "battery" }],
     sources: [
-      "https://www.energy-storage.news/at-300mw-1200mwh-the-worlds-largest-battery-storage-system-so-far-is-up-and-running/",
-      "https://www.spglobal.com/market-intelligence/en/news-insights/articles/2021/1/vistra-connects-300-mw-battery-to-grid-in-california-61998078"
+      "https://investor.vistracorp.com/2021-01-06-Vistra-Brings-Worlds-Largest-Utility-Scale-Battery-Energy-Storage-System-Online",
+      "https://www.energy-storage.news/at-300mw-1200mwh-the-worlds-largest-battery-storage-system-so-far-is-up-and-running/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2021_paryz_powrot",
+    date: "2021-01",
+    title: "USA wracają do porozumienia paryskiego",
+    paper: "The Washington Post",
+    text: "Wyjście USA z porozumienia paryskiego weszło w życie 4 listopada 2020 r., ale 20 stycznia 2021 r., w dniu zaprzysiężenia, prezydent Joe Biden zdecydował o powrocie – USA znów będą stroną porozumienia od 19 lutego. 27 stycznia nowy prezydent wyznaczył cel: energetyka wolna od emisji CO₂ do 2035 r. i gospodarka neutralna klimatycznie do 2050 r.",
+    hint: "Polityka federalna znów sprzyja czystej energii – ale konkretne pieniądze przyjdą dopiero z ustaw Kongresu.",
+    icon: "handshake",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/United_States_withdrawal_from_the_Paris_Agreement",
+      "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2021/01/27/fact-sheet-president-biden-takes-executive-actions-to-tackle-the-climate-crisis-at-home-and-abroad-create-jobs-and-restore-scientific-integrity-across-federal-government/"
     ],
     certainty: "high",
     speculative: false
@@ -886,6 +1152,38 @@ window.PN_EVENTS_US = [
       { type: "derate", techs: ["gas_ocgt", "gas_ccgt", "coal", "wind", "nuclear"], mult: 0.7, months: 1 }
     ],
     sources: ["https://en.wikipedia.org/wiki/2021_Texas_power_crisis"],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2021_iija",
+    date: "2021-11",
+    title: "Ustawa infrastrukturalna: miliardy na sieci",
+    paper: "The New York Times",
+    text: "15 listopada 2021 r. prezydent Biden podpisał ustawę infrastrukturalną (Infrastructure Investment and Jobs Act) o wartości ok. 1,2 bln dolarów. Ponad 65 mld dolarów pójdzie na sieci elektroenergetyczne – według Białego Domu to największa w historii USA inwestycja w przesył czystej energii, obejmująca tysiące mil nowych linii.",
+    hint: "Budowa linii przesyłowych i modernizacja sieci są przez kilka lat tańsze.",
+    icon: "tower",
+    effects: [{ type: "subsidy", target: "grid", costMult: 0.9, months: 60 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Infrastructure_Investment_and_Jobs_Act",
+      "https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2021/11/06/fact-sheet-the-bipartisan-infrastructure-deal/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2022_west_virginia",
+    date: "2022-06",
+    title: "Sąd Najwyższy: EPA nie może wymusić zmiany miksu",
+    paper: "The Washington Post",
+    text: "30 czerwca 2022 r. Sąd Najwyższy w sprawie West Virginia v. EPA orzekł 6:3, że ustawa o czystym powietrzu nie pozwala EPA wymuszać przesunięcia produkcji prądu z węgla na gaz i OZE, na czym opierał się Clean Power Plan. EPA może dalej regulować emisje samych elektrowni, ale tak daleko idące zmiany wymagają wyraźnej zgody Kongresu (tzw. doktryna ważnych kwestii).",
+    hint: "Federalne ograniczenia emisji będą skromniejsze – o transformacji decydują ulgi podatkowe, stany i rynek.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/West_Virginia_v._EPA",
+      "https://en.wikipedia.org/wiki/Clean_Power_Plan"
+    ],
     certainty: "high",
     speculative: false
   },
@@ -929,6 +1227,38 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2022_gaz_lng",
+    date: "2022-08",
+    title: "Wojna w Europie podbija ceny gazu w USA",
+    paper: "The Wall Street Journal",
+    text: "22 sierpnia 2022 r. gaz w hubie Henry kosztował 9,85 dolara za mln BTU – ok. 60 proc. więcej niż na początku roku. Po rosyjskiej inwazji na Ukrainę Europa zastępuje gaz z Rosji amerykańskim LNG i kupuje już większość ładunków z USA, a upały podbijają zużycie gazu w elektrowniach.",
+    hint: "Eksport LNG wiąże amerykańskie ceny gazu ze światowymi – przez kilka miesięcy elektrownie gazowe pracują drożej.",
+    icon: "gas",
+    effects: [{ type: "fuel", fuel: "gas", mult: 1.5, months: 5 }],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=55119",
+      "https://www.eia.gov/todayinenergy/detail.php?id=55920"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2022_teksas_esg",
+    date: "2022-08",
+    title: "Teksas wpisuje BlackRock na czarną listę",
+    paper: "The Dallas Morning News",
+    text: "24 sierpnia 2022 r. kontroler stanu Teksas Glenn Hegar ogłosił listę dziesięciu instytucji finansowych – BlackRock i dziewięciu firm europejskich – oraz ok. 350 funduszy, które jego zdaniem „bojkotują” przemysł naftowy i gazowy. Na mocy ustawy SB 13 z 2021 r. stanowe agencje i samorządy muszą się z nich wycofać i nie mogą zawierać z nimi umów.",
+    hint: "Presja ESG ma przeciwników – w części stanów odcinanie się od paliw kopalnych też kosztuje.",
+    icon: "money",
+    effects: [],
+    sources: [
+      "https://www.click2houston.com/news/texas/2022/08/24/texas-bans-local-state-government-entities-from-doing-business-with-firms-that-boycott-fossil-fuels/",
+      "https://www.texastribune.org/2025/06/03/texas-comptroller-blackrock-boycott-energy/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2022_nif_zaplon",
     date: "2022-12",
     title: "Zapłon! Fuzja daje więcej energii niż laser",
@@ -956,6 +1286,70 @@ window.PN_EVENTS_US = [
     sources: [
       "https://www.clickondetroit.com/business/2023/07/31/first-american-nuclear-reactor-built-from-scratch-in-decades-enters-commercial-operation-in-georgia/",
       "https://11alive.com/article/news/state/plant-vogtle-georgia-unit-four-commercial-operation/85-77cd499a-fbc8-4704-ae3b-87cbc3706078"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2023_ferc_2023",
+    date: "2023-07",
+    title: "FERC porządkuje kolejki przyłączeniowe",
+    paper: "The New York Times",
+    text: "27 lipca 2023 r. Federalna Komisja Regulacji Energetyki jednogłośnie przyjęła reformę przyłączania elektrowni i magazynów (Order No. 2023). W kolejkach stoi ponad 2000 GW projektów, a przyłączenie trwa nawet pięć lat; operatorzy będą badać wnioski grupami według zasady „kto pierwszy gotowy, ten pierwszy obsłużony”, a za spóźnienia zapłacą kary.",
+    hint: "Przyłączenie nowej elektrowni trwa latami – planuj linie i stacje z wyprzedzeniem.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://ecoblock.berkeley.edu/2023/08/ferc-approves-critical-path-for-integrating-renewable-energy-resources-into-the-grid/",
+      "https://www.theregreview.org/2023/10/03/coffey-supercharging-electric-grid-interconnection/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2023_maui",
+    date: "2023-08",
+    title: "Lahaina w płomieniach",
+    paper: "Honolulu Star-Advertiser",
+    text: "8 sierpnia 2023 r. porywisty wiatr, wzmocniony przez wyż na północy i huragan Dora na południu, rozniósł na Maui pożar, który zniszczył ponad 2000 budynków w Lahainie; zginęło ponad 100 osób. Hawaiian Electric przyznała, że poranny pożar wywołały najpewniej zerwane linie, ale twierdzi, że gdy wybuchł popołudniowy ogień, jej sieć była od sześciu godzin wyłączona.",
+    hint: "Linie napowietrzne w suchym, wietrznym terenie to ryzyko pożaru – wyłączenia prewencyjne i kable ziemne kosztują, ale chronią.",
+    icon: "heat",
+    effects: [],
+    sources: [
+      "https://en.wikipedia.org/wiki/2023_Hawaii_wildfires",
+      "https://www.kpbs.org/news/environment/2023/08/28/hawaii-power-utility-takes-responsibility-for-first-fire-on-maui-but-faults-county-firefighters"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2024_lng_morze_czerwone",
+    date: "2024-01",
+    title: "Ameryka największym eksporterem LNG",
+    paper: "Houston Chronicle",
+    text: "W 2023 r. USA wyeksportowały najwięcej LNG na świecie – średnio 11,9 mld stóp sześciennych dziennie, z czego dwie trzecie trafiły do Europy, zastępującej gaz z rosyjskich rurociągów. Ataki jemeńskich Huti na statki na Morzu Czerwonym zmuszają tymczasem tankowce LNG z Kataru do opływania Afryki, co wydłuża rejs do Wielkiej Brytanii z 18 do ok. 27 dni.",
+    hint: "Gaz z łupków jest w USA wciąż tani, ale eksport LNG coraz mocniej wiąże jego cenę ze światowymi kryzysami.",
+    icon: "gas",
+    effects: [],
+    sources: [
+      "https://www.eia.gov/todayinenergy/detail.php?id=61683",
+      "https://gcaptain.com/lng-carriers-divert-from-red-sea-as-qatar-warns-of-escalation"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2024_epa_co2",
+    date: "2024-04",
+    title: "EPA: wychwyt CO₂ albo zamknięcie",
+    paper: "The Washington Post",
+    text: "25 kwietnia 2024 r. EPA ogłosiła nowe normy emisji CO₂ dla elektrowni: bloki węglowe, które mają pracować po 2039 r., muszą do 2032 r. wychwytywać 90 proc. dwutlenku węgla, a ten sam wymóg obejmie nowe bloki gazowe pracujące w podstawie. Przepisy dla istniejących elektrowni gazowych odłożono na później.",
+    hint: "Nowe bloki węglowe nie mają przyszłości – praca po 2039 r. wymagałaby drogiego wychwytu CO₂.",
+    icon: "coal",
+    effects: [],
+    sources: [
+      "https://www.power-eng.com/news/epa-leans-on-carbon-capture-as-it-releases-final-power-plant-pollution-rules/",
+      "https://www.epa.gov/stationary-sources-air-pollution/greenhouse-gas-standards-and-guidelines-fossil-fuel-fired-power"
     ],
     certainty: "high",
     speculative: false
@@ -1013,17 +1407,100 @@ window.PN_EVENTS_US = [
     speculative: false
   },
   {
+    id: "us_2025_pozary_la",
+    date: "2025-01",
+    title: "Pożary pod Los Angeles, Edison pod lupą",
+    paper: "Los Angeles Times",
+    text: "7 stycznia 2025 r. wiatry Santa Ana, w porywach do 160 km/h, rozniosły pożary Palisades i Eaton, które zniszczyły lub uszkodziły ok. 18 tys. budynków; zginęło 31 osób. Bez prądu było ok. 414 tys. odbiorców Southern California Edison, a pierwsze pozwy zarzucają spółce, że pożar Eaton wybuchł pod jej wieżami przesyłowymi; firma odpowiada, że przyczyna wciąż jest badana.",
+    hint: "Wiatr Santa Ana i linie napowietrzne to groźne połączenie – w sezonie pożarów licz się z wyłączeniami i kosztowną odbudową.",
+    icon: "crisis",
+    effects: [
+      { type: "damage", region: { lat: 34.12, lon: -118.35, radiusKm: 40 }, target: "lines", share: 0.1 },
+      { type: "outage", region: { lat: 34.1, lon: -118, radiusKm: 90 }, months: 1 }
+    ],
+    sources: [
+      "https://en.wikipedia.org/wiki/January_2025_Southern_California_wildfires",
+      "https://abc7.com/post/california-wildfires-2-lawsuits-filed-southern-edison-eaton-fire-pasadena-altadena/15796131/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_odwrot_esg",
+    date: "2025-03",
+    title: "Wall Street wycofuje się z sojuszy klimatycznych",
+    paper: "The Wall Street Journal",
+    text: "Na przełomie 2024 i 2025 r. największe banki USA, w tym JPMorgan Chase, opuściły Net-Zero Banking Alliance, a BlackRock – ten od listu z 2020 r. – wystąpił z sojuszu Net Zero Asset Managers. 27 marca 2025 r. SEC przestała bronić w sądzie przepisów o ujawnianiu ryzyka klimatycznego, przyjętych w marcu 2024 r. i wkrótce potem zawieszonych.",
+    hint: "Presja finansowa na paliwa kopalne słabnie – kredyt dla elektrowni węglowych i gazowych tanieje, choć ryzyko klimatyczne nie znika z rachunków.",
+    icon: "money",
+    effects: [{ type: "esg", premium: 0.005, months: 120 }],
+    sources: [
+      "https://www.ai-cio.com/news/net-zero-asset-managers-initiative-pauses-activities-following-blackrock-exit/",
+      "https://www.sec.gov/newsroom/press-releases/2025-58"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_epa_paryz",
+    date: "2025-06",
+    title: "EPA chce znieść limity CO₂ dla elektrowni",
+    paper: "The New York Times",
+    text: "11 czerwca 2025 r. EPA zaproponowała uchylenie norm emisji gazów cieplarnianych dla elektrowni na paliwa kopalne, w tym wymogu wychwytu CO₂ z 2024 r. To kolejny krok odwrotu od polityki klimatycznej: 20 stycznia prezydent Trump po raz drugi wypowiedział porozumienie paryskie, a wyjście wejdzie w życie w styczniu 2026 r.",
+    hint: "Federalne limity CO₂ prawdopodobnie znikną – emisje obciążają tylko programy stanowe, takie jak RGGI i kalifornijski.",
+    icon: "law",
+    effects: [],
+    sources: [
+      "https://www.epa.gov/stationary-sources-air-pollution/greenhouse-gas-standards-and-guidelines-fossil-fuel-fired-power",
+      "https://en.wikipedia.org/wiki/Paris_Agreement"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2025_izrael_iran",
+    date: "2025-06",
+    title: "Wojna Izraela z Iranem, bomby USA na Fordo",
+    paper: "The Wall Street Journal",
+    text: "13 czerwca 2025 r. Izrael zaatakował irańskie obiekty jądrowe i wojskowe, a 22 czerwca USA zbombardowały ośrodki jądrowe w Fordo, Natanz i Isfahanie. Ropa Brent podrożała do najwyższego poziomu od pięciu miesięcy, ale po rozejmie 24 czerwca potaniała w jeden dzień o 6 proc., do 67 dolarów za baryłkę – poniżej poziomu sprzed wojny.",
+    hint: "Ropa daje dziś mniej niż 1 proc. prądu w USA – tę wojnę mocniej odczują kierowcy niż elektrownie.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.1, months: 1 }],
+    sources: [
+      "https://en.wikipedia.org/wiki/Twelve-Day_War",
+      "https://www.thestar.com.my/business/2025/06/25/oil-falls-6-as-israel-iran-ceasefire-cuts-mideast-supply-risk"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
     id: "us_2025_obbba",
     date: "2025-07",
     title: "Koniec ulg dla wiatru i słońca",
     paper: "The Wall Street Journal",
     text: "4 lipca 2025 r. prezydent Donald Trump podpisał ustawę One Big Beautiful Bill Act. Farmy wiatrowe i słoneczne zachowają ulgi podatkowe tylko wtedy, gdy ich budowa ruszy do 4 lipca 2026 r. albo zostaną oddane do użytku do końca 2027 r.; magazyny energii zachowują wsparcie dla projektów rozpoczętych do 2033 r.",
-    hint: "Ulgi dla wiatru i słońca wygasają z końcem 2027 r. – magazyny energii nadal są wspierane.",
+    hint: "Nowe farmy wiatrowe i słoneczne dostaną ulgi tylko, jeśli ich budowa ruszy do lipca 2026 r. albo zostaną oddane do końca 2027 r.; magazyny energii są nadal wspierane.",
     icon: "law",
     effects: [],
     sources: [
       "https://www.projectfinance.law/publications/2025/july/effects-of-one-big-beautiful-bill-on-projects/",
       "https://www.gibsondunn.com/focus-on-clean-energy-tax-provisions-in-the-one-big-beautiful-bill-act/"
+    ],
+    certainty: "high",
+    speculative: false
+  },
+  {
+    id: "us_2026_wojna_iran",
+    date: "2026-03",
+    title: "Wojna z Iranem: Ormuz zamknięty, ropa po 120 dolarów",
+    paper: "The Wall Street Journal",
+    text: "Po amerykańsko-izraelskich nalotach na Iran z 28 lutego 2026 r. Iran praktycznie zamknął cieśninę Ormuz, którą płynie ok. jednej piątej światowej ropy, i uderzył w katarski kompleks LNG Ras Laffan. Baryłka Brent skoczyła z ok. 70 do 119,50 dolara 9 marca, a średnia cena benzyny w USA przekroczyła 3,5 dolara za galon. Amerykański prąd prawie nie zależy od ropy – daje ona mniej niż 1 proc. produkcji.",
+    hint: "Dla Twojej sieci to głównie sygnał ostrzegawczy: przez kilka miesięcy drożeje ropa, a niezależność od importu paliw jest warta coraz więcej.",
+    icon: "oil",
+    effects: [{ type: "fuel", fuel: "oil", mult: 1.3, months: 3 }],
+    sources: [
+      "https://wisconsinexaminer.com/2026/03/09/repub/gas-prices-spike-across-us-amid-iran-war/",
+      "https://www.cnbc.com/2026/03/19/iran-attack-qatar-lng-capacity.html"
     ],
     certainty: "high",
     speculative: false
