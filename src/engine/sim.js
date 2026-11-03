@@ -524,7 +524,12 @@
   };
   function assetValue(G) { let v = 0; for (const n of G.nodes) if (n.built && n.cost) v += n.cost * Math.max(0.2, 1 - (n.age || 0) / 60); for (const l of G.lines) if (l.built && l.cost) v += l.cost * 0.7; return v; }
   PN.assetValue = assetValue;
-  PN.loanRate = (G) => PN.curve(G.sc.interest, ym(G)) * (G.regime === 'state' ? 0.6 : 1) + 0.015;
+  const activeFx = (list, y) => (Array.isArray(list) ? list : list ? [list] : []).filter((e) => e && e.until > y);
+  PN.carbonAdder = (G) => activeFx(G.fx.carbon, ym(G)).reduce((a, e) => a + (e.price || 0), 0);
+  PN.co2Price = (G) => PN.curve(G.sc.co2, ym(G)) + PN.carbonAdder(G);
+  /* ESG: lenders price in climate risk – the more of the energy comes from fossil fuels, the dearer the credit */
+  PN.esgPremium = (G) => { const e = activeFx(G.fx.esg, ym(G)).pop(); return e ? Math.max(0, e.premium || 0) * (1 - PN.helpers(G).cleanShare()) : 0; };
+  PN.loanRate = (G) => PN.curve(G.sc.interest, ym(G)) * (G.regime === 'state' ? 0.6 : 1) + 0.015 + PN.esgPremium(G);
   PN.takeLoan = function (G, amt) { const room = PN.creditLimit(G) - G.debt; amt = Math.min(amt, room); if (amt <= 0) return 0; G.debt += amt; G.money += amt; return amt; };
   PN.repay = function (G, amt) { amt = Math.min(amt, G.debt, G.money); if (amt <= 0) return 0; G.debt -= amt; G.money -= amt; return amt; };
 
@@ -761,7 +766,7 @@
   const mcf = new PN.MCF();
   function dispatch(G) {
     const y = ym(G), sc = G.sc, M = G.map, days = PN.DAYS[G.m], W8 = 3 * days;
-    const co2p = PN.curve(sc.co2, y), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
+    const co2p = PN.co2Price(G), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
     const prof = profile(G);
     for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; n._src = null; n._dst = null; }
     const act = G.nodes.filter((n) => n.built && !n.dmg && (n.type !== 'city' || PN.cityOwned(G, n)) && n.on !== false);
@@ -1202,6 +1207,8 @@
           case 'regime': G.regime = e.regime; break;
           case 'prosumer': G.prosumer = { mwPerYear: e.mwPerYear, until: y + (e.years || 5) }; break;
           case 'territory': G.terr[e.change] = true; break;
+          case 'carbon': G.fx.carbon = activeFx(G.fx.carbon, y).concat([{ price: e.price || 0, until: y + (e.months || 120) / 12, ev: ev.id }]); break;
+          case 'esg': G.fx.esg = [{ premium: e.premium || 0, until: y + (e.months || 120) / 12, ev: ev.id }]; break;
           case 'ipp': if (G.ippScope !== 'all') { G.ippScope = e.scope || 'all'; G._trans = { scope: G.ippScope, ev: ev.id }; } break;
           default: break;
         }

@@ -4700,7 +4700,12 @@ window.PN_EVENTS_US = [
   };
   function assetValue(G) { let v = 0; for (const n of G.nodes) if (n.built && n.cost) v += n.cost * Math.max(0.2, 1 - (n.age || 0) / 60); for (const l of G.lines) if (l.built && l.cost) v += l.cost * 0.7; return v; }
   PN.assetValue = assetValue;
-  PN.loanRate = (G) => PN.curve(G.sc.interest, ym(G)) * (G.regime === 'state' ? 0.6 : 1) + 0.015;
+  const activeFx = (list, y) => (Array.isArray(list) ? list : list ? [list] : []).filter((e) => e && e.until > y);
+  PN.carbonAdder = (G) => activeFx(G.fx.carbon, ym(G)).reduce((a, e) => a + (e.price || 0), 0);
+  PN.co2Price = (G) => PN.curve(G.sc.co2, ym(G)) + PN.carbonAdder(G);
+  /* ESG: lenders price in climate risk – the more of the energy comes from fossil fuels, the dearer the credit */
+  PN.esgPremium = (G) => { const e = activeFx(G.fx.esg, ym(G)).pop(); return e ? Math.max(0, e.premium || 0) * (1 - PN.helpers(G).cleanShare()) : 0; };
+  PN.loanRate = (G) => PN.curve(G.sc.interest, ym(G)) * (G.regime === 'state' ? 0.6 : 1) + 0.015 + PN.esgPremium(G);
   PN.takeLoan = function (G, amt) { const room = PN.creditLimit(G) - G.debt; amt = Math.min(amt, room); if (amt <= 0) return 0; G.debt += amt; G.money += amt; return amt; };
   PN.repay = function (G, amt) { amt = Math.min(amt, G.debt, G.money); if (amt <= 0) return 0; G.debt -= amt; G.money -= amt; return amt; };
 
@@ -4937,7 +4942,7 @@ window.PN_EVENTS_US = [
   const mcf = new PN.MCF();
   function dispatch(G) {
     const y = ym(G), sc = G.sc, M = G.map, days = PN.DAYS[G.m], W8 = 3 * days;
-    const co2p = PN.curve(sc.co2, y), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
+    const co2p = PN.co2Price(G), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
     const prof = profile(G);
     for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; n._src = null; n._dst = null; }
     const act = G.nodes.filter((n) => n.built && !n.dmg && (n.type !== 'city' || PN.cityOwned(G, n)) && n.on !== false);
@@ -5378,6 +5383,8 @@ window.PN_EVENTS_US = [
           case 'regime': G.regime = e.regime; break;
           case 'prosumer': G.prosumer = { mwPerYear: e.mwPerYear, until: y + (e.years || 5) }; break;
           case 'territory': G.terr[e.change] = true; break;
+          case 'carbon': G.fx.carbon = activeFx(G.fx.carbon, y).concat([{ price: e.price || 0, until: y + (e.months || 120) / 12, ev: ev.id }]); break;
+          case 'esg': G.fx.esg = [{ premium: e.premium || 0, until: y + (e.months || 120) / 12, ev: ev.id }]; break;
           case 'ipp': if (G.ippScope !== 'all') { G.ippScope = e.scope || 'all'; G._trans = { scope: G.ippScope, ev: ev.id }; } break;
           default: break;
         }
@@ -7446,7 +7453,7 @@ window.PN_EVENTS_US = [
   UI.overviewHtml = function () {
     const G = UI.G, st = G.stats || {}, y = PN.ym(G), H = PN.helpers(G);
     let s = '<h2>' + esc(G.sc.name) + ' · ' + G.y + '</h2><p class="era">' + esc(UI.era()) + '</p>';
-    s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (G.code === 'PL' && y >= 2005 ? row('Cena uprawnień CO₂', PN.money(PN.curve(G.sc.co2, y)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
+    s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (PN.co2Price(G) > 0 ? row(G.code === 'PL' ? 'Cena uprawnień CO₂ (EU ETS)' : 'Cena CO₂ (programy stanowe)', PN.money(PN.co2Price(G)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
     const adv = UI.advice();
     if (adv.length) s += '<h3>Doradca</h3><ul class="advice">' + adv.map((a) => '<li' + (a.p >= 8 ? ' class="hot"' : '') + '>' + (a.id ? '<a href="#" data-goto="' + a.id + '">' + esc(a.t) + '</a>' : esc(a.t)) + '</li>').join('') + '</ul>';
     s += '<h3>Doba w tym miesiącu</h3><canvas class="chart" data-chart="day" width="560" height="250"></canvas>';
@@ -7521,7 +7528,7 @@ window.PN_EVENTS_US = [
   };
   UI.finHtml = function () {
     const G = UI.G, st = G.stats || {}, F = st.F || {};
-    let s = '<h2>Finanse</h2><div class="kvs">' + row('Gotówka', PN.money(G.money)) + row('Dług', PN.money(G.debt)) + row('Limit kredytu', PN.money(PN.creditLimit(G))) + row('Oprocentowanie', PN.pct(PN.loanRate(G), 1)) + row('Wartość majątku', PN.money(PN.assetValue(G))) + '</div>';
+    let s = '<h2>Finanse</h2><div class="kvs">' + row('Gotówka', PN.money(G.money)) + row('Dług', PN.money(G.debt)) + row('Limit kredytu', PN.money(PN.creditLimit(G))) + row('Oprocentowanie', PN.pct(PN.loanRate(G), 1) + (PN.esgPremium(G) > 0.0005 ? ' (w tym ESG ' + PN.pct(PN.esgPremium(G), 1) + ')' : '')) + row('Wartość majątku', PN.money(PN.assetValue(G))) + '</div>';
     const cl = PN.creditLimit(G), step = Math.max(G.sc.money, cl * 0.1);
     s += '<div class="row">' + btn('loan', 'Weź kredyt', step, cl - G.debt < 1) + btn('repay', 'Spłać', Math.min(G.debt, step), G.debt <= 0 || G.money <= 0) + '</div>';
     s += '<h3>Ostatni miesiąc</h3><div class="kvs">';
@@ -7814,6 +7821,8 @@ window.PN_EVENTS_US = [
       case 'prosumer': return 'Prosumenci: +' + PN.mw(e.mwPerYear) + ' fotowoltaiki na dachach rocznie';
       case 'territory': return 'Zmiana granic: nowe ziemie w Twoim zasięgu';
       case 'ipp': return e.scope === 'small' ? 'Mali niezależni wytwórcy zgłaszają projekty' : 'Prywatni inwestorzy zgłaszają własne elektrownie';
+      case 'carbon': return (e.price >= 0 ? 'Cena CO₂ +' : 'Cena CO₂ ') + PN.money(e.price) + '/t przez ' + PN.months(e.months || 120);
+      case 'esg': return e.premium > 0 ? 'Banki: kredyt droższy o do ' + PN.nf(e.premium * 100, 1) + ' pp – im więcej paliw kopalnych, tym drożej' : 'Banki przestają doliczać ryzyko klimatyczne do kredytów';
       default: return '';
     }
   };

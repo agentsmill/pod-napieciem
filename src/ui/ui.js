@@ -246,7 +246,7 @@
   UI.overviewHtml = function () {
     const G = UI.G, st = G.stats || {}, y = PN.ym(G), H = PN.helpers(G);
     let s = '<h2>' + esc(G.sc.name) + ' · ' + G.y + '</h2><p class="era">' + esc(UI.era()) + '</p>';
-    s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (G.code === 'PL' && y >= 2005 ? row('Cena uprawnień CO₂', PN.money(PN.curve(G.sc.co2, y)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
+    s += '<div class="kvs">' + row('Szczyt zapotrzebowania', PN.mw(st.peak || 0)) + row('Moc zainstalowana', PN.mw(st.capTot || 0)) + row('Energia dostarczona', PN.mwh(st.servedE || 0) + '/mies.') + row('Straty w sieci', PN.pct((st.lossE || 0) / Math.max(1, st.servedE || 1), 1)) + row('Taryfa', PN.price(PN.curve(G.sc.price, y))) + (PN.co2Price(G) > 0 ? row(G.code === 'PL' ? 'Cena uprawnień CO₂ (EU ETS)' : 'Cena CO₂ (programy stanowe)', PN.money(PN.co2Price(G)) + '/t') : '') + row('Udział OZE (12 mies.)', PN.pct(H.resShare(), 0)) + '</div>';
     const adv = UI.advice();
     if (adv.length) s += '<h3>Doradca</h3><ul class="advice">' + adv.map((a) => '<li' + (a.p >= 8 ? ' class="hot"' : '') + '>' + (a.id ? '<a href="#" data-goto="' + a.id + '">' + esc(a.t) + '</a>' : esc(a.t)) + '</li>').join('') + '</ul>';
     s += '<h3>Doba w tym miesiącu</h3><canvas class="chart" data-chart="day" width="560" height="250"></canvas>';
@@ -321,7 +321,7 @@
   };
   UI.finHtml = function () {
     const G = UI.G, st = G.stats || {}, F = st.F || {};
-    let s = '<h2>Finanse</h2><div class="kvs">' + row('Gotówka', PN.money(G.money)) + row('Dług', PN.money(G.debt)) + row('Limit kredytu', PN.money(PN.creditLimit(G))) + row('Oprocentowanie', PN.pct(PN.loanRate(G), 1)) + row('Wartość majątku', PN.money(PN.assetValue(G))) + '</div>';
+    let s = '<h2>Finanse</h2><div class="kvs">' + row('Gotówka', PN.money(G.money)) + row('Dług', PN.money(G.debt)) + row('Limit kredytu', PN.money(PN.creditLimit(G))) + row('Oprocentowanie', PN.pct(PN.loanRate(G), 1) + (PN.esgPremium(G) > 0.0005 ? ' (w tym ESG ' + PN.pct(PN.esgPremium(G), 1) + ')' : '')) + row('Wartość majątku', PN.money(PN.assetValue(G))) + '</div>';
     const cl = PN.creditLimit(G), step = Math.max(G.sc.money, cl * 0.1);
     s += '<div class="row">' + btn('loan', 'Weź kredyt', step, cl - G.debt < 1) + btn('repay', 'Spłać', Math.min(G.debt, step), G.debt <= 0 || G.money <= 0) + '</div>';
     s += '<h3>Ostatni miesiąc</h3><div class="kvs">';
@@ -614,6 +614,8 @@
       case 'prosumer': return 'Prosumenci: +' + PN.mw(e.mwPerYear) + ' fotowoltaiki na dachach rocznie';
       case 'territory': return 'Zmiana granic: nowe ziemie w Twoim zasięgu';
       case 'ipp': return e.scope === 'small' ? 'Mali niezależni wytwórcy zgłaszają projekty' : 'Prywatni inwestorzy zgłaszają własne elektrownie';
+      case 'carbon': return (e.price >= 0 ? 'Cena CO₂ +' : 'Cena CO₂ ') + PN.money(e.price) + '/t przez ' + PN.months(e.months || 120);
+      case 'esg': return e.premium > 0 ? 'Banki: kredyt droższy o do ' + PN.nf(e.premium * 100, 1) + ' pp – im więcej paliw kopalnych, tym drożej' : 'Banki przestają doliczać ryzyko klimatyczne do kredytów';
       default: return '';
     }
   };
