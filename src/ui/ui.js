@@ -479,6 +479,7 @@
       const kindName = { datacenter: 'Centrum danych', industry: 'Zakład przemysłowy', tram: 'Trakcja tramwajowa', rail: 'Trakcja kolejowa', military: 'Obiekt strategiczny', mine: 'Kopalnia' }[o.kind] || 'Odbiorca';
       s += '<h2>' + esc(o.name) + '</h2><p class="era">' + kindName + '</p><div class="kvs">' + row('Moc zamówiona', PN.mw(PN.loadMW(G, o))) + row('Zasilono', o.demE > 0 ? PN.pct(o.servedE / o.demE, 1) : '–', o.demE > 0 && o.servedE < o.demE * 0.95 ? 'neg' : '') + row('Dopłata do taryfy', PN.pct(o.premium || 0)) + '</div>';
       if (!o.links.length) s += '<p class="hint">Odbiorca nie jest podłączony: zbuduj do niego linię.</p>';
+      s += UI.flowList(o.srcTop, 'Skąd płynie prąd', 'Udział w energii zużytej w tym miesiącu. Na mapie żółta poświata pokazuje drogę prądu.');
       if (o.note) s += '<p class="note">' + esc(o.note) + '</p>';
       if (o.contract) s += '<p class="note">Umowa wymaga zasilania 24/7. Za niedostarczoną energię płacisz karę.</p>';
       else s += '<p class="note">Odbiorca kupi prąd, jeśli go doprowadzisz – bez kar za braki.</p>';
