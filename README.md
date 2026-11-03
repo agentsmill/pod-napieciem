@@ -1,5 +1,7 @@
 # Pod Napięciem
 
+**Zagraj w przeglądarce: https://agentsmill.github.io/pod-napieciem/**
+
 Ekonomiczna gra o budowie i utrzymaniu sieci elektroenergetycznej, z widokiem mapy z góry i grafiką rysowaną ołówkiem. Dwie kampanie: **Polska 1888–2050** i **USA 1882–2050**. Technologie, ceny, popyt i wydarzenia idą za prawdziwą historią, a po 2026 r. za ogłoszonymi planami (atom, morski wiatr, centra danych AI, fuzja).
 
 ## Uruchomienie
