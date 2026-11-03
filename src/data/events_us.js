@@ -591,7 +591,8 @@ window.PN_EVENTS_US = [
       { type: "unlock", tech: "biomass" },
       { type: "subsidy", target: "wind", costMult: 0.75, months: 96 },
       { type: "subsidy", target: "solar", costMult: 0.8, months: 96 },
-      { type: "fuel", fuel: "gas", mult: 1.3, months: 102 }
+      { type: "fuel", fuel: "gas", mult: 1.3, months: 102 },
+      { type: "ipp", scope: "small" }
     ],
     sources: [
       "https://webarchive.library.unt.edu/eot2008/20081009071108/http://edocket.access.gpo.gov/2003/03-21401.htm",
@@ -701,7 +702,7 @@ window.PN_EVENTS_US = [
     text: "24 kwietnia 1996 r. Federalna Komisja Regulacji Energetyki wydała Order 888, nakazujący zakładom energetycznym otwarty i niedyskryminacyjny dostęp do sieci przesyłowych. Znika największa bariera dla konkurencyjnego hurtowego rynku energii.",
     hint: "Era rynku: Twoje elektrownie konkurują o odbiorców, a sieć musi przyjąć cudzą energię.",
     icon: "law",
-    effects: [{ type: "regime", regime: "market" }],
+    effects: [{ type: "regime", regime: "market" }, { type: "ipp", scope: "all" }],
     sources: ["https://www.ferc.gov/sites/default/files/2020-05/rm95-8p1-000.txt"],
     certainty: "high",
     speculative: false

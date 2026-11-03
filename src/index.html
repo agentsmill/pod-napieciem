@@ -8,7 +8,7 @@
 /* Layout: full-bleed sketch-map canvas; hand-drawn paper panels pinned to the edges like notes on a drawing board. */
 :root {
   --paper: #eeece5; --paper-2: #e3e0d6; --news: #f3efe2; --ink: #2a2c30; --ink-2: #5a5d63; --rule: rgba(42,44,48,.42);
-  --volt: #e2ae16; --water: #3f7cb4; --red: #c23b2b; --green: #3f8f5a; --orange: #d27a22;
+  --volt: #e2ae16; --water: #3f7cb4; --red: #c23b2b; --green: #3f8f5a; --orange: #d27a22; --violet: #7a4fb0;
   --shadow: rgba(42,44,48,.20); --veil: rgba(28,30,34,.38); --hatch: rgba(226,174,22,.5);
   --f-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
   --f-ui: 'Kalam', 'Segoe Print', 'Trebuchet MS', sans-serif;
@@ -22,13 +22,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #23262c; --paper-2: #1b1d22; --news: #2b2b28; --ink: #dcd8cf; --ink-2: #a9a59c; --rule: rgba(220,216,207,.32);
-    --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457;
+    --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457; --violet: #c3a2ee;
     --shadow: rgba(0,0,0,.45); --veil: rgba(0,0,0,.55); --hatch: rgba(255,210,77,.35); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #23262c; --paper-2: #1b1d22; --news: #2b2b28; --ink: #dcd8cf; --ink-2: #a9a59c; --rule: rgba(220,216,207,.32);
-  --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457;
+  --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457; --violet: #c3a2ee;
   --shadow: rgba(0,0,0,.45); --veil: rgba(0,0,0,.55); --hatch: rgba(255,210,77,.35); color-scheme: dark;
 }
 html, body { height: 100%; }
@@ -82,6 +82,11 @@ button { font: inherit; color: inherit; }
 .item .tx { display: flex; flex-direction: column; min-width: 0; }
 .item b { font-weight: 700; font-size: 14px; line-height: 1.2; }
 .item small { font-family: var(--f-data); font-size: 11.5px; color: var(--ink-2); }
+.item.new { border-color: var(--water); }
+.item.mark { border-color: var(--ink); border-style: solid; background-image: repeating-linear-gradient(-38deg, var(--hatch) 0 2px, transparent 2px 6px); }
+.badge { display: inline-block; font-style: normal; font-weight: 400; font-size: 10.5px; letter-spacing: .8px; text-transform: uppercase; border: 1.2px solid var(--water); color: var(--water); border-radius: 6px; padding: 0 4px; margin-left: 6px; vertical-align: 1px; }
+.fly-empty { margin: 4px 6px 6px; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+.fly-tip { margin: 6px 6px 2px; font-size: 12.5px; line-height: 1.4; color: var(--ink-2); border-top: 1px dashed var(--rule); padding-top: 5px; }
 #toolhint { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: min(640px, calc(100% - 520px)); padding: 6px 14px; font-size: 14px; z-index: 6; background: var(--paper) var(--paper-tex); border: 2px solid var(--ink); border-radius: var(--r1); box-shadow: 3px 4px 0 var(--shadow); }
 kbd { font-family: var(--f-data); font-size: 12px; border: 1px solid var(--ink); border-radius: 4px; padding: 0 4px; }
 
@@ -136,6 +141,13 @@ kbd { font-family: var(--f-data); font-size: 12px; border: 1px solid var(--ink);
 .chron li.event a { color: inherit; text-decoration-style: dotted; }
 .chron li.done { color: var(--green); } .chron li.warn { color: var(--red); }
 #panelToggle { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 112px; z-index: 4; display: none; }
+.srcs { list-style: none; margin: 4px 0; padding: 0; }
+.srcs li { display: grid; grid-template-columns: 1fr auto; gap: 1px 8px; padding: 3px 0; border-bottom: 1px dashed var(--rule); font-size: 13.5px; align-items: baseline; }
+.srcs li a { color: inherit; text-decoration: underline dotted; }
+.srcs li b { font-family: var(--f-data); font-size: 12.5px; }
+.srcs li i { grid-column: 1 / -1; display: block; height: 5px; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.srcs li i em { display: block; height: 100%; background-image: repeating-linear-gradient(-38deg, var(--volt) 0 2px, transparent 2px 5px); }
+.ownr { color: var(--violet); }
 
 /* ---------- bottom bar ---------- */
 #ticker { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(540px, calc(100% - 520px)); min-width: 280px; padding: 6px 12px; font-size: 13.5px; line-height: 1.35; cursor: pointer; z-index: 4; }
@@ -146,6 +158,34 @@ body.tooling #ticker { visibility: hidden; }
 #layers button { border: 1.5px solid var(--ink); border-radius: var(--r2); background: transparent; cursor: pointer; padding: 3px 10px; font-size: 14px; }
 #layers button.on, #layers button:hover { background-image: repeating-linear-gradient(-38deg, var(--hatch) 0 2px, transparent 2px 6px); }
 #layers .sep { width: 1.5px; background: var(--rule); margin: 2px 2px; }
+
+/* ---------- cards: news that does not stop the clock ---------- */
+#cards { position: absolute; left: calc(max(16px, env(safe-area-inset-left, 0px)) + 86px); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); width: min(340px, calc(100% - 520px)); min-width: 270px; max-height: calc(100% - 210px); overflow: hidden; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 6; pointer-events: none; padding: 0 6px 6px 0; }
+.gcard { pointer-events: auto; position: relative; flex: 0 0 auto; padding: 8px 12px 9px; background: var(--paper) var(--paper-tex); border: 1.8px solid var(--ink); border-radius: var(--r3); box-shadow: 3px 4px 0 var(--shadow); font-size: 13.5px; line-height: 1.4; animation: tin .35s ease-out; }
+.gcard.out { opacity: 0; transform: translateX(-14px); transition: opacity .4s, transform .4s; }
+.gcard .k { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-2); padding-right: 18px; }
+.gcard h4 { margin: 1px 0 3px; font-size: 17px; line-height: 1.15; text-wrap: balance; }
+.gcard p { margin: 0 0 4px; }
+.gcard .x, #legend .x { position: absolute; right: 6px; top: 2px; border: 0; background: none; font-size: 20px; cursor: pointer; line-height: 1; color: var(--ink-2); }
+.gcard .row { margin-top: 4px; }
+.gcard .act { padding: 3px 10px; font-size: 13.5px; }
+.gcard .kv { font-size: 12.5px; padding: 1px 0; }
+.gcard .kv b { font-size: 12px; }
+.gcard .fxs { font-family: var(--f-ui); font-size: 12.5px; color: var(--ink-2); }
+.gcard canvas, .gcard .pic { float: right; width: 52px; height: 52px; margin: 0 0 2px 8px; }
+.gcard .pic canvas { float: none; margin: 0; width: 52px !important; height: 52px !important; }
+.gcard.clipc { background: var(--news) var(--paper-tex); font-family: var(--f-news); border-radius: 3px; transform: rotate(-.4deg); }
+.gcard.clipc h4 { font-family: var(--f-news); font-weight: 700; }
+.gcard.clipc .act { font-family: var(--f-ui); }
+.gcard.techc { border-color: var(--water); }
+.gcard.ippc { border: 2px dashed var(--violet); }
+body.tut-on #cards { display: none; }
+#legend { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(66px + env(safe-area-inset-bottom, 0px)); width: 320px; max-height: calc(100% - 220px); overflow: auto; padding: 8px 12px 10px; z-index: 6; font-size: 13px; background: var(--paper) var(--paper-tex); border: 2px solid var(--ink); border-radius: var(--r2); box-shadow: 3px 4px 0 var(--shadow); }
+#legend h4 { margin: 0 0 4px; font-family: var(--f-hand); font-size: 22px; }
+#legend .lg { display: flex; gap: 8px; align-items: center; padding: 2px 0; border-bottom: 1px dashed var(--rule); }
+#legend .lg:last-child { border-bottom: 0; }
+#legend .sw { flex: 0 0 56px; height: 22px; }
+#legend .lg span:last-child { line-height: 1.3; }
 
 /* ---------- tooltip, toasts ---------- */
 #tip { position: fixed; z-index: 20; max-width: 320px; padding: 6px 10px; font-size: 13.5px; line-height: 1.35; pointer-events: none; border-width: 1.6px; }
@@ -245,8 +285,10 @@ body.tooling #ticker { visibility: hidden; }
   #layers .sep { display: none; }
   #toolhint { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); max-width: none; font-size: 13px; }
   #toasts { top: 120px; }
+  #cards { left: max(16px, env(safe-area-inset-left, 0px)); right: calc(max(16px, env(safe-area-inset-right, 0px)) + 82px); width: auto; min-width: 0; top: 116px; bottom: auto; max-height: calc(100% - 330px); flex-direction: column; padding: 0; }
+  #legend { left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: auto; bottom: auto; top: 116px; max-height: calc(100% - 300px); }
 }
-@media (prefers-reduced-motion: reduce) { .toast, #speed button.nudge, .tut-ring { animation: none; } #panel, .tut-card { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .toast, .gcard, #speed button.nudge, .tut-ring { animation: none; } #panel, .tut-card, .gcard.out { transition: none; } }
 </style>
 <!--PART:BODY-->
 <div id="app">
@@ -268,9 +310,11 @@ body.tooling #ticker { visibility: hidden; }
   <aside id="panel"><div id="tabs" role="tablist"><button data-tab="overview" class="on">Przegląd</button><button data-tab="fin">Finanse</button><button data-tab="goals">Zadania</button><button data-tab="chron">Kronika</button><button class="tabclose" data-close="1" aria-label="Zwiń panel">▾</button></div><div id="info"></div></aside>
   <button id="panelToggle" class="act">Panel</button>
   <div id="ticker" role="status" aria-live="polite"></div>
-  <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
+  <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><button data-legend="1" title="Co oznaczają linie i znaczki">Legenda</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
   <div id="tip" hidden></div>
   <div id="toasts"></div>
+  <div id="cards" aria-live="polite"></div>
+  <div id="legend" hidden></div>
   <div id="modal" hidden></div>
   <div id="start" hidden></div>
 </div>

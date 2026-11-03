@@ -659,9 +659,9 @@ window.PN_EVENTS_PL = [
     title: "Sejm uchwala Prawo energetyczne",
     paper: "Rzeczpospolita",
     text: "10 kwietnia 1997 r. Sejm przyjął ustawę Prawo energetyczne. Powołuje ona niezależnego regulatora – Urząd Regulacji Energetyki – i otwiera drogę do konkurencji w wytwarzaniu i obrocie energią.",
-    hint: "Koniec gospodarki nakazowej: od teraz liczą się ceny, taryfy i regulator.",
+    hint: "Koniec gospodarki nakazowej: od teraz liczą się ceny, taryfy i regulator, a prywatni inwestorzy zgłaszają własne elektrownie.",
     icon: "law",
-    effects: [{ type: "regime", regime: "market" }],
+    effects: [{ type: "regime", regime: "market" }, { type: "ipp", scope: "all" }],
     sources: [
       "https://eli.gov.pl/eli/DU/1997/348/ogl/pol/pdf",
       "https://en.wikipedia.org/wiki/Polskie_Sieci_Elektroenergetyczne"

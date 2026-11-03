@@ -22,7 +22,7 @@
       y: sc.start.year, m: sc.start.month - 1, months: 0,
       money: sc.money, debt: 0, rep: 60,
       nodes: [], lines: [], byId: {}, nextId: 1,
-      cities: [], borders: [], offers: [],
+      cities: [], borders: [], offers: [], ippOffers: [], ippScope: null, ippStats: { offered: 0, accepted: 0, declined: 0 },
       unlocked: {}, rules: {}, terr: {}, regime: code === 'PL' ? 'concession' : 'private',
       fx: { fuel: {}, derate: {}, subsidy: {}, demand: [], freezeUntil: 0, hydro: null, windLull: null },
       lambda: 0.03, prosumerMW: 0, prosumer: null,
@@ -105,6 +105,41 @@
     return false;
   };
   PN.techSoon = function (G, id) { const t = PN.TECH[id]; const w = PN.techWindows(t, G.code); const y = ym(G); for (const [a] of w) if (a > y) return a; return null; };
+  /* technologies arrive with history: the player sees them only once they exist */
+  PN.TECH_ALL = () => PN.GEN_ORDER.concat(PN.STORE_ORDER, PN.LINE_ORDER, ['substation'], PN.RES_ORDER);
+  function discoverTech(G) {
+    const first = !G.techSeen; if (first) { G.techSeen = {}; G.techGone = {}; }
+    const fresh = [], y = ym(G);
+    for (const id of PN.TECH_ALL()) {
+      if (!PN.TECH[id]) continue;
+      const av = PN.techAvail(G, id), seen = G.techSeen[id] != null;
+      if (av && (!seen || G.techGone[id])) { G.techSeen[id] = first ? 0 : y; delete G.techGone[id]; if (!first) fresh.push(id); }
+      else if (!av && seen) G.techGone[id] = true;
+    }
+    if (fresh.length) { for (const id of fresh) PN.news(G, 'Nowa technologia: ' + PN.TECH[id].name + '.', 'tech', { tech: id }); PN.bus.emit('tech', fresh); }
+    return fresh;
+  }
+  PN.discoverTech = discoverTech;
+  PN.techIsNew = (G, id) => !!(G.techSeen && G.techSeen[id] > 0 && ym(G) - G.techSeen[id] < 3);
+  /* only events that change the rules of the game stop the clock; the rest arrive as clippings */
+  PN.eventImportant = (ev) => ev.major === true || (ev.effects || []).some((e) => ['damage', 'territory', 'regime', 'freeze', 'outage', 'ipp'].indexOf(e.type) >= 0) || ['war', 'crisis', 'blackout'].indexOf(ev.icon) >= 0;
+  /* can a mine be sunk on this deposit today? */
+  const DEP_TECH = { coal: 'coal_mine', lignite: 'lignite_mine', gas: 'gas_well' };
+  PN.depositState = function (G, d) {
+    const tech = DEP_TECH[d.kind];
+    if (!tech) return { ok: false, info: true };
+    if (!PN.techAvail(G, tech)) return { ok: false, why: 'tech' };
+    if (d.from && ym(G) < d.from - 15) return { ok: false, why: 'unknown', year: d.from };
+    return { ok: true, tech };
+  };
+  /* map layers show up together with the technology that needs them */
+  PN.layerAvail = function (G, kind) {
+    const seen = (id) => PN.techAvail(G, id) || !!(G.techSeen && G.techSeen[id] != null);
+    if (kind === 'wind') return seen('wind') || seen('wind_offshore');
+    if (kind === 'solar') return seen('solar') || seen('csp');
+    if (kind === 'res') return PN.RES_ORDER.some(seen) || seen('hydro_dam');
+    return true;
+  };
 
   function subsidy(G, target) { const s = G.fx.subsidy[target]; return s && s.until > ym(G) ? s.mult : 1; }
   function catOf(id) {
@@ -173,7 +208,7 @@
   }
 
   /* ------------------------------------------------------------- placement */
-  PN.canPlace = function (G, id, tx, ty) {
+  PN.canPlace = function (G, id, tx, ty, opts) {
     const M = G.map, t = PN.TECH[id], y = ym(G);
     const r = { ok: false, why: '', info: [], id };
     const i = M.idx(tx, ty);
@@ -299,7 +334,7 @@
       r.cost = PN.tv(t.cost, y) * subsidy(G, 'grid'); r.buildM = 0;
     }
     if (inCity && t.cat !== 'node') r.info.push('Podłączenie do sieci miejskiej (' + PN.cityName(city, y) + ') bez budowy linii');
-    if (G.money < r.cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(r.cost) + '.'; r.ok = false; r.poor = true; return r; }
+    if (!(opts && opts.free) && G.money < r.cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(r.cost) + '.'; r.ok = false; r.poor = true; return r; }
     r.ok = true; return r;
   };
 
@@ -334,7 +369,7 @@
     const c = cityAtTile(G, x, y);
     const pre = { steam_dc: 'Elektrownia miejska', coal: 'Elektrownia', lignite: 'Elektrownia', oil: 'Elektrownia olejowa', gas_ocgt: 'Turbiny gazowe', gas_ccgt: 'Elektrociepłownia gazowa', nuclear: 'Elektrownia jądrowa', smr: 'SMR', wind: 'Farma wiatrowa', wind_offshore: 'Morska farma', solar: 'Farma PV', csp: 'Elektrownia słoneczna', geothermal: 'Geotermia', biomass: 'Elektrownia na biomasę', battery: 'Magazyn energii', fusion: 'Elektrownia termojądrowa', hydro_small: 'MEW', substation: 'Stacja', coal_mine: 'Kopalnia', lignite_mine: 'Odkrywka', gas_well: 'Odwierty' }[id] || t.short;
     const base = pre + ' ' + (c ? PN.cityName(c, G.y) : '');
-    let n = base, k = 2; const roman = ['', '', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+    let n = base, k = 2; const roman = ['', '', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
     while (G.nodes.some((q) => q.name === n)) { n = base + ' ' + (roman[k] || k); k++; }
     return n;
   }
@@ -373,6 +408,7 @@
     return PN.tv(t.capex, y, G.code) * subsidy(G, catOf(n.tech) || '') * n.unitMW * 1000 * 1.05;
   };
   PN.addUnit = function (G, n) {
+    if (n.owner === 'ipp') return false;
     if (!n.built || n.pending || n.units >= n.maxUnits) return false;
     const c = PN.unitCost(G, n); if (G.money < c) return false;
     if (G.fx.freezeUntil > ym(G)) return false;
@@ -381,9 +417,9 @@
     return true;
   };
   PN.retrofitCost = (G, n) => n.cap * 1000 * (n.tech === 'lignite' ? 170 : 150);
-  PN.retrofit = function (G, n) { const c = PN.retrofitCost(G, n); if (n.fgd || G.money < c) return false; G.money -= c; G.capexYear += c; n.fgd = true; return true; };
+  PN.retrofit = function (G, n) { const c = PN.retrofitCost(G, n); if (n.owner === 'ipp' || n.fgd || G.money < c) return false; G.money -= c; G.capexYear += c; n.fgd = true; return true; };
   PN.lifeExtCost = (G, n) => n.cost * 0.3;
-  PN.extendLife = function (G, n) { const c = PN.lifeExtCost(G, n); if (G.money < c) return false; G.money -= c; G.capexYear += c; n.age = Math.max(0, n.age - 20); n.eff = Math.max(n.eff, (PN.TECH[n.tech].eff ? PN.tv(PN.TECH[n.tech].eff, ym(G) - 10, G.code) : 1)); return true; };
+  PN.extendLife = function (G, n) { const c = PN.lifeExtCost(G, n); if (n.owner === 'ipp' || G.money < c) return false; G.money -= c; G.capexYear += c; n.age = Math.max(0, n.age - 20); n.eff = Math.max(n.eff, (PN.TECH[n.tech].eff ? PN.tv(PN.TECH[n.tech].eff, ym(G) - 10, G.code) : 1)); return true; };
   PN.repairCost = (G, o) => (o.cost || 0) * (o.a ? 0.25 : 0.3);
   PN.repair = function (G, o) { const c = PN.repairCost(G, o); if (!o.dmg || G.money < c) return false; G.money -= c; o.dmg = false; return true; };
 
@@ -426,7 +462,7 @@
     const cost = (km * PN.tv(t.cost, y) * mult + (t.fixed ? PN.tv(t.fixed, y) : 0)) * subsidy(G, 'grid');
     const buildM = Math.round(PN.clamp(3 + (km / 30) * (1 + (cap > 500 ? 1 : 0)), 3, 54) * (G.rep < 30 ? 1.3 : 1));
     Object.assign(r, { km, cap, lossK, cost, buildM, seaFrac, protN, fullLoss: lossK * km + (t.convLoss || 0) });
-    if (km > t.maxKm * 1.6) { r.why = 'Za długa dla tego napięcia (maks. ok. ' + t.maxKm + ' km). Wybierz wyższe napięcie.'; return r; }
+    if (km > t.maxKm * 1.6) { r.why = 'Za długa dla tego napięcia (maks. ok. ' + Math.round(t.maxKm * 1.6) + ' km, rozsądnie do ' + t.maxKm + ' km). Wybierz wyższe napięcie.'; return r; }
     if (G.money < cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(cost) + '.'; r.poor = true; return r; }
     r.ok = true; return r;
   };
@@ -667,13 +703,67 @@
     return { mineCost, mineRev };
   }
 
+  /* ---------------------------------------------- where does the power go? */
+  /* Proportional sharing (Bialek): power arriving at a node is a mix of everything that flowed in,
+     and leaves (to consumers and onward lines) in the same proportions. The optimal flow has no
+     cycles because every line has a positive cost, so a topological pass is enough. */
+  function traceSample(G, act, idx, lines, lf, inj, outW, w) {
+    const N = act.length, P = new Float64Array(N), deg = new Int32Array(N), inE = new Array(N), outE = new Array(N), edges = [];
+    for (let k = 0; k < N; k++) P[k] = inj[k];
+    for (let q = 0; q < lines.length; q++) {
+      const f = lf[q]; if (!(Math.abs(f) > 1e-6)) continue;
+      const a = idx.get(lines[q].a), b = idx.get(lines[q].b), from = f > 0 ? a : b, to = f > 0 ? b : a;
+      edges.push([from, to, Math.abs(f)]); P[to] += Math.abs(f); deg[to]++;
+      (inE[to] || (inE[to] = [])).push(edges.length - 1); (outE[from] || (outE[from] = [])).push(edges.length - 1);
+    }
+    const order = [], stack = []; for (let k = 0; k < N; k++) if (!deg[k]) stack.push(k);
+    while (stack.length) { const k = stack.pop(); order.push(k); for (const ei of outE[k] || []) { const t = edges[ei][1]; if (--deg[t] === 0) stack.push(t); } }
+    if (order.length < N) return;
+    const comp = new Array(N);
+    for (const k of order) {
+      const c = new Map(), n = act[k];
+      if (inj[k] > 1e-6) c.set(n.id, inj[k]);
+      for (const ei of inE[k] || []) {
+        const [from, , fw] = edges[ei], cf = comp[from]; if (!cf || !(P[from] > 0)) continue;
+        const sh = fw / P[from]; for (const [src, mw] of cf) { const v = mw * sh; if (v > 1e-5) c.set(src, (c.get(src) || 0) + v); }
+      }
+      comp[k] = c;
+      if (outW[k] > 1e-6 && P[k] > 0) {
+        const sh = Math.min(1, outW[k] / P[k]); n._src = n._src || {};
+        for (const [src, mw] of c) {
+          const e = mw * sh * w; if (e <= 0) continue;
+          n._src[src] = (n._src[src] || 0) + e;
+          const sn = G.byId[src]; if (sn) { sn._dst = sn._dst || {}; sn._dst[n.id] = (sn._dst[n.id] || 0) + e; }
+        }
+      }
+    }
+  }
+  function finishTrace(G) {
+    const top = (o) => { if (!o) return null; const a = Object.keys(o).map((k) => [+k, o[k]]).filter((x) => x[1] > 0).sort((p, q) => q[1] - p[1]); const tot = a.reduce((s, x) => s + x[1], 0); return tot > 0 ? { tot, list: a.slice(0, 8) } : null; };
+    for (const n of G.nodes) { n.srcTop = top(n._src); n.dstTop = top(n._dst); n._src = null; n._dst = null; }
+  }
+  /* lines that carry power towards (up) or away from (down) a node in the peak hour */
+  PN.traceLines = function (G, node, dir) {
+    const res = new Set(), seen = new Set([node.id]), q = [node.id];
+    while (q.length) {
+      const id = q.shift(), n = G.byId[id]; if (!n || !n.links) continue;
+      for (const lid of n.links) {
+        const l = G.byId[lid]; if (!l || !l.built || !(Math.abs(l.flow) > 1e-4)) continue;
+        const into = (l.b === id && l.flow > 0) || (l.a === id && l.flow < 0);
+        if ((dir === 'up') !== into) continue;
+        res.add(l.id); const other = l.a === id ? l.b : l.a; if (!seen.has(other)) { seen.add(other); q.push(other); }
+      }
+    }
+    return res;
+  };
+
   /* ------------------------------------------------------------- dispatch */
   const mcf = new PN.MCF();
   function dispatch(G) {
     const y = ym(G), sc = G.sc, M = G.map, days = PN.DAYS[G.m], W8 = 3 * days;
     const co2p = PN.curve(sc.co2, y), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
     const prof = profile(G);
-    for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; }
+    for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; n._src = null; n._dst = null; }
     const act = G.nodes.filter((n) => n.built && !n.dmg && (n.type !== 'city' || PN.cityOwned(G, n)) && n.on !== false);
     const idx = new Map(); act.forEach((n, k) => idx.set(n.id, k));
     const N = act.length, S = N, T = N + 1;
@@ -704,6 +794,7 @@
           n.mc = (n.fuelPrice * 3.6) / n.eff + PN.tv(t.vom, y) + (co2p * f.co2 * 3.6) / n.eff;
         } else if (t.dispatch === 'nuclear') n.mc = PN.curve(sc.fuel[t.fuel === 'fusion' ? 'fusion' : 'uranium'], y) + PN.tv(t.vom, y);
         else n.mc = 0.5 + (PN.tv(t.vom, y) || 0);
+        if (n.owner === 'ipp' && (t.dispatch === 'thermal' || t.dispatch === 'nuclear')) n.mc = n.ppa;
         for (let s = 0; s < 8; s++) {
           if (t.dispatch === 'wind') {
             const loc = 1 + 0.35 * (PN.vnoise(n.x / 12 + wx.seed, n.y / 12, 5) - 0.5);
@@ -786,15 +877,16 @@
         }
       }
       mcf.solve(S, T, K);
+      const inj = new Float64Array(N), outW = new Float64Array(N), lf = new Float64Array(lines.length);
       // read results
       for (const [k, e, , kind] of ge) {
-        const f = mcf.flow(e); const n = act[k];
+        const f = mcf.flow(e); const n = act[k]; inj[k] += f;
         if (kind === 'imp') { n.imp = (n.imp || 0) + f * W8; impE += f * W8; impCost += f * W8 * (np * 1.08); continue; }
         n.gen += f * W8; n.peakGen = Math.max(n.peakGen, f); n.genS = n.genS || []; n.genS[s] = f;
         if (PN.TECH[n.tech].dispatch === 'storage') { n.soc = Math.max(0, n.soc - f * 3); n.dis += f * W8; }
       }
       for (const [k, e, kind] of de) {
-        const f = mcf.flow(e); const n = act[k];
+        const f = mcf.flow(e); const n = act[k]; outW[k] += f;
         if (kind === 'chg') { n.soc += f * 3 * (PN.TECH[n.tech].rte || 0.85); n.chg += f * W8; chgE += f * W8; continue; }
         if (kind === 'exp') { n.exp = (n.exp || 0) + f * W8; expE += f * W8; expRev += f * W8 * np * 0.92; continue; }
         const served = f / (1 + lam);
@@ -802,11 +894,12 @@
         if (s === pkS) n.servedPk = served;
       }
       for (let q = 0; q < lines.length; q++) {
-        const l = lines[q]; const f = mcf.flow(le[q][0]) - mcf.flow(le[q][1]);
+        const l = lines[q]; const f = mcf.flow(le[q][0]) - mcf.flow(le[q][1]); lf[q] = f;
         const af = Math.abs(f); if (af > l.fMax) l.fMax = af; l.fSum += af;
         if (s === pkS) l.fPk = f;
         if (!l.local) { const loss = (l.lossK * l.km * af * af) / l.cap + (PN.TECH[l.type].convLoss || 0) * af; l.lossE += loss * W8; lossE += loss * W8; }
       }
+      if (PN.traceOn !== false) traceSample(G, act, idx, lines, lf, inj, outW, W8);
       // genS for plants not dispatched in this sample
       for (const n of act) if (n.type === 'plant') { n.genS = n.genS || []; if (n.genS[s] == null) n.genS[s] = 0; }
       // demand accounting
@@ -815,6 +908,7 @@
       G._sampleGen = G._sampleGen || [];
     }
     for (const n of act) if (n.genS) { for (let s = 0; s < 8; s++) if (n.genS[s] == null) n.genS[s] = 0; }
+    finishTrace(G);
     unservedE = Math.max(0, demandE - servedE);
     for (const n of act) if (n.type === 'mine') n.powered = n.demE > 0 ? n.servedE / n.demE : 0;
     for (const l of lines) { l.load = l.fMax / l.cap; l.avg = l.fSum / 8; l.flow = l.fPk; }
@@ -842,12 +936,14 @@
     const y = ym(G);
     if (G.m === 0) yearly(G);
     fireEvents(G);
+    discoverTech(G);
     randomEvents(G);
     syncBorders(G);
     syncIndustry(G);
     G.wx = weather(G);
     construction(G);
     energize(G);
+    ippMonthly(G);
     updateCities(G);
     G.urbanPop = G.cities.reduce((s, c) => s + (PN.cityOwned(G, c) ? c.pop : 0), 0);
     if (G.prosumer && G.prosumer.until > y) G.prosumerMW += G.prosumer.mwPerYear / 12;
@@ -859,6 +955,7 @@
     reputation(G, D);
     checkMissions(G);
     offers(G);
+    ippOffers(G);
     record(G, D, F);
     bankruptcy(G);
     PN.bus.emit('month', G);
@@ -942,12 +1039,19 @@
   function finance(G, D, fl) {
     const y = ym(G), sc = G.sc;
     const price = PN.curve(sc.price, y), dcost = PN.curve(sc.dcost, y), co2p = D.co2p;
-    let rev = 0, fuel = 0, co2 = 0, co2t = 0, om = 0, grid = 0, dist = 0, retail = 0, interest = 0, penalty = 0;
+    let rev = 0, fuel = 0, co2 = 0, co2t = 0, om = 0, grid = 0, dist = 0, retail = 0, interest = 0, penalty = 0, ipp = 0;
     for (const c of G.cities) if (PN.cityOwned(G, c)) { rev += c.servedE * price; retail += c.servedE * dcost; }
     for (const n of G.nodes) {
       if (n.type === 'load' && n.built) {
         rev += n.servedE * price * (1 + (n.premium || 0)) * (n.kind === 'datacenter' ? 0.75 : 0.85);
         if (n.contract && n.demE > 0 && n.servedE < n.demE * 0.9) { penalty += (n.demE - n.servedE) * price * 0.5; }
+      }
+      if (n.type === 'plant' && n.built && n.owner === 'ipp') {
+        const t = PN.TECH[n.tech];
+        ipp += (n.gen || 0) * (n.ppa || 0);
+        if (t.dispatch === 'thermal') { const t2 = ((n.gen * 3.6) / n.eff) * PN.FUELS[t.fuel].co2; co2t += t2; n.co2 = t2; }
+        n.lastCF = n.cap > 0 ? n.gen / (n.cap * 24 * PN.DAYS[G.m]) : 0;
+        continue;
       }
       if (n.type === 'plant' && n.built) {
         const t = PN.TECH[n.tech];
@@ -966,10 +1070,10 @@
     for (const c of G.cities) dist += (c.distCap * 1000 * PN.curve(sc.distCost, y) * 0.02) / 12;
     interest = (G.debt * PN.loanRate(G)) / 12;
     rev += D.expRev;
-    const cost = fuel + co2 + om + grid + dist + retail + interest + D.impCost + fl.mineCost + penalty;
+    const cost = fuel + co2 + om + grid + dist + retail + interest + D.impCost + fl.mineCost + penalty + ipp;
     const profit = rev + fl.mineRev - cost;
     G.money += profit;
-    return { rev: rev + fl.mineRev, fuel, co2, co2t, om, grid, dist, retail, interest, imp: D.impCost, mine: fl.mineCost - fl.mineRev, penalty, profit, price };
+    return { rev: rev + fl.mineRev, fuel, co2, co2t, om, grid, dist, retail, interest, imp: D.impCost, mine: fl.mineCost - fl.mineRev, penalty, ipp, profit, price };
   }
 
   function reputation(G, D) {
@@ -1073,6 +1177,7 @@
       applyEffects(G, ev);
       PN.news(G, ev.title, 'event', { ev: ev.id });
       PN.bus.emit('event', ev);
+      if (G._trans) { PN.bus.emit('transformation', G._trans); G._trans = null; } // explained right after the newspaper
     }
   }
   PN.regionToTiles = function (G, r) { const t = G.map.toTile(r.lon, r.lat); return { x: t[0], y: t[1], r: (r.radiusKm || 100) / G.map.T }; };
@@ -1097,6 +1202,7 @@
           case 'regime': G.regime = e.regime; break;
           case 'prosumer': G.prosumer = { mwPerYear: e.mwPerYear, until: y + (e.years || 5) }; break;
           case 'territory': G.terr[e.change] = true; break;
+          case 'ipp': if (G.ippScope !== 'all') { G.ippScope = e.scope || 'all'; G._trans = { scope: G.ippScope, ev: ev.id }; } break;
           default: break;
         }
       } catch (err) { console.warn('effect failed', e, err); }
@@ -1127,12 +1233,12 @@
     if (k) PN.news(G, 'Awarie sieci: ' + k + ' ' + PN.plural(k, 'linia wyłączona', 'linie wyłączone', 'linii wyłączonych') + '.', 'warn');
   }
   PN.repairAll = function (G) {
-    let c = 0; for (const o of G.nodes.concat(G.lines)) if (o.dmg) c += PN.repairCost(G, o);
+    let c = 0; for (const o of G.nodes.concat(G.lines)) if (o.dmg && o.owner !== 'ipp') c += PN.repairCost(G, o);
     if (G.money < c) return false;
-    for (const o of G.nodes.concat(G.lines)) if (o.dmg) { G.money -= PN.repairCost(G, o); o.dmg = false; }
+    for (const o of G.nodes.concat(G.lines)) if (o.dmg && o.owner !== 'ipp') { G.money -= PN.repairCost(G, o); o.dmg = false; }
     return true;
   };
-  PN.repairAllCost = (G) => G.nodes.concat(G.lines).reduce((s, o) => s + (o.dmg ? PN.repairCost(G, o) : 0), 0);
+  PN.repairAllCost = (G) => G.nodes.concat(G.lines).reduce((s, o) => s + (o.dmg && o.owner !== 'ipp' ? PN.repairCost(G, o) : 0), 0);
 
   /* random weather & incidents (on top of the historical calendar) */
   function randomEvents(G) {
@@ -1202,6 +1308,110 @@
   };
   PN.declineOffer = function (G, o) { G.offers = G.offers.filter((x) => x !== o); };
 
+  /* ------------------------------------------- independent power producers */
+  /* After the market opens (USA: PURPA 1978 for small producers, FERC Order 888 in 1996 for everyone;
+     Poland: Energy Law 1997) private investors bring their own projects. The player, as the grid
+     company, decides whether to connect them and then buys their energy at the contract price. */
+  const IPP_NAMES = {
+    PL: ['EkoMoc', 'Zielony Most Energia', 'Karpacka Moc', 'Nadwiślańska Energia', 'Bałtycki Horyzont', 'Polna Iskra', 'Jantar Power', 'Grot Energia', 'Kaszubska Energia', 'Mazowiecka Moc', 'Iskra Inwestycje', 'Warta Energia Nowa'],
+    US: ['Blue Heron Power', 'Copper Mesa Energy', 'Cascade Current', 'Lone Pine Energy', 'Red Rock Generation', 'Silver Creek Power', 'Prairie Star Energy', 'Harbor Light Power', 'Juniper Ridge Energy', 'Bluebonnet Power', 'Maple Hollow Energy', 'Sandstone Power Co.'],
+  };
+  function ippMenu(G, y) {
+    const w = {}, add = (id, v) => { if (v > 0 && PN.TECH[id] && PN.techAvail(G, id)) w[id] = (w[id] || 0) + v; };
+    if (G.ippScope === 'small') { add('gas_ccgt', 2); add('gas_ocgt', 1); add('wind', 3); add('hydro_small', 1.5); add('biomass', 1.5); add('geothermal', 1); add('solar', 0.4); add('csp', 0.4); return w; }
+    add('wind', G.rules.wind_distance_km >= 1 ? 0.3 : 3);
+    add('solar', y < 2010 ? 0.3 : y < 2018 ? 2 : 4);
+    add('gas_ccgt', y < 2015 ? 2.5 : 1);
+    add('biomass', 0.8); add('battery', y < 2020 ? 0.5 : 2.5); add('wind_offshore', 1.2);
+    add('smr', y < 2035 ? 0.4 : 1); add('geothermal', 0.6); add('hydro_small', 0.4); add('csp', 0.5);
+    return w;
+  }
+  function ippTargetMW(G, id, y, r) {
+    const k = PN.clamp((y - 1995) / 30, 0, 1.4), us = G.code === 'US' ? 1.6 : 1;
+    const mw = { wind: 20 + r() * (40 + 120 * k), wind_offshore: 400 + r() * 800, solar: 5 + r() * (20 + 200 * k), gas_ccgt: 150 + r() * 350, gas_ocgt: 40 + r() * 120,
+      battery: 20 + r() * (40 + 160 * k), smr: 300, biomass: 15 + r() * 40, geothermal: 20 + r() * 60, hydro_small: 2 + r() * 8, csp: 50 + r() * 200 }[id] || 50;
+    return mw * (id === 'smr' || id === 'wind_offshore' ? 1 : us);
+  }
+  function ippSite(G, id, r) {
+    const M = G.map, offshore = id === 'wind_offshore';
+    // investors look for the grid and for demand: anything powered, plus every big town
+    const anchors = G.nodes.filter((n) => n.built && !n.dmg && (n.type === 'city' ? PN.cityOwned(G, n) && (n.energized || n.pop > 100000) : (n.type === 'sub' || n.type === 'plant') && n.energized));
+    const pool = offshore ? anchors.filter((n) => M.distSea[M.idx(Math.floor(n.x), Math.floor(n.y))] * M.T < 60) : anchors;
+    if (!pool.length) return null;
+    let best = null, bs = -1e9;
+    for (let k = 0; k < 80; k++) {
+      const base = pool[Math.floor(r() * pool.length)];
+      const radT = (id === 'battery' ? 6 : offshore ? 40 + r() * 60 : 15 + r() * 55) / M.T, a = r() * 6.2832, d = radT * Math.sqrt(r());
+      const tx = Math.floor(base.x + Math.cos(a) * d), ty = Math.floor(base.y + Math.sin(a) * d);
+      const c = PN.canPlace(G, id, tx, ty, { free: true }); if (!c.ok) continue;
+      const km = Math.hypot(tx + 0.5 - base.x, ty + 0.5 - base.y) * M.T;
+      const sc = (c.cf || 0.3) * 4 - km / 120 + (id === 'battery' && c.city ? 1 : 0) + r() * 0.3;
+      if (sc > bs) { bs = sc; best = { tx, ty, c, km }; }
+    }
+    return best;
+  }
+  PN.ippNet = (G) => { const y = ym(G); return Math.max(1, PN.curve(G.sc.price, y) - PN.curve(G.sc.dcost, y)); };
+  function ippOffers(G) {
+    const y = ym(G), r = G.rnd;
+    G.ippOffers = (G.ippOffers || []).filter((o) => o.expires > y);
+    G.ippStats = G.ippStats || { offered: 0, accepted: 0, declined: 0 };
+    if (!G.ippScope || G.fx.freezeUntil > y) return;
+    const p = G.ippScope === 'small' ? 0.035 : y < 2010 ? 0.05 : y < 2020 ? 0.08 : 0.1;
+    if (G.ippOffers.length >= 2 || r() > p) return;
+    const menu = ippMenu(G, y), ids = Object.keys(menu); if (!ids.length) return;
+    let q = r() * ids.reduce((s, k) => s + menu[k], 0), id = ids[0];
+    for (const k of ids) { q -= menu[k]; if (q <= 0) { id = k; break; } }
+    const site = ippSite(G, id, r); if (!site) return;
+    const c = site.c, units = PN.clamp(Math.round(ippTargetMW(G, id, y, r) / Math.max(0.1, c.unitMW)), 1, Math.max(1, c.maxUnits || 4));
+    const kp = { wind: PN.curve([[1981, 1.05], [2005, 0.85], [2015, 0.7], [2025, 0.55], [2040, 0.45]], y), wind_offshore: PN.curve([[2016, 1.0], [2025, 0.8], [2040, 0.6]], y),
+      solar: PN.curve([[1982, 1.6], [2010, 1.1], [2018, 0.7], [2025, 0.5], [2040, 0.38]], y), csp: 1.1, gas_ccgt: 0.85, gas_ocgt: 1.05, battery: 0.9, smr: 0.95, biomass: 0.95, geothermal: 0.8, hydro_small: 0.75 }[id] || 0.9;
+    const names = IPP_NAMES[G.code] || IPP_NAMES.PL;
+    const near = nearestCity(G, site.tx + 0.5, site.ty + 0.5, null, true);
+    const o = { id: 'ipp' + G.months + '_' + Math.floor(r() * 1e4), company: names[Math.floor(r() * names.length)], tech: id, tx: site.tx, ty: site.ty, units, unitMW: c.unitMW, cap: c.unitMW * units,
+      capex: c.cost * units, buildM: c.buildM, cf: c.cf || 0, ppa: PN.ippNet(G) * kp * (0.92 + r() * 0.16), years: id === 'battery' ? 12 : 15 + Math.floor(r() * 3) * 5,
+      gridKm: site.km, inCity: !!c.city, near: near ? near.id : null, expires: y + 0.75 };
+    G.ippOffers.push(o); G.ippStats.offered++;
+    PN.bus.emit('ipp', o);
+  }
+  PN.acceptIpp = function (G, o) {
+    const y = ym(G);
+    G.ippOffers = (G.ippOffers || []).filter((x) => x !== o);
+    const c = PN.canPlace(G, o.tech, o.tx, o.ty, { free: true });
+    if (!c.ok) { PN.news(G, o.company + ' wycofuje projekt: ' + c.why, 'warn'); return null; }
+    const t = PN.TECH[o.tech], x = o.tx + 0.5, yy = o.ty + 0.5;
+    const n = addNode(G, {
+      type: 'plant', tech: o.tech, x, y: yy, name: autoName(G, o.tech, x, yy, c.site), built: false, prog: 0, buildM: c.buildM,
+      units: o.units, unitMW: c.unitMW, cap: c.unitMW * o.units, maxUnits: o.units, cost: 0, since: y, age: 0,
+      eff: t.eff ? PN.tv(t.eff, y, G.code) : 1, cf: c.cf || 0, site: c.site ? c.site.k : -1, on: true, fgd: true, soc: 0, fuelOK: 1, fuelPrice: 0, mc: 0,
+      hours: t.hours ? PN.tv(t.hours, y) : 0, owner: 'ipp', company: o.company, ppa: o.ppa, until: y + o.years, capex: o.capex,
+    });
+    if (c.city) linkLocal(G, n, c.city);
+    G.ippStats.accepted++;
+    PN.news(G, 'Umowa przyłączeniowa: ' + n.name + ' (' + PN.mw(n.cap) + ', inwestor ' + o.company + '). Gdy stanie, poprowadź do niej linię.', 'deal', { node: n.id });
+    PN.bus.emit('built', n);
+    return n;
+  };
+  PN.declineIpp = function (G, o) {
+    G.ippOffers = (G.ippOffers || []).filter((x) => x !== o); G.ippStats.declined++;
+    if (G.ippStats.declined % 4 === 0) { G.rep = Math.max(0, G.rep - 2); PN.news(G, 'Inwestorzy skarżą się na odmowy przyłączenia. Reputacja spada.', 'warn'); }
+  };
+  function ippMonthly(G) {
+    const y = ym(G);
+    for (const n of G.nodes.slice()) {
+      if (n.owner !== 'ipp') continue;
+      if (n.dmg) { n.dmgM = (n.dmgM || 0) + 1; if (n.dmgM > 12) { n.dmg = false; n.dmgM = 0; PN.news(G, n.company + ' odbudował ' + n.name + '.', 'build', { node: n.id }); } }
+      if (!n.built) continue;
+      if (n.until && y >= n.until) { n.ppa *= 0.8; n.until = y + 10; PN.news(G, 'Nowa umowa z ' + n.company + ' (' + n.name + '): energia tańsza o 20%.', 'deal', { node: n.id }); }
+      const linked = n.links.some((id) => { const l = G.byId[id]; return l && l.built && !l.dmg; });
+      if (linked) { if (n.waiting) { n.waiting = 0; PN.news(G, n.name + ' przyłączona do sieci.', 'build', { node: n.id }); } continue; }
+      n.waiting = (n.waiting || 0) + 1;
+      if (n.waiting === 1) PN.news(G, n.name + ' (' + n.company + ') czeka na przyłączenie. Masz rok na linię do sieci.', 'warn', { node: n.id });
+      if (n.waiting > 12) G.rep = Math.max(0, G.rep - 0.25);
+      if (n.waiting === 13) PN.news(G, n.company + ' skarży się na brak przyłączenia (' + n.name + '). Reputacja spada co miesiąc.', 'warn', { node: n.id });
+      if (n.waiting > 36) { PN.news(G, n.company + ' rezygnuje z ' + n.name + ' po trzech latach bez przyłączenia.', 'warn'); PN.demolish(G, n); }
+    }
+  }
+
   function bankruptcy(G) {
     if (G.money < 0) {
       const need = -G.money * 1.1 + 1;
@@ -1217,14 +1427,14 @@
 
   /* -------------------------------------------------------------- save/load */
   PN.serialize = function (G) {
-    const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; return c; };
+    const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; delete c.srcTop; delete c.dstTop; delete c._src; delete c._dst; return c; };
     return JSON.stringify({ v: 1, code: G.code, y: G.y, m: G.m, months: G.months, money: G.money, debt: G.debt, rep: G.rep, nodes: G.nodes.map(strip), lines: G.lines, nextId: G.nextId,
       unlocked: G.unlocked, rules: G.rules, terr: G.terr, regime: G.regime, fx: G.fx, lambda: G.lambda, prosumerMW: G.prosumerMW, prosumer: G.prosumer, fired: G.fired, missions: G.missions,
-      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone });
+      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
   };
   PN.deserialize = function (str) {
     const S = JSON.parse(str); const G = PN.newGame(S.code);
-    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone'];
+    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
     for (const k of keep) if (S[k] !== undefined) G[k] = S[k];
     G.rnd = PN.rng(G.seed + G.months);
     const cityByCi = {}; G.cities.forEach((c) => (cityByCi[c.ci] = c));

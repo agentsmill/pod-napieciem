@@ -84,6 +84,7 @@
     this.drawLines();
     this.drawCities();
     this.drawNodes();
+    this.drawOffers();
     this.drawIncidents();
     this.drawTool();
     this.screenT();
@@ -162,8 +163,9 @@
         if (G.nodes.some((n) => n.site === h.k && n.type === 'plant')) continue;
         const want = !tool || (tool === 'pumped' ? h.type === 'pumped' : tool === 'hydro_dam' ? h.type !== 'pumped' : true);
         if (!want) continue;
+        const live = PN.techAvail(G, h.type === 'pumped' ? 'pumped' : h.type === 'ror' ? 'hydro_small' : 'hydro_dam') || (h.type === 'ror' && PN.techAvail(G, 'hydro_dam'));
         const x = h.tx + 0.5, yy = h.ty + 0.5, r = 0.32;
-        ctx.globalAlpha = 0.9; ctx.strokeStyle = th.water; ctx.lineWidth = 1.4 / s;
+        ctx.globalAlpha = live ? 0.9 : 0.3; ctx.strokeStyle = th.water; ctx.lineWidth = 1.4 / s;
         ctx.beginPath(); ctx.arc(x, yy, r, 0, 6.3); ctx.stroke();
         ctx.beginPath(); for (let k = 0; k < 2; k++) { const yy2 = yy - 0.06 + k * 0.12; ctx.moveTo(x - 0.18, yy2); ctx.quadraticCurveTo(x - 0.09, yy2 - 0.07, x, yy2); ctx.quadraticCurveTo(x + 0.09, yy2 + 0.07, x + 0.18, yy2); } ctx.stroke();
         if (h.type === 'pumped') { ctx.beginPath(); ctx.moveTo(x, yy - 0.42); ctx.lineTo(x, yy - 0.55); ctx.moveTo(x - 0.05, yy - 0.5); ctx.lineTo(x, yy - 0.55); ctx.lineTo(x + 0.05, yy - 0.5); ctx.stroke(); }
@@ -188,9 +190,10 @@
     for (const p of list) {
       const t = M.toTile(p.lon, p.lat); const tech = PN.TECH[p.tech];
       const future = p.year > y;
-      ctx.globalAlpha = future ? 0.45 : 0.8; ctx.strokeStyle = (tech && tech.color) || th.ink; ctx.lineWidth = 1.6 / s; ctx.setLineDash([2.5 / s, 2.5 / s]);
+      if (future && this.cam.z < 0.9) continue;
+      ctx.globalAlpha = future ? 0.25 : 0.8; ctx.strokeStyle = (tech && tech.color) || th.ink; ctx.lineWidth = 1.6 / s; ctx.setLineDash([2.5 / s, 2.5 / s]);
       const r = Math.max(0.35, 9 / s); ctx.beginPath(); ctx.arc(t[0], t[1], r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
-      if (this.cam.z > 0.7) { ctx.fillStyle = th.ink; ctx.font = '600 ' + (12 / s) + 'px Caveat, cursive'; ctx.fillText(p.name + ' · ' + p.year, t[0], t[1] + r * 1.15); }
+      if (this.cam.z > (future ? 1.2 : 0.7)) { ctx.fillStyle = th.ink; ctx.font = (future ? 'italic 500 ' : '600 ') + (12 / s) + 'px Caveat, cursive'; ctx.fillText(future ? p.name + ' · w historii ' + p.year : p.name + ' · ' + p.year, t[0], t[1] + r * 1.15); }
     }
     ctx.restore();
   };
@@ -200,17 +203,18 @@
     const kindFor = { coal_mine: 'coal', lignite_mine: 'lignite', lignite: 'lignite', gas_well: 'gas', geothermal: 'geothermal' }[tool];
     for (const d of M.deposits) {
       if (kindFor && d.kind !== kindFor) continue;
-      const col = th[DEP_COL[d.kind]] || DEP_COL[d.kind] || th.ink;
-      ctx.save();
+      const st = d.kind === 'geothermal' ? { ok: PN.techAvail(G, 'geothermal') } : PN.depositState(G, d), live = st.ok;
+      const col = live ? th[DEP_COL[d.kind]] || DEP_COL[d.kind] || th.ink : th.ink;
+      ctx.save(); ctx.globalAlpha = live ? 1 : 0.32;
       const p = new Path2D();
       if (d.ring) { p.moveTo(d.ring[0], d.ring[1]); for (let i = 2; i < d.ring.length; i += 2) p.lineTo(d.ring[i], d.ring[i + 1]); p.closePath(); }
       else p.arc(d.x, d.y, Math.max(0.7, d.r || 1), 0, 6.3);
       ctx.clip(p);
       const bb = d.ring ? bbox(d.ring) : { x: d.x - (d.r || 1), y: d.y - (d.r || 1), w: 2 * (d.r || 1), h: 2 * (d.r || 1) };
-      S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, d.kind === 'coal' ? 0.8 : d.kind === 'lignite' ? -0.5 : 1.3, d.kind === 'coal' ? 0.18 : 0.26, PN.rng(d.k + 9), { color: col, w: 1.1 / s, alpha: 0.55 });
-      if (d.kind === 'coal') S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, -0.8, 0.26, PN.rng(d.k + 19), { color: col, w: 0.8 / s, alpha: 0.35 });
+      S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, d.kind === 'coal' ? 0.8 : d.kind === 'lignite' ? -0.5 : 1.3, live ? (d.kind === 'coal' ? 0.18 : 0.26) : 0.42, PN.rng(d.k + 9), { color: col, w: 1.1 / s, alpha: live ? 0.6 : 0.5 });
+      if (d.kind === 'coal' && live) S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, -0.8, 0.26, PN.rng(d.k + 19), { color: col, w: 0.8 / s, alpha: 0.35 });
       ctx.restore();
-      ctx.globalAlpha = 0.85; ctx.strokeStyle = col; ctx.lineWidth = 1.4 / s; ctx.stroke(p); ctx.globalAlpha = 1;
+      ctx.globalAlpha = live ? 0.9 : 0.4; ctx.strokeStyle = col; ctx.lineWidth = (live ? 1.8 : 1.1) / s; if (!live) ctx.setLineDash([4 / s, 4 / s]); ctx.stroke(p); ctx.setLineDash([]); ctx.globalAlpha = 1;
     }
   };
   function bbox(r) { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let i = 0; i < r.length; i += 2) { x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]); y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]); } return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }; }
@@ -305,7 +309,9 @@
       const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue;
       if (Math.max(a.x, b.x) < vr.x0 || Math.min(a.x, b.x) > vr.x1 || Math.max(a.y, b.y) < vr.y0 || Math.min(a.y, b.y) > vr.y1) continue;
       const g = this.geo(l), w = (LW[l.type] || 1.2) * PN.clamp(z * 0.9, 0.7, 1.7);
-      if (l.local) { ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.45; ctx.lineWidth = px(0.9); ctx.setLineDash([px(2), px(3)]); ctx.stroke(g.path); ctx.setLineDash([]); ctx.globalAlpha = 1; continue; }
+      const traced = this.trace && this.trace.lines.has(l.id);
+      if (traced) { ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.42; ctx.lineWidth = px((l.local ? 1 : w) + 9); ctx.stroke(g.path); ctx.globalAlpha = 1; }
+      if (l.local) { ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.6; ctx.lineWidth = px(1.1); ctx.setLineDash([px(2), px(3)]); ctx.stroke(g.path); ctx.setLineDash([]); ctx.globalAlpha = 1; continue; }
       const out = l.out > y, sel = this.sel === l;
       if (!l.built) {
         ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.45; ctx.lineWidth = px(w * 0.8); ctx.setLineDash([px(5), px(5)]); ctx.stroke(g.path); ctx.setLineDash([]);
@@ -472,7 +478,9 @@
       ctx.globalAlpha = building ? 0.38 : n.dmg ? 0.6 : n.on === false ? 0.5 : (n.type === 'load' && !n.links.length) || n.closed ? 0.5 : 1;
       ctx.drawImage(spr, ox, oy, w, w);
       ctx.globalAlpha = 1;
+      if (this.trace && this.trace.nodes.has(n.id) && n !== this.sel) { ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.9; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.ellipse(n.x, n.y - w * 0.2, w * 0.55, w * 0.45, 0, 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
       if (building) {
+        if (n.owner === 'ipp') this.flag(n.x - w * 0.36, n.y - w * 0.08, w, s);
         ctx.drawImage(PN.Sprites.get('construction'), ox, oy, w, w);
         const bw = w * 0.6, bx = n.x - bw / 2, by = n.y + 0.12;
         ctx.strokeStyle = th.ink; ctx.lineWidth = 1 / s; ctx.strokeRect(bx, by, bw, 4 / s);
@@ -524,6 +532,7 @@
         g.addColorStop(0, hexA(col, 0.65 * pulse)); g.addColorStop(1, hexA(col, 0));
         ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(gx, gy, m.glow[2] * sc * 1.6, m.glow[3] * sc * 1.6, 0, 0, 6.3); ctx.fill(); ctx.restore();
       }
+      if (n.owner === 'ipp') this.flag(n.x - w * 0.36, n.y - w * 0.08, w, s);
       // not connected to anything: dangling plug marker
       if ((n.type === 'plant' || n.type === 'mine') && !n.links.length) {
         const bx = n.x + w * 0.38, by = n.y - w * 0.62, k2 = 7 / s;
@@ -533,6 +542,25 @@
       if ((n.type === 'load' || n.type === 'mine') && n.links.length && n.demE > 0 && n.servedE < n.demE * 0.9) {
         ctx.fillStyle = th.red; ctx.font = 'bold ' + (16 / s) + 'px Caveat, cursive'; ctx.textAlign = 'center'; ctx.fillText('!', n.x + w * 0.35, n.y - w * 0.55);
       }
+    }
+  };
+  /* a small violet pennant: this plant belongs to a private investor */
+  View.prototype.flag = function (x, y, w, s) {
+    const ctx = this.ctx, th = S.th, hgt = Math.max(w * 0.42, 15 / s), fw = hgt * 0.62;
+    ctx.save(); ctx.strokeStyle = th.ink; ctx.lineWidth = 1.3 / s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - hgt); ctx.stroke();
+    ctx.fillStyle = th.violet; ctx.beginPath(); ctx.moveTo(x + 0.6 / s, y - hgt); ctx.lineTo(x + fw, y - hgt * 0.78); ctx.lineTo(x + 0.6 / s, y - hgt * 0.56); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  };
+  /* proposed sites of investor projects that wait for a decision */
+  View.prototype.drawOffers = function () {
+    const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), t = this.time;
+    for (const o of G.ippOffers || []) {
+      const x = o.tx + 0.5, y = o.ty + 0.5, foc = this.focusOffer === o, r = Math.max(0.45, 16 / s) * (foc ? 1 + 0.12 * Math.sin(t * 4) : 1);
+      ctx.save(); ctx.strokeStyle = th.violet; ctx.lineWidth = (foc ? 2.6 : 1.6) / s; ctx.setLineDash([5 / s, 4 / s]); ctx.globalAlpha = foc ? 1 : 0.75;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
+      const spr = PN.Sprites.get(o.tech); if (spr) { const w = Math.max(1.2, 26 / s), sc = w / PN.SPRITE_U, m = spr.meta; ctx.globalAlpha = 0.45; ctx.drawImage(spr, x - m.anchor[0] * sc, y - m.anchor[1] * sc, w, w); }
+      ctx.restore(); this.flag(x - r * 0.75, y - r * 0.2, Math.max(1.2, 26 / s), s);
     }
   };
   function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a.toFixed(3) + ')'; }
@@ -545,6 +573,7 @@
       ctx.strokeStyle = i.kind === 'heat' ? th.orange : th.red; ctx.globalAlpha = 0.7 * a; ctx.lineWidth = 2 / s; ctx.setLineDash([8 / s, 6 / s]);
       ctx.beginPath(); ctx.arc(i.reg.x, i.reg.y, i.reg.r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
     }
+    if (this.trace && this.trace.dir === 'down') for (const [id] of this.trace.nodes) { const c = this.G.byId[id]; if (!c || c.type !== 'city') continue; ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.9; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.arc(c.x, c.y, Math.max(0.4, c.rad * 0.85 + 0.15), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     for (const f of this.flash) { const a = PN.clamp((f.until - now) / 900, 0, 1); if (a <= 0) continue; ctx.strokeStyle = th.yellow; ctx.globalAlpha = a; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.arc(f.x, f.y, 1.4 * (1.6 - a), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     this.flash = this.flash.filter((f) => f.until > now);
   };
@@ -552,7 +581,10 @@
   /* tool previews */
   View.prototype.drawTool = function () {
     const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), h = this.hover, tool = this.tool;
+    this.reachLabels = null;
     if (!tool || !h) return;
+    if (tool.kind === 'build' && h.check) this.drawReach(tool.id, h.tx + 0.5, h.ty + 0.5, h.check);
+    if (tool.kind === 'line') { const a = this.lineStart; this.lineReach(tool.id, a ? a.x : h.snap ? h.snap.x : h.tx + 0.5, a ? a.y : h.snap ? h.snap.y : h.ty + 0.5); }
     if (tool.kind === 'build' && h.check) {
       const tx = h.tx + 0.5, ty = h.ty + 0.5;
       ctx.strokeStyle = h.check.ok ? th.green : th.red; ctx.lineWidth = 2 / s; ctx.globalAlpha = 0.9; ctx.setLineDash([5 / s, 4 / s]);
@@ -570,6 +602,37 @@
     }
     if (tool.kind === 'line' && h.snap) { ctx.strokeStyle = th.yellow; ctx.lineWidth = 3 / s; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(h.snap.x, h.snap.y, Math.max(0.45, 12 / s), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     if (tool.kind === 'demolish' && h.pick) { const p = h.pick.obj; const x = p.a ? (G.byId[p.a].x + G.byId[p.b].x) / 2 : p.x, y = p.a ? (G.byId[p.a].y + G.byId[p.b].y) / 2 : p.y; ctx.strokeStyle = th.red; ctx.lineWidth = 3 / s; const k = Math.max(0.4, 12 / s); ctx.beginPath(); ctx.moveTo(x - k, y - k); ctx.lineTo(x + k, y + k); ctx.moveTo(x + k, y - k); ctx.lineTo(x - k, y + k); ctx.stroke(); }
+  };
+
+  /* how far power from a plant built here can travel: in the town by the low-voltage network,
+     further only by lines, and only as far as the voltages invented so far allow */
+  View.prototype.drawReach = function (id, x, y, check) {
+    const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), M = G.map, t = PN.TECH[id], L = [];
+    if (!t || (t.cat !== 'gen' && t.cat !== 'store')) return;
+    ctx.save(); ctx.lineWidth = 1.7 / s; ctx.setLineDash([7 / s, 5 / s]);
+    if (id === 'steam_dc') {
+      const c = check.city || PN.nearestCity(G, x, y, 3, true);
+      if (c) { const r = c.rad + 0.6; ctx.strokeStyle = check.ok ? th.water : th.red; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, 6.3); ctx.stroke(); L.push({ x: c.x, y: c.y - r, t: 'prąd stały 110 V: tylko to miasto (ok. 1,5 km)', c: check.ok ? th.water : th.red }); }
+    } else {
+      if (check.city) L.push({ x, y: y + 0.9, t: 'w mieście: zasila je wprost siecią nN', c: th.ink });
+      const lines = PN.LINE_ORDER.filter((lid) => PN.techAvail(G, lid) && !PN.TECH[lid].sea);
+      const show = lines.length ? [lines[0]].concat(lines.length > 1 ? [lines[lines.length - 1]] : []) : [];
+      for (const lid of show) {
+        const lt = PN.TECH[lid], r = lt.maxKm / (1.08 * M.T);
+        ctx.strokeStyle = th.water; ctx.globalAlpha = lid === show[0] ? 0.9 : 0.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.3); ctx.stroke();
+        L.push({ x, y: y - r, t: 'linia ' + lt.short + ': do ' + lt.maxKm + ' km', c: th.water });
+      }
+      if (!lines.length && !check.city) L.push({ x, y: y - 1, t: 'linii jeszcze nie ma – postaw ją w mieście', c: th.red });
+    }
+    ctx.restore(); this.reachLabels = L;
+  };
+  View.prototype.lineReach = function (id, x, y) {
+    const ctx = this.ctx, th = S.th, s = this.scale(), t = PN.TECH[id]; if (!t || !t.maxKm) return;
+    const r1 = t.maxKm / (1.08 * this.G.map.T), r2 = r1 * 1.6;
+    ctx.save(); ctx.strokeStyle = th.water; ctx.lineWidth = 1.7 / s;
+    ctx.setLineDash([7 / s, 5 / s]); ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(x, y, r1, 0, 6.3); ctx.stroke();
+    ctx.setLineDash([2 / s, 5 / s]); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(x, y, r2, 0, 6.3); ctx.stroke(); ctx.restore();
+    this.reachLabels = [{ x, y: y - r1, t: t.short + ': rozsądnie do ' + t.maxKm + ' km', c: th.water }, { x, y: y - r2, t: 'najdalej ok. ' + Math.round(t.maxKm * 1.6) + ' km', c: th.water, a: 0.7 }];
   };
 
   /* ------------------------------------------------------------------ labels */
@@ -608,6 +671,29 @@
       const size = Math.round(PN.clamp(11 + 5.5 * Math.log10(c.pop / 30000), 12, 26) * PN.clamp(0.75 + z * 0.2, 0.8, 1.2));
       txt(PN.cityName(c, G.y), sx, sy + size * 0.35, size, th.label, { alpha: PN.cityOwned(G, c) ? 1 : 0.6 });
     }
+    // voltage written along the lines (and nN on a town's own network) when zoomed in
+    if (z > 1.25) for (const l of G.lines) {
+      if (!l.built) continue; const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue;
+      const [ax, ay] = this.toScreen(a.x, a.y), [bx, by] = this.toScreen(b.x, b.y); if (Math.hypot(bx - ax, by - ay) < (l.local ? 64 : 110)) continue;
+      const g = this.geo(l), [sx, sy] = this.toScreen((a.x + 2 * g.cx + b.x) / 4, (a.y + 2 * g.cy + b.y) / 4);
+      if (sx < -40 || sx > this.W + 40 || sy < -20 || sy > this.H + 20) continue;
+      const t = PN.TECH[l.type], lab = l.local ? 'nN' : t ? (Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, y) : t.kvLabel) || t.short : '';
+      txt(lab, sx, sy - 9, 12.5, th.ink, { alpha: 0.85, weight: 700 });
+    }
+    if (this.trace) for (const [id, sh] of this.trace.nodes) {
+      const n = G.byId[id]; if (!n || n === this.sel) continue; const [sx, sy] = this.toScreen(n.x, n.y);
+      if (sx < -30 || sx > this.W + 30 || sy < -30 || sy > this.H + 30) continue;
+      txt(PN.pct(sh, sh < 0.1 ? 1 : 0), sx + 20, sy - 26, 16, th.label, { weight: 700 });
+    }
+    if (this.overlay === 'res' || (this.tool && PN.RES_ORDER.indexOf(this.tool.id) >= 0)) for (const d of G.map.deposits) {
+      if (!d.name || z < 0.55) continue; const st = PN.depositState(G, d);
+      if (this.tool && PN.RES_ORDER.indexOf(this.tool.id) >= 0 && st.tech !== this.tool.id && !(st.why && PN.TECH[this.tool.id].fuel === d.kind)) continue;
+      const [sx, sy] = this.toScreen(d.x, d.y); if (sx < -80 || sx > this.W + 80 || sy < -30 || sy > this.H + 30) continue;
+      const lab = st.ok ? d.name : d.name + (st.why === 'unknown' && st.year ? ' · wydobycie od ' + st.year : st.info ? '' : ' · jeszcze niedostępne');
+      txt(lab, sx, sy, st.ok ? 14 : 12.5, th.ink, { alpha: st.ok ? 0.95 : 0.5, weight: st.ok ? 700 : 500, italic: !st.ok });
+    }
+    for (const o of G.ippOffers || []) { const [sx, sy] = this.toScreen(o.tx + 0.5, o.ty + 0.5); if (sx > -60 && sx < this.W + 60 && sy > -30 && sy < this.H + 30) txt(o.company, sx, sy + 26, 13, th.violet, { weight: 700 }); }
+    if (this.reachLabels) for (const r of this.reachLabels) { const [sx, sy] = this.toScreen(r.x, r.y); txt(r.t, PN.clamp(sx, 110, this.W - 110), PN.clamp(sy - 10, 84, this.H - 20), 14, r.c || th.water, { weight: 700, alpha: r.a || 1 }); }
     // node names: selected or hovered, plus plants at very high zoom
     const hov = this.hover && this.hover.node;
     for (const n of G.nodes) {
@@ -647,6 +733,14 @@
         const a = G.byId[l.a], b = G.byId[l.b]; const g = this.geo(l);
         let dmin = 1e9; for (let k = 0; k <= 20; k++) { const t = k / 20, it = 1 - t; const x = it * it * a.x + 2 * it * t * g.cx + t * t * b.x, y = it * it * a.y + 2 * it * t * g.cy + t * t * b.y; dmin = Math.min(dmin, Math.hypot(x - wx, y - wy)); }
         if (dmin < Math.max(0.15, 7 / s) && dmin < bd) { bd = dmin; best = { type: 'line', obj: l }; }
+      }
+      if (best) return best;
+      if (!opts.noLocal) for (const l of G.lines) {
+        if (!l.local) continue;
+        const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue; const c = a.type === 'city' ? a : b;
+        if (Math.hypot(c.x - wx, c.y - wy) < Math.max(c.rad * 0.45, 8 / s)) continue;
+        let dmin = 1e9; for (let k = 0; k <= 10; k++) { const t = k / 10; dmin = Math.min(dmin, Math.hypot(a.x + (b.x - a.x) * t - wx, a.y + (b.y - a.y) * t - wy)); }
+        if (dmin < Math.max(0.08, 5 / s) && dmin < bd) { bd = dmin; best = { type: 'line', obj: l }; }
       }
       if (best) return best;
     }

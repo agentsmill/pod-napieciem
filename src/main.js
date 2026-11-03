@@ -96,7 +96,8 @@
     if (PN.Tutorial && PN.Tutorial.active) PN.Tutorial.cancel();
     $('#start').hidden = true; document.body.classList.remove('at-start');
     if (!V) V = new PN.View($('#map'), G); else { V.G = G; V.terrain = new PN.Terrain(G); V.citySpr.clear(); V.lineGeo.clear(); V.ovCache = {}; V.prepareLabels(); const v = G.sc.view, t = G.map.toTile(v.lon, v.lat); V.cam = { x: t[0], y: t[1], z: v.zoom || 1 }; V.sel = null; V.tool = null; V.overlay = null; }
-    V.firstFrames = 2;
+    V.firstFrames = 2; V.trace = null; V.focusOffer = null;
+    PN.discoverTech(G); // what already exists at the start is known, not news
     UI.bind(G, V); UI.setTool(null); UI.setSpeed(0);
     PN.energize(G);
     if (fresh) intro(); else UI.setSpeed(1);
@@ -122,9 +123,10 @@
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     if (G && !UI.modalOpen && UI.speed > 0 && !G.over && !document.hidden) {
       acc += dt * UI.speed;
-      let n = 0;
-      while (acc >= MONTH_SEC && n < 3) { try { PN.step(G); } catch (e) { console.error(e); } acc -= MONTH_SEC; n++; }
-      if (n === 3) acc = Math.min(acc, MONTH_SEC);
+      let n = 0; const tb = performance.now();
+      // a heavy month (huge late-game grid) gets a frame of its own, so the map never freezes
+      while (acc >= MONTH_SEC && n < 3 && (n === 0 || performance.now() - tb < 25)) { try { PN.step(G); } catch (e) { console.error(e); } acc -= MONTH_SEC; n++; }
+      if (acc > MONTH_SEC * 2) acc = MONTH_SEC;
     }
     if (V && G) { try { V.frame(dt); } catch (e) { console.error(e); } UI.hud(); if (PN.Tutorial) PN.Tutorial.tick(); }
     requestAnimationFrame(loop);
@@ -173,7 +175,7 @@
       if (e.key === 'ArrowLeft' || e.key === 'a') V.cam.x -= s; if (e.key === 'ArrowRight' || e.key === 'd') V.cam.x += s;
       if (e.key === 'ArrowUp' || e.key === 'w') V.cam.y -= s; if (e.key === 'ArrowDown' || e.key === 's') V.cam.y += s;
       if (e.key === '+' || e.key === '=') V.zoomAt(V.W / 2, V.H / 2, 1.25); if (e.key === '-') V.zoomAt(V.W / 2, V.H / 2, 0.8);
-      if ((e.key === 'Delete' || e.key === 'Backspace') && UI.sel && UI.sel.type !== 'city') { PN.demolish(G, UI.sel); UI.select(null); }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && UI.sel && UI.sel.type !== 'city' && !UI.sel.local && UI.sel.owner !== 'ipp') { PN.demolish(G, UI.sel); UI.select(null); }
       V.clampCam();
     });
   }
@@ -204,11 +206,13 @@
       } else UI.tip(cx, cy, '<b>' + PN.esc(PN.TECH[tool.id].name) + '</b><div>' + (e.node ? 'Początek: ' + PN.esc(nodeName(e.node)) : e.sub.ok ? 'Początek: nowa stacja (' + PN.money(e.sub.cost) + ')' : PN.esc(e.sub.why)) + '</div>', e.node || e.sub.ok);
       cvCursor('crosshair'); return;
     }
-    if (tool.kind === 'demolish') { const p = V.pick(sx, sy); V.hover.pick = p && p.type !== 'city' ? p : null; UI.tip(cx, cy, V.hover.pick ? 'Wyburz: ' + PN.esc(nodeName(p.obj)) : null); cvCursor('crosshair'); }
+    if (tool.kind === 'demolish') { const p = V.pick(sx, sy, { noLocal: true }); V.hover.pick = p && p.type !== 'city' ? p : null; UI.tip(cx, cy, V.hover.pick ? 'Wyburz: ' + PN.esc(nodeName(p.obj)) : null); cvCursor('crosshair'); }
   }
   function nodeName(n) { if (!n) return ''; if (n.a) return (PN.TECH[n.type] ? PN.TECH[n.type].short : '') + ' ' + nodeName(G.byId[n.a]) + ' – ' + nodeName(G.byId[n.b]); return n.type === 'city' ? PN.cityName(n, G.y) : n.name; }
   function quickTip(o) {
-    if (o.a) return '<b>' + PN.esc(nodeName(o)) + '</b><div>' + PN.mw(Math.abs(o.flow || 0)) + ' / ' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie') + '</div>';
+    if (o.a && o.local) return '<b>Sieć niskiego napięcia (nN)</b><div>Elektrownia stoi w mieście i zasila je wprost, bez linii przesyłowej.</div>';
+    if (o.a) { const t = PN.TECH[o.type]; return '<b>' + PN.esc(nodeName(o)) + '</b><div>' + PN.esc(t ? UI.kv(o.type) || t.short : '') + ' · ' + PN.mw(Math.abs(o.flow || 0)) + ' / ' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie') + '</div>'; }
+    if (o.owner === 'ipp') return '<b>' + PN.esc(o.name) + '</b><div>Prywatna · ' + PN.esc(o.company) + ' · ' + PN.mw(o.cap) + (o.built ? (o.links.length ? '' : ' · czeka na przyłączenie') : ' · w budowie ' + PN.pct(o.prog)) + '</div>';
     if (o.type === 'city') return '<b>' + PN.esc(PN.cityName(o, G.y)) + '</b><div>' + PN.nf(o.pop, 0) + ' mieszk. · ' + (o.demE > 0 ? 'zasilono ' + PN.pct(o.served) : PN.cityOwned(G, o) ? 'bez prądu' : 'poza Twoim obszarem') + '</div>';
     return '<b>' + PN.esc(o.name) + '</b>' + (o.cap ? '<div>' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie ' + PN.pct(o.prog)) + '</div>' : '');
   }
@@ -242,7 +246,8 @@
       return;
     }
     if (tool.kind === 'demolish') {
-      const p = V.pick(sx, sy); if (!p || p.type === 'city') return;
+      const p = V.pick(sx, sy, { noLocal: true }); if (!p || p.type === 'city') return;
+      if (p.obj.owner === 'ipp') { UI.toast('To elektrownia prywatnego inwestora – nie możesz jej wyburzyć.', 'warn'); return; }
       if (UI.pendingDemolish !== p.obj) { UI.pendingDemolish = p.obj; UI.toast('Kliknij jeszcze raz, aby wyburzyć: ' + PN.esc(nodeName(p.obj)) + '.', 'warn'); return; }
       PN.demolish(G, p.obj); UI.pendingDemolish = null; UI.refreshInfo(true);
     }

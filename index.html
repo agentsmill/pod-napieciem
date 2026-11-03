@@ -12,7 +12,7 @@
 /* Layout: full-bleed sketch-map canvas; hand-drawn paper panels pinned to the edges like notes on a drawing board. */
 :root {
   --paper: #eeece5; --paper-2: #e3e0d6; --news: #f3efe2; --ink: #2a2c30; --ink-2: #5a5d63; --rule: rgba(42,44,48,.42);
-  --volt: #e2ae16; --water: #3f7cb4; --red: #c23b2b; --green: #3f8f5a; --orange: #d27a22;
+  --volt: #e2ae16; --water: #3f7cb4; --red: #c23b2b; --green: #3f8f5a; --orange: #d27a22; --violet: #7a4fb0;
   --shadow: rgba(42,44,48,.20); --veil: rgba(28,30,34,.38); --hatch: rgba(226,174,22,.5);
   --f-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
   --f-ui: 'Kalam', 'Segoe Print', 'Trebuchet MS', sans-serif;
@@ -26,13 +26,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #23262c; --paper-2: #1b1d22; --news: #2b2b28; --ink: #dcd8cf; --ink-2: #a9a59c; --rule: rgba(220,216,207,.32);
-    --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457;
+    --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457; --violet: #c3a2ee;
     --shadow: rgba(0,0,0,.45); --veil: rgba(0,0,0,.55); --hatch: rgba(255,210,77,.35); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #23262c; --paper-2: #1b1d22; --news: #2b2b28; --ink: #dcd8cf; --ink-2: #a9a59c; --rule: rgba(220,216,207,.32);
-  --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457;
+  --volt: #ffd24d; --water: #77aee0; --red: #ff7a66; --green: #7fd39a; --orange: #f2a457; --violet: #c3a2ee;
   --shadow: rgba(0,0,0,.45); --veil: rgba(0,0,0,.55); --hatch: rgba(255,210,77,.35); color-scheme: dark;
 }
 html, body { height: 100%; }
@@ -86,6 +86,11 @@ button { font: inherit; color: inherit; }
 .item .tx { display: flex; flex-direction: column; min-width: 0; }
 .item b { font-weight: 700; font-size: 14px; line-height: 1.2; }
 .item small { font-family: var(--f-data); font-size: 11.5px; color: var(--ink-2); }
+.item.new { border-color: var(--water); }
+.item.mark { border-color: var(--ink); border-style: solid; background-image: repeating-linear-gradient(-38deg, var(--hatch) 0 2px, transparent 2px 6px); }
+.badge { display: inline-block; font-style: normal; font-weight: 400; font-size: 10.5px; letter-spacing: .8px; text-transform: uppercase; border: 1.2px solid var(--water); color: var(--water); border-radius: 6px; padding: 0 4px; margin-left: 6px; vertical-align: 1px; }
+.fly-empty { margin: 4px 6px 6px; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+.fly-tip { margin: 6px 6px 2px; font-size: 12.5px; line-height: 1.4; color: var(--ink-2); border-top: 1px dashed var(--rule); padding-top: 5px; }
 #toolhint { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: min(640px, calc(100% - 520px)); padding: 6px 14px; font-size: 14px; z-index: 6; background: var(--paper) var(--paper-tex); border: 2px solid var(--ink); border-radius: var(--r1); box-shadow: 3px 4px 0 var(--shadow); }
 kbd { font-family: var(--f-data); font-size: 12px; border: 1px solid var(--ink); border-radius: 4px; padding: 0 4px; }
 
@@ -140,6 +145,13 @@ kbd { font-family: var(--f-data); font-size: 12px; border: 1px solid var(--ink);
 .chron li.event a { color: inherit; text-decoration-style: dotted; }
 .chron li.done { color: var(--green); } .chron li.warn { color: var(--red); }
 #panelToggle { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 112px; z-index: 4; display: none; }
+.srcs { list-style: none; margin: 4px 0; padding: 0; }
+.srcs li { display: grid; grid-template-columns: 1fr auto; gap: 1px 8px; padding: 3px 0; border-bottom: 1px dashed var(--rule); font-size: 13.5px; align-items: baseline; }
+.srcs li a { color: inherit; text-decoration: underline dotted; }
+.srcs li b { font-family: var(--f-data); font-size: 12.5px; }
+.srcs li i { grid-column: 1 / -1; display: block; height: 5px; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.srcs li i em { display: block; height: 100%; background-image: repeating-linear-gradient(-38deg, var(--volt) 0 2px, transparent 2px 5px); }
+.ownr { color: var(--violet); }
 
 /* ---------- bottom bar ---------- */
 #ticker { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(540px, calc(100% - 520px)); min-width: 280px; padding: 6px 12px; font-size: 13.5px; line-height: 1.35; cursor: pointer; z-index: 4; }
@@ -150,6 +162,34 @@ body.tooling #ticker { visibility: hidden; }
 #layers button { border: 1.5px solid var(--ink); border-radius: var(--r2); background: transparent; cursor: pointer; padding: 3px 10px; font-size: 14px; }
 #layers button.on, #layers button:hover { background-image: repeating-linear-gradient(-38deg, var(--hatch) 0 2px, transparent 2px 6px); }
 #layers .sep { width: 1.5px; background: var(--rule); margin: 2px 2px; }
+
+/* ---------- cards: news that does not stop the clock ---------- */
+#cards { position: absolute; left: calc(max(16px, env(safe-area-inset-left, 0px)) + 86px); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); width: min(340px, calc(100% - 520px)); min-width: 270px; max-height: calc(100% - 210px); overflow: hidden; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 6; pointer-events: none; padding: 0 6px 6px 0; }
+.gcard { pointer-events: auto; position: relative; flex: 0 0 auto; padding: 8px 12px 9px; background: var(--paper) var(--paper-tex); border: 1.8px solid var(--ink); border-radius: var(--r3); box-shadow: 3px 4px 0 var(--shadow); font-size: 13.5px; line-height: 1.4; animation: tin .35s ease-out; }
+.gcard.out { opacity: 0; transform: translateX(-14px); transition: opacity .4s, transform .4s; }
+.gcard .k { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-2); padding-right: 18px; }
+.gcard h4 { margin: 1px 0 3px; font-size: 17px; line-height: 1.15; text-wrap: balance; }
+.gcard p { margin: 0 0 4px; }
+.gcard .x, #legend .x { position: absolute; right: 6px; top: 2px; border: 0; background: none; font-size: 20px; cursor: pointer; line-height: 1; color: var(--ink-2); }
+.gcard .row { margin-top: 4px; }
+.gcard .act { padding: 3px 10px; font-size: 13.5px; }
+.gcard .kv { font-size: 12.5px; padding: 1px 0; }
+.gcard .kv b { font-size: 12px; }
+.gcard .fxs { font-family: var(--f-ui); font-size: 12.5px; color: var(--ink-2); }
+.gcard canvas, .gcard .pic { float: right; width: 52px; height: 52px; margin: 0 0 2px 8px; }
+.gcard .pic canvas { float: none; margin: 0; width: 52px !important; height: 52px !important; }
+.gcard.clipc { background: var(--news) var(--paper-tex); font-family: var(--f-news); border-radius: 3px; transform: rotate(-.4deg); }
+.gcard.clipc h4 { font-family: var(--f-news); font-weight: 700; }
+.gcard.clipc .act { font-family: var(--f-ui); }
+.gcard.techc { border-color: var(--water); }
+.gcard.ippc { border: 2px dashed var(--violet); }
+body.tut-on #cards { display: none; }
+#legend { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(66px + env(safe-area-inset-bottom, 0px)); width: 320px; max-height: calc(100% - 220px); overflow: auto; padding: 8px 12px 10px; z-index: 6; font-size: 13px; background: var(--paper) var(--paper-tex); border: 2px solid var(--ink); border-radius: var(--r2); box-shadow: 3px 4px 0 var(--shadow); }
+#legend h4 { margin: 0 0 4px; font-family: var(--f-hand); font-size: 22px; }
+#legend .lg { display: flex; gap: 8px; align-items: center; padding: 2px 0; border-bottom: 1px dashed var(--rule); }
+#legend .lg:last-child { border-bottom: 0; }
+#legend .sw { flex: 0 0 56px; height: 22px; }
+#legend .lg span:last-child { line-height: 1.3; }
 
 /* ---------- tooltip, toasts ---------- */
 #tip { position: fixed; z-index: 20; max-width: 320px; padding: 6px 10px; font-size: 13.5px; line-height: 1.35; pointer-events: none; border-width: 1.6px; }
@@ -249,8 +289,10 @@ body.tooling #ticker { visibility: hidden; }
   #layers .sep { display: none; }
   #toolhint { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); max-width: none; font-size: 13px; }
   #toasts { top: 120px; }
+  #cards { left: max(16px, env(safe-area-inset-left, 0px)); right: calc(max(16px, env(safe-area-inset-right, 0px)) + 82px); width: auto; min-width: 0; top: 116px; bottom: auto; max-height: calc(100% - 330px); flex-direction: column; padding: 0; }
+  #legend { left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: auto; bottom: auto; top: 116px; max-height: calc(100% - 300px); }
 }
-@media (prefers-reduced-motion: reduce) { .toast, #speed button.nudge, .tut-ring { animation: none; } #panel, .tut-card { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .toast, .gcard, #speed button.nudge, .tut-ring { animation: none; } #panel, .tut-card, .gcard.out { transition: none; } }
 </style>
 </head>
 <body>
@@ -273,9 +315,11 @@ body.tooling #ticker { visibility: hidden; }
   <aside id="panel"><div id="tabs" role="tablist"><button data-tab="overview" class="on">Przegląd</button><button data-tab="fin">Finanse</button><button data-tab="goals">Zadania</button><button data-tab="chron">Kronika</button><button class="tabclose" data-close="1" aria-label="Zwiń panel">▾</button></div><div id="info"></div></aside>
   <button id="panelToggle" class="act">Panel</button>
   <div id="ticker" role="status" aria-live="polite"></div>
-  <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
+  <div id="layers"><button data-ov="wind" title="Gdzie wieje">Wiatr</button><button data-ov="solar" title="Gdzie świeci">Słońce</button><button data-ov="res" title="Złoża, zapory, parki narodowe">Zasoby</button><button data-ov="demand" title="Zapotrzebowanie miast">Popyt</button><button data-legend="1" title="Co oznaczają linie i znaczki">Legenda</button><span class="sep"></span><button id="zoomOut" aria-label="Oddal">−</button><button id="zoomFit" aria-label="Cała mapa">⤢</button><button id="zoomIn" aria-label="Przybliż">+</button></div>
   <div id="tip" hidden></div>
   <div id="toasts"></div>
+  <div id="cards" aria-live="polite"></div>
+  <div id="legend" hidden></div>
   <div id="modal" hidden></div>
   <div id="start" hidden></div>
 </div>
@@ -2188,9 +2232,9 @@ window.PN_EVENTS_PL = [
     title: "Sejm uchwala Prawo energetyczne",
     paper: "Rzeczpospolita",
     text: "10 kwietnia 1997 r. Sejm przyjął ustawę Prawo energetyczne. Powołuje ona niezależnego regulatora – Urząd Regulacji Energetyki – i otwiera drogę do konkurencji w wytwarzaniu i obrocie energią.",
-    hint: "Koniec gospodarki nakazowej: od teraz liczą się ceny, taryfy i regulator.",
+    hint: "Koniec gospodarki nakazowej: od teraz liczą się ceny, taryfy i regulator, a prywatni inwestorzy zgłaszają własne elektrownie.",
     icon: "law",
-    effects: [{ type: "regime", regime: "market" }],
+    effects: [{ type: "regime", regime: "market" }, { type: "ipp", scope: "all" }],
     sources: [
       "https://eli.gov.pl/eli/DU/1997/348/ogl/pol/pdf",
       "https://en.wikipedia.org/wiki/Polskie_Sieci_Elektroenergetyczne"
@@ -3275,7 +3319,8 @@ window.PN_EVENTS_US = [
       { type: "unlock", tech: "biomass" },
       { type: "subsidy", target: "wind", costMult: 0.75, months: 96 },
       { type: "subsidy", target: "solar", costMult: 0.8, months: 96 },
-      { type: "fuel", fuel: "gas", mult: 1.3, months: 102 }
+      { type: "fuel", fuel: "gas", mult: 1.3, months: 102 },
+      { type: "ipp", scope: "small" }
     ],
     sources: [
       "https://webarchive.library.unt.edu/eot2008/20081009071108/http://edocket.access.gpo.gov/2003/03-21401.htm",
@@ -3385,7 +3430,7 @@ window.PN_EVENTS_US = [
     text: "24 kwietnia 1996 r. Federalna Komisja Regulacji Energetyki wydała Order 888, nakazujący zakładom energetycznym otwarty i niedyskryminacyjny dostęp do sieci przesyłowych. Znika największa bariera dla konkurencyjnego hurtowego rynku energii.",
     hint: "Era rynku: Twoje elektrownie konkurują o odbiorców, a sieć musi przyjąć cudzą energię.",
     icon: "law",
-    effects: [{ type: "regime", regime: "market" }],
+    effects: [{ type: "regime", regime: "market" }, { type: "ipp", scope: "all" }],
     sources: ["https://www.ferc.gov/sites/default/files/2020-05/rm95-8p1-000.txt"],
     certainty: "high",
     speculative: false
@@ -4153,7 +4198,7 @@ window.PN_EVENTS_US = [
       y: sc.start.year, m: sc.start.month - 1, months: 0,
       money: sc.money, debt: 0, rep: 60,
       nodes: [], lines: [], byId: {}, nextId: 1,
-      cities: [], borders: [], offers: [],
+      cities: [], borders: [], offers: [], ippOffers: [], ippScope: null, ippStats: { offered: 0, accepted: 0, declined: 0 },
       unlocked: {}, rules: {}, terr: {}, regime: code === 'PL' ? 'concession' : 'private',
       fx: { fuel: {}, derate: {}, subsidy: {}, demand: [], freezeUntil: 0, hydro: null, windLull: null },
       lambda: 0.03, prosumerMW: 0, prosumer: null,
@@ -4236,6 +4281,41 @@ window.PN_EVENTS_US = [
     return false;
   };
   PN.techSoon = function (G, id) { const t = PN.TECH[id]; const w = PN.techWindows(t, G.code); const y = ym(G); for (const [a] of w) if (a > y) return a; return null; };
+  /* technologies arrive with history: the player sees them only once they exist */
+  PN.TECH_ALL = () => PN.GEN_ORDER.concat(PN.STORE_ORDER, PN.LINE_ORDER, ['substation'], PN.RES_ORDER);
+  function discoverTech(G) {
+    const first = !G.techSeen; if (first) { G.techSeen = {}; G.techGone = {}; }
+    const fresh = [], y = ym(G);
+    for (const id of PN.TECH_ALL()) {
+      if (!PN.TECH[id]) continue;
+      const av = PN.techAvail(G, id), seen = G.techSeen[id] != null;
+      if (av && (!seen || G.techGone[id])) { G.techSeen[id] = first ? 0 : y; delete G.techGone[id]; if (!first) fresh.push(id); }
+      else if (!av && seen) G.techGone[id] = true;
+    }
+    if (fresh.length) { for (const id of fresh) PN.news(G, 'Nowa technologia: ' + PN.TECH[id].name + '.', 'tech', { tech: id }); PN.bus.emit('tech', fresh); }
+    return fresh;
+  }
+  PN.discoverTech = discoverTech;
+  PN.techIsNew = (G, id) => !!(G.techSeen && G.techSeen[id] > 0 && ym(G) - G.techSeen[id] < 3);
+  /* only events that change the rules of the game stop the clock; the rest arrive as clippings */
+  PN.eventImportant = (ev) => ev.major === true || (ev.effects || []).some((e) => ['damage', 'territory', 'regime', 'freeze', 'outage', 'ipp'].indexOf(e.type) >= 0) || ['war', 'crisis', 'blackout'].indexOf(ev.icon) >= 0;
+  /* can a mine be sunk on this deposit today? */
+  const DEP_TECH = { coal: 'coal_mine', lignite: 'lignite_mine', gas: 'gas_well' };
+  PN.depositState = function (G, d) {
+    const tech = DEP_TECH[d.kind];
+    if (!tech) return { ok: false, info: true };
+    if (!PN.techAvail(G, tech)) return { ok: false, why: 'tech' };
+    if (d.from && ym(G) < d.from - 15) return { ok: false, why: 'unknown', year: d.from };
+    return { ok: true, tech };
+  };
+  /* map layers show up together with the technology that needs them */
+  PN.layerAvail = function (G, kind) {
+    const seen = (id) => PN.techAvail(G, id) || !!(G.techSeen && G.techSeen[id] != null);
+    if (kind === 'wind') return seen('wind') || seen('wind_offshore');
+    if (kind === 'solar') return seen('solar') || seen('csp');
+    if (kind === 'res') return PN.RES_ORDER.some(seen) || seen('hydro_dam');
+    return true;
+  };
 
   function subsidy(G, target) { const s = G.fx.subsidy[target]; return s && s.until > ym(G) ? s.mult : 1; }
   function catOf(id) {
@@ -4304,7 +4384,7 @@ window.PN_EVENTS_US = [
   }
 
   /* ------------------------------------------------------------- placement */
-  PN.canPlace = function (G, id, tx, ty) {
+  PN.canPlace = function (G, id, tx, ty, opts) {
     const M = G.map, t = PN.TECH[id], y = ym(G);
     const r = { ok: false, why: '', info: [], id };
     const i = M.idx(tx, ty);
@@ -4430,7 +4510,7 @@ window.PN_EVENTS_US = [
       r.cost = PN.tv(t.cost, y) * subsidy(G, 'grid'); r.buildM = 0;
     }
     if (inCity && t.cat !== 'node') r.info.push('Podłączenie do sieci miejskiej (' + PN.cityName(city, y) + ') bez budowy linii');
-    if (G.money < r.cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(r.cost) + '.'; r.ok = false; r.poor = true; return r; }
+    if (!(opts && opts.free) && G.money < r.cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(r.cost) + '.'; r.ok = false; r.poor = true; return r; }
     r.ok = true; return r;
   };
 
@@ -4465,7 +4545,7 @@ window.PN_EVENTS_US = [
     const c = cityAtTile(G, x, y);
     const pre = { steam_dc: 'Elektrownia miejska', coal: 'Elektrownia', lignite: 'Elektrownia', oil: 'Elektrownia olejowa', gas_ocgt: 'Turbiny gazowe', gas_ccgt: 'Elektrociepłownia gazowa', nuclear: 'Elektrownia jądrowa', smr: 'SMR', wind: 'Farma wiatrowa', wind_offshore: 'Morska farma', solar: 'Farma PV', csp: 'Elektrownia słoneczna', geothermal: 'Geotermia', biomass: 'Elektrownia na biomasę', battery: 'Magazyn energii', fusion: 'Elektrownia termojądrowa', hydro_small: 'MEW', substation: 'Stacja', coal_mine: 'Kopalnia', lignite_mine: 'Odkrywka', gas_well: 'Odwierty' }[id] || t.short;
     const base = pre + ' ' + (c ? PN.cityName(c, G.y) : '');
-    let n = base, k = 2; const roman = ['', '', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+    let n = base, k = 2; const roman = ['', '', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
     while (G.nodes.some((q) => q.name === n)) { n = base + ' ' + (roman[k] || k); k++; }
     return n;
   }
@@ -4504,6 +4584,7 @@ window.PN_EVENTS_US = [
     return PN.tv(t.capex, y, G.code) * subsidy(G, catOf(n.tech) || '') * n.unitMW * 1000 * 1.05;
   };
   PN.addUnit = function (G, n) {
+    if (n.owner === 'ipp') return false;
     if (!n.built || n.pending || n.units >= n.maxUnits) return false;
     const c = PN.unitCost(G, n); if (G.money < c) return false;
     if (G.fx.freezeUntil > ym(G)) return false;
@@ -4512,9 +4593,9 @@ window.PN_EVENTS_US = [
     return true;
   };
   PN.retrofitCost = (G, n) => n.cap * 1000 * (n.tech === 'lignite' ? 170 : 150);
-  PN.retrofit = function (G, n) { const c = PN.retrofitCost(G, n); if (n.fgd || G.money < c) return false; G.money -= c; G.capexYear += c; n.fgd = true; return true; };
+  PN.retrofit = function (G, n) { const c = PN.retrofitCost(G, n); if (n.owner === 'ipp' || n.fgd || G.money < c) return false; G.money -= c; G.capexYear += c; n.fgd = true; return true; };
   PN.lifeExtCost = (G, n) => n.cost * 0.3;
-  PN.extendLife = function (G, n) { const c = PN.lifeExtCost(G, n); if (G.money < c) return false; G.money -= c; G.capexYear += c; n.age = Math.max(0, n.age - 20); n.eff = Math.max(n.eff, (PN.TECH[n.tech].eff ? PN.tv(PN.TECH[n.tech].eff, ym(G) - 10, G.code) : 1)); return true; };
+  PN.extendLife = function (G, n) { const c = PN.lifeExtCost(G, n); if (n.owner === 'ipp' || G.money < c) return false; G.money -= c; G.capexYear += c; n.age = Math.max(0, n.age - 20); n.eff = Math.max(n.eff, (PN.TECH[n.tech].eff ? PN.tv(PN.TECH[n.tech].eff, ym(G) - 10, G.code) : 1)); return true; };
   PN.repairCost = (G, o) => (o.cost || 0) * (o.a ? 0.25 : 0.3);
   PN.repair = function (G, o) { const c = PN.repairCost(G, o); if (!o.dmg || G.money < c) return false; G.money -= c; o.dmg = false; return true; };
 
@@ -4557,7 +4638,7 @@ window.PN_EVENTS_US = [
     const cost = (km * PN.tv(t.cost, y) * mult + (t.fixed ? PN.tv(t.fixed, y) : 0)) * subsidy(G, 'grid');
     const buildM = Math.round(PN.clamp(3 + (km / 30) * (1 + (cap > 500 ? 1 : 0)), 3, 54) * (G.rep < 30 ? 1.3 : 1));
     Object.assign(r, { km, cap, lossK, cost, buildM, seaFrac, protN, fullLoss: lossK * km + (t.convLoss || 0) });
-    if (km > t.maxKm * 1.6) { r.why = 'Za długa dla tego napięcia (maks. ok. ' + t.maxKm + ' km). Wybierz wyższe napięcie.'; return r; }
+    if (km > t.maxKm * 1.6) { r.why = 'Za długa dla tego napięcia (maks. ok. ' + Math.round(t.maxKm * 1.6) + ' km, rozsądnie do ' + t.maxKm + ' km). Wybierz wyższe napięcie.'; return r; }
     if (G.money < cost) { r.why = 'Brakuje pieniędzy: potrzeba ' + PN.money(cost) + '.'; r.poor = true; return r; }
     r.ok = true; return r;
   };
@@ -4798,13 +4879,67 @@ window.PN_EVENTS_US = [
     return { mineCost, mineRev };
   }
 
+  /* ---------------------------------------------- where does the power go? */
+  /* Proportional sharing (Bialek): power arriving at a node is a mix of everything that flowed in,
+     and leaves (to consumers and onward lines) in the same proportions. The optimal flow has no
+     cycles because every line has a positive cost, so a topological pass is enough. */
+  function traceSample(G, act, idx, lines, lf, inj, outW, w) {
+    const N = act.length, P = new Float64Array(N), deg = new Int32Array(N), inE = new Array(N), outE = new Array(N), edges = [];
+    for (let k = 0; k < N; k++) P[k] = inj[k];
+    for (let q = 0; q < lines.length; q++) {
+      const f = lf[q]; if (!(Math.abs(f) > 1e-6)) continue;
+      const a = idx.get(lines[q].a), b = idx.get(lines[q].b), from = f > 0 ? a : b, to = f > 0 ? b : a;
+      edges.push([from, to, Math.abs(f)]); P[to] += Math.abs(f); deg[to]++;
+      (inE[to] || (inE[to] = [])).push(edges.length - 1); (outE[from] || (outE[from] = [])).push(edges.length - 1);
+    }
+    const order = [], stack = []; for (let k = 0; k < N; k++) if (!deg[k]) stack.push(k);
+    while (stack.length) { const k = stack.pop(); order.push(k); for (const ei of outE[k] || []) { const t = edges[ei][1]; if (--deg[t] === 0) stack.push(t); } }
+    if (order.length < N) return;
+    const comp = new Array(N);
+    for (const k of order) {
+      const c = new Map(), n = act[k];
+      if (inj[k] > 1e-6) c.set(n.id, inj[k]);
+      for (const ei of inE[k] || []) {
+        const [from, , fw] = edges[ei], cf = comp[from]; if (!cf || !(P[from] > 0)) continue;
+        const sh = fw / P[from]; for (const [src, mw] of cf) { const v = mw * sh; if (v > 1e-5) c.set(src, (c.get(src) || 0) + v); }
+      }
+      comp[k] = c;
+      if (outW[k] > 1e-6 && P[k] > 0) {
+        const sh = Math.min(1, outW[k] / P[k]); n._src = n._src || {};
+        for (const [src, mw] of c) {
+          const e = mw * sh * w; if (e <= 0) continue;
+          n._src[src] = (n._src[src] || 0) + e;
+          const sn = G.byId[src]; if (sn) { sn._dst = sn._dst || {}; sn._dst[n.id] = (sn._dst[n.id] || 0) + e; }
+        }
+      }
+    }
+  }
+  function finishTrace(G) {
+    const top = (o) => { if (!o) return null; const a = Object.keys(o).map((k) => [+k, o[k]]).filter((x) => x[1] > 0).sort((p, q) => q[1] - p[1]); const tot = a.reduce((s, x) => s + x[1], 0); return tot > 0 ? { tot, list: a.slice(0, 8) } : null; };
+    for (const n of G.nodes) { n.srcTop = top(n._src); n.dstTop = top(n._dst); n._src = null; n._dst = null; }
+  }
+  /* lines that carry power towards (up) or away from (down) a node in the peak hour */
+  PN.traceLines = function (G, node, dir) {
+    const res = new Set(), seen = new Set([node.id]), q = [node.id];
+    while (q.length) {
+      const id = q.shift(), n = G.byId[id]; if (!n || !n.links) continue;
+      for (const lid of n.links) {
+        const l = G.byId[lid]; if (!l || !l.built || !(Math.abs(l.flow) > 1e-4)) continue;
+        const into = (l.b === id && l.flow > 0) || (l.a === id && l.flow < 0);
+        if ((dir === 'up') !== into) continue;
+        res.add(l.id); const other = l.a === id ? l.b : l.a; if (!seen.has(other)) { seen.add(other); q.push(other); }
+      }
+    }
+    return res;
+  };
+
   /* ------------------------------------------------------------- dispatch */
   const mcf = new PN.MCF();
   function dispatch(G) {
     const y = ym(G), sc = G.sc, M = G.map, days = PN.DAYS[G.m], W8 = 3 * days;
     const co2p = PN.curve(sc.co2, y), np = PN.curve(sc.neighborPrice, y) * fuelMult(G, 'gas') ** 0.5;
     const prof = profile(G);
-    for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; }
+    for (const n of G.nodes) { n.gen = 0; n.servedE = 0; n.demE = 0; n.peakGen = 0; n.chg = 0; n.dis = 0; n.imp = 0; n.exp = 0; n.co2 = 0; n.servedPk = 0; n.demPk = 0; n.genS = null; n._src = null; n._dst = null; }
     const act = G.nodes.filter((n) => n.built && !n.dmg && (n.type !== 'city' || PN.cityOwned(G, n)) && n.on !== false);
     const idx = new Map(); act.forEach((n, k) => idx.set(n.id, k));
     const N = act.length, S = N, T = N + 1;
@@ -4835,6 +4970,7 @@ window.PN_EVENTS_US = [
           n.mc = (n.fuelPrice * 3.6) / n.eff + PN.tv(t.vom, y) + (co2p * f.co2 * 3.6) / n.eff;
         } else if (t.dispatch === 'nuclear') n.mc = PN.curve(sc.fuel[t.fuel === 'fusion' ? 'fusion' : 'uranium'], y) + PN.tv(t.vom, y);
         else n.mc = 0.5 + (PN.tv(t.vom, y) || 0);
+        if (n.owner === 'ipp' && (t.dispatch === 'thermal' || t.dispatch === 'nuclear')) n.mc = n.ppa;
         for (let s = 0; s < 8; s++) {
           if (t.dispatch === 'wind') {
             const loc = 1 + 0.35 * (PN.vnoise(n.x / 12 + wx.seed, n.y / 12, 5) - 0.5);
@@ -4917,15 +5053,16 @@ window.PN_EVENTS_US = [
         }
       }
       mcf.solve(S, T, K);
+      const inj = new Float64Array(N), outW = new Float64Array(N), lf = new Float64Array(lines.length);
       // read results
       for (const [k, e, , kind] of ge) {
-        const f = mcf.flow(e); const n = act[k];
+        const f = mcf.flow(e); const n = act[k]; inj[k] += f;
         if (kind === 'imp') { n.imp = (n.imp || 0) + f * W8; impE += f * W8; impCost += f * W8 * (np * 1.08); continue; }
         n.gen += f * W8; n.peakGen = Math.max(n.peakGen, f); n.genS = n.genS || []; n.genS[s] = f;
         if (PN.TECH[n.tech].dispatch === 'storage') { n.soc = Math.max(0, n.soc - f * 3); n.dis += f * W8; }
       }
       for (const [k, e, kind] of de) {
-        const f = mcf.flow(e); const n = act[k];
+        const f = mcf.flow(e); const n = act[k]; outW[k] += f;
         if (kind === 'chg') { n.soc += f * 3 * (PN.TECH[n.tech].rte || 0.85); n.chg += f * W8; chgE += f * W8; continue; }
         if (kind === 'exp') { n.exp = (n.exp || 0) + f * W8; expE += f * W8; expRev += f * W8 * np * 0.92; continue; }
         const served = f / (1 + lam);
@@ -4933,11 +5070,12 @@ window.PN_EVENTS_US = [
         if (s === pkS) n.servedPk = served;
       }
       for (let q = 0; q < lines.length; q++) {
-        const l = lines[q]; const f = mcf.flow(le[q][0]) - mcf.flow(le[q][1]);
+        const l = lines[q]; const f = mcf.flow(le[q][0]) - mcf.flow(le[q][1]); lf[q] = f;
         const af = Math.abs(f); if (af > l.fMax) l.fMax = af; l.fSum += af;
         if (s === pkS) l.fPk = f;
         if (!l.local) { const loss = (l.lossK * l.km * af * af) / l.cap + (PN.TECH[l.type].convLoss || 0) * af; l.lossE += loss * W8; lossE += loss * W8; }
       }
+      if (PN.traceOn !== false) traceSample(G, act, idx, lines, lf, inj, outW, W8);
       // genS for plants not dispatched in this sample
       for (const n of act) if (n.type === 'plant') { n.genS = n.genS || []; if (n.genS[s] == null) n.genS[s] = 0; }
       // demand accounting
@@ -4946,6 +5084,7 @@ window.PN_EVENTS_US = [
       G._sampleGen = G._sampleGen || [];
     }
     for (const n of act) if (n.genS) { for (let s = 0; s < 8; s++) if (n.genS[s] == null) n.genS[s] = 0; }
+    finishTrace(G);
     unservedE = Math.max(0, demandE - servedE);
     for (const n of act) if (n.type === 'mine') n.powered = n.demE > 0 ? n.servedE / n.demE : 0;
     for (const l of lines) { l.load = l.fMax / l.cap; l.avg = l.fSum / 8; l.flow = l.fPk; }
@@ -4973,12 +5112,14 @@ window.PN_EVENTS_US = [
     const y = ym(G);
     if (G.m === 0) yearly(G);
     fireEvents(G);
+    discoverTech(G);
     randomEvents(G);
     syncBorders(G);
     syncIndustry(G);
     G.wx = weather(G);
     construction(G);
     energize(G);
+    ippMonthly(G);
     updateCities(G);
     G.urbanPop = G.cities.reduce((s, c) => s + (PN.cityOwned(G, c) ? c.pop : 0), 0);
     if (G.prosumer && G.prosumer.until > y) G.prosumerMW += G.prosumer.mwPerYear / 12;
@@ -4990,6 +5131,7 @@ window.PN_EVENTS_US = [
     reputation(G, D);
     checkMissions(G);
     offers(G);
+    ippOffers(G);
     record(G, D, F);
     bankruptcy(G);
     PN.bus.emit('month', G);
@@ -5073,12 +5215,19 @@ window.PN_EVENTS_US = [
   function finance(G, D, fl) {
     const y = ym(G), sc = G.sc;
     const price = PN.curve(sc.price, y), dcost = PN.curve(sc.dcost, y), co2p = D.co2p;
-    let rev = 0, fuel = 0, co2 = 0, co2t = 0, om = 0, grid = 0, dist = 0, retail = 0, interest = 0, penalty = 0;
+    let rev = 0, fuel = 0, co2 = 0, co2t = 0, om = 0, grid = 0, dist = 0, retail = 0, interest = 0, penalty = 0, ipp = 0;
     for (const c of G.cities) if (PN.cityOwned(G, c)) { rev += c.servedE * price; retail += c.servedE * dcost; }
     for (const n of G.nodes) {
       if (n.type === 'load' && n.built) {
         rev += n.servedE * price * (1 + (n.premium || 0)) * (n.kind === 'datacenter' ? 0.75 : 0.85);
         if (n.contract && n.demE > 0 && n.servedE < n.demE * 0.9) { penalty += (n.demE - n.servedE) * price * 0.5; }
+      }
+      if (n.type === 'plant' && n.built && n.owner === 'ipp') {
+        const t = PN.TECH[n.tech];
+        ipp += (n.gen || 0) * (n.ppa || 0);
+        if (t.dispatch === 'thermal') { const t2 = ((n.gen * 3.6) / n.eff) * PN.FUELS[t.fuel].co2; co2t += t2; n.co2 = t2; }
+        n.lastCF = n.cap > 0 ? n.gen / (n.cap * 24 * PN.DAYS[G.m]) : 0;
+        continue;
       }
       if (n.type === 'plant' && n.built) {
         const t = PN.TECH[n.tech];
@@ -5097,10 +5246,10 @@ window.PN_EVENTS_US = [
     for (const c of G.cities) dist += (c.distCap * 1000 * PN.curve(sc.distCost, y) * 0.02) / 12;
     interest = (G.debt * PN.loanRate(G)) / 12;
     rev += D.expRev;
-    const cost = fuel + co2 + om + grid + dist + retail + interest + D.impCost + fl.mineCost + penalty;
+    const cost = fuel + co2 + om + grid + dist + retail + interest + D.impCost + fl.mineCost + penalty + ipp;
     const profit = rev + fl.mineRev - cost;
     G.money += profit;
-    return { rev: rev + fl.mineRev, fuel, co2, co2t, om, grid, dist, retail, interest, imp: D.impCost, mine: fl.mineCost - fl.mineRev, penalty, profit, price };
+    return { rev: rev + fl.mineRev, fuel, co2, co2t, om, grid, dist, retail, interest, imp: D.impCost, mine: fl.mineCost - fl.mineRev, penalty, ipp, profit, price };
   }
 
   function reputation(G, D) {
@@ -5204,6 +5353,7 @@ window.PN_EVENTS_US = [
       applyEffects(G, ev);
       PN.news(G, ev.title, 'event', { ev: ev.id });
       PN.bus.emit('event', ev);
+      if (G._trans) { PN.bus.emit('transformation', G._trans); G._trans = null; } // explained right after the newspaper
     }
   }
   PN.regionToTiles = function (G, r) { const t = G.map.toTile(r.lon, r.lat); return { x: t[0], y: t[1], r: (r.radiusKm || 100) / G.map.T }; };
@@ -5228,6 +5378,7 @@ window.PN_EVENTS_US = [
           case 'regime': G.regime = e.regime; break;
           case 'prosumer': G.prosumer = { mwPerYear: e.mwPerYear, until: y + (e.years || 5) }; break;
           case 'territory': G.terr[e.change] = true; break;
+          case 'ipp': if (G.ippScope !== 'all') { G.ippScope = e.scope || 'all'; G._trans = { scope: G.ippScope, ev: ev.id }; } break;
           default: break;
         }
       } catch (err) { console.warn('effect failed', e, err); }
@@ -5258,12 +5409,12 @@ window.PN_EVENTS_US = [
     if (k) PN.news(G, 'Awarie sieci: ' + k + ' ' + PN.plural(k, 'linia wyłączona', 'linie wyłączone', 'linii wyłączonych') + '.', 'warn');
   }
   PN.repairAll = function (G) {
-    let c = 0; for (const o of G.nodes.concat(G.lines)) if (o.dmg) c += PN.repairCost(G, o);
+    let c = 0; for (const o of G.nodes.concat(G.lines)) if (o.dmg && o.owner !== 'ipp') c += PN.repairCost(G, o);
     if (G.money < c) return false;
-    for (const o of G.nodes.concat(G.lines)) if (o.dmg) { G.money -= PN.repairCost(G, o); o.dmg = false; }
+    for (const o of G.nodes.concat(G.lines)) if (o.dmg && o.owner !== 'ipp') { G.money -= PN.repairCost(G, o); o.dmg = false; }
     return true;
   };
-  PN.repairAllCost = (G) => G.nodes.concat(G.lines).reduce((s, o) => s + (o.dmg ? PN.repairCost(G, o) : 0), 0);
+  PN.repairAllCost = (G) => G.nodes.concat(G.lines).reduce((s, o) => s + (o.dmg && o.owner !== 'ipp' ? PN.repairCost(G, o) : 0), 0);
 
   /* random weather & incidents (on top of the historical calendar) */
   function randomEvents(G) {
@@ -5333,6 +5484,110 @@ window.PN_EVENTS_US = [
   };
   PN.declineOffer = function (G, o) { G.offers = G.offers.filter((x) => x !== o); };
 
+  /* ------------------------------------------- independent power producers */
+  /* After the market opens (USA: PURPA 1978 for small producers, FERC Order 888 in 1996 for everyone;
+     Poland: Energy Law 1997) private investors bring their own projects. The player, as the grid
+     company, decides whether to connect them and then buys their energy at the contract price. */
+  const IPP_NAMES = {
+    PL: ['EkoMoc', 'Zielony Most Energia', 'Karpacka Moc', 'Nadwiślańska Energia', 'Bałtycki Horyzont', 'Polna Iskra', 'Jantar Power', 'Grot Energia', 'Kaszubska Energia', 'Mazowiecka Moc', 'Iskra Inwestycje', 'Warta Energia Nowa'],
+    US: ['Blue Heron Power', 'Copper Mesa Energy', 'Cascade Current', 'Lone Pine Energy', 'Red Rock Generation', 'Silver Creek Power', 'Prairie Star Energy', 'Harbor Light Power', 'Juniper Ridge Energy', 'Bluebonnet Power', 'Maple Hollow Energy', 'Sandstone Power Co.'],
+  };
+  function ippMenu(G, y) {
+    const w = {}, add = (id, v) => { if (v > 0 && PN.TECH[id] && PN.techAvail(G, id)) w[id] = (w[id] || 0) + v; };
+    if (G.ippScope === 'small') { add('gas_ccgt', 2); add('gas_ocgt', 1); add('wind', 3); add('hydro_small', 1.5); add('biomass', 1.5); add('geothermal', 1); add('solar', 0.4); add('csp', 0.4); return w; }
+    add('wind', G.rules.wind_distance_km >= 1 ? 0.3 : 3);
+    add('solar', y < 2010 ? 0.3 : y < 2018 ? 2 : 4);
+    add('gas_ccgt', y < 2015 ? 2.5 : 1);
+    add('biomass', 0.8); add('battery', y < 2020 ? 0.5 : 2.5); add('wind_offshore', 1.2);
+    add('smr', y < 2035 ? 0.4 : 1); add('geothermal', 0.6); add('hydro_small', 0.4); add('csp', 0.5);
+    return w;
+  }
+  function ippTargetMW(G, id, y, r) {
+    const k = PN.clamp((y - 1995) / 30, 0, 1.4), us = G.code === 'US' ? 1.6 : 1;
+    const mw = { wind: 20 + r() * (40 + 120 * k), wind_offshore: 400 + r() * 800, solar: 5 + r() * (20 + 200 * k), gas_ccgt: 150 + r() * 350, gas_ocgt: 40 + r() * 120,
+      battery: 20 + r() * (40 + 160 * k), smr: 300, biomass: 15 + r() * 40, geothermal: 20 + r() * 60, hydro_small: 2 + r() * 8, csp: 50 + r() * 200 }[id] || 50;
+    return mw * (id === 'smr' || id === 'wind_offshore' ? 1 : us);
+  }
+  function ippSite(G, id, r) {
+    const M = G.map, offshore = id === 'wind_offshore';
+    // investors look for the grid and for demand: anything powered, plus every big town
+    const anchors = G.nodes.filter((n) => n.built && !n.dmg && (n.type === 'city' ? PN.cityOwned(G, n) && (n.energized || n.pop > 100000) : (n.type === 'sub' || n.type === 'plant') && n.energized));
+    const pool = offshore ? anchors.filter((n) => M.distSea[M.idx(Math.floor(n.x), Math.floor(n.y))] * M.T < 60) : anchors;
+    if (!pool.length) return null;
+    let best = null, bs = -1e9;
+    for (let k = 0; k < 80; k++) {
+      const base = pool[Math.floor(r() * pool.length)];
+      const radT = (id === 'battery' ? 6 : offshore ? 40 + r() * 60 : 15 + r() * 55) / M.T, a = r() * 6.2832, d = radT * Math.sqrt(r());
+      const tx = Math.floor(base.x + Math.cos(a) * d), ty = Math.floor(base.y + Math.sin(a) * d);
+      const c = PN.canPlace(G, id, tx, ty, { free: true }); if (!c.ok) continue;
+      const km = Math.hypot(tx + 0.5 - base.x, ty + 0.5 - base.y) * M.T;
+      const sc = (c.cf || 0.3) * 4 - km / 120 + (id === 'battery' && c.city ? 1 : 0) + r() * 0.3;
+      if (sc > bs) { bs = sc; best = { tx, ty, c, km }; }
+    }
+    return best;
+  }
+  PN.ippNet = (G) => { const y = ym(G); return Math.max(1, PN.curve(G.sc.price, y) - PN.curve(G.sc.dcost, y)); };
+  function ippOffers(G) {
+    const y = ym(G), r = G.rnd;
+    G.ippOffers = (G.ippOffers || []).filter((o) => o.expires > y);
+    G.ippStats = G.ippStats || { offered: 0, accepted: 0, declined: 0 };
+    if (!G.ippScope || G.fx.freezeUntil > y) return;
+    const p = G.ippScope === 'small' ? 0.035 : y < 2010 ? 0.05 : y < 2020 ? 0.08 : 0.1;
+    if (G.ippOffers.length >= 2 || r() > p) return;
+    const menu = ippMenu(G, y), ids = Object.keys(menu); if (!ids.length) return;
+    let q = r() * ids.reduce((s, k) => s + menu[k], 0), id = ids[0];
+    for (const k of ids) { q -= menu[k]; if (q <= 0) { id = k; break; } }
+    const site = ippSite(G, id, r); if (!site) return;
+    const c = site.c, units = PN.clamp(Math.round(ippTargetMW(G, id, y, r) / Math.max(0.1, c.unitMW)), 1, Math.max(1, c.maxUnits || 4));
+    const kp = { wind: PN.curve([[1981, 1.05], [2005, 0.85], [2015, 0.7], [2025, 0.55], [2040, 0.45]], y), wind_offshore: PN.curve([[2016, 1.0], [2025, 0.8], [2040, 0.6]], y),
+      solar: PN.curve([[1982, 1.6], [2010, 1.1], [2018, 0.7], [2025, 0.5], [2040, 0.38]], y), csp: 1.1, gas_ccgt: 0.85, gas_ocgt: 1.05, battery: 0.9, smr: 0.95, biomass: 0.95, geothermal: 0.8, hydro_small: 0.75 }[id] || 0.9;
+    const names = IPP_NAMES[G.code] || IPP_NAMES.PL;
+    const near = nearestCity(G, site.tx + 0.5, site.ty + 0.5, null, true);
+    const o = { id: 'ipp' + G.months + '_' + Math.floor(r() * 1e4), company: names[Math.floor(r() * names.length)], tech: id, tx: site.tx, ty: site.ty, units, unitMW: c.unitMW, cap: c.unitMW * units,
+      capex: c.cost * units, buildM: c.buildM, cf: c.cf || 0, ppa: PN.ippNet(G) * kp * (0.92 + r() * 0.16), years: id === 'battery' ? 12 : 15 + Math.floor(r() * 3) * 5,
+      gridKm: site.km, inCity: !!c.city, near: near ? near.id : null, expires: y + 0.75 };
+    G.ippOffers.push(o); G.ippStats.offered++;
+    PN.bus.emit('ipp', o);
+  }
+  PN.acceptIpp = function (G, o) {
+    const y = ym(G);
+    G.ippOffers = (G.ippOffers || []).filter((x) => x !== o);
+    const c = PN.canPlace(G, o.tech, o.tx, o.ty, { free: true });
+    if (!c.ok) { PN.news(G, o.company + ' wycofuje projekt: ' + c.why, 'warn'); return null; }
+    const t = PN.TECH[o.tech], x = o.tx + 0.5, yy = o.ty + 0.5;
+    const n = addNode(G, {
+      type: 'plant', tech: o.tech, x, y: yy, name: autoName(G, o.tech, x, yy, c.site), built: false, prog: 0, buildM: c.buildM,
+      units: o.units, unitMW: c.unitMW, cap: c.unitMW * o.units, maxUnits: o.units, cost: 0, since: y, age: 0,
+      eff: t.eff ? PN.tv(t.eff, y, G.code) : 1, cf: c.cf || 0, site: c.site ? c.site.k : -1, on: true, fgd: true, soc: 0, fuelOK: 1, fuelPrice: 0, mc: 0,
+      hours: t.hours ? PN.tv(t.hours, y) : 0, owner: 'ipp', company: o.company, ppa: o.ppa, until: y + o.years, capex: o.capex,
+    });
+    if (c.city) linkLocal(G, n, c.city);
+    G.ippStats.accepted++;
+    PN.news(G, 'Umowa przyłączeniowa: ' + n.name + ' (' + PN.mw(n.cap) + ', inwestor ' + o.company + '). Gdy stanie, poprowadź do niej linię.', 'deal', { node: n.id });
+    PN.bus.emit('built', n);
+    return n;
+  };
+  PN.declineIpp = function (G, o) {
+    G.ippOffers = (G.ippOffers || []).filter((x) => x !== o); G.ippStats.declined++;
+    if (G.ippStats.declined % 4 === 0) { G.rep = Math.max(0, G.rep - 2); PN.news(G, 'Inwestorzy skarżą się na odmowy przyłączenia. Reputacja spada.', 'warn'); }
+  };
+  function ippMonthly(G) {
+    const y = ym(G);
+    for (const n of G.nodes.slice()) {
+      if (n.owner !== 'ipp') continue;
+      if (n.dmg) { n.dmgM = (n.dmgM || 0) + 1; if (n.dmgM > 12) { n.dmg = false; n.dmgM = 0; PN.news(G, n.company + ' odbudował ' + n.name + '.', 'build', { node: n.id }); } }
+      if (!n.built) continue;
+      if (n.until && y >= n.until) { n.ppa *= 0.8; n.until = y + 10; PN.news(G, 'Nowa umowa z ' + n.company + ' (' + n.name + '): energia tańsza o 20%.', 'deal', { node: n.id }); }
+      const linked = n.links.some((id) => { const l = G.byId[id]; return l && l.built && !l.dmg; });
+      if (linked) { if (n.waiting) { n.waiting = 0; PN.news(G, n.name + ' przyłączona do sieci.', 'build', { node: n.id }); } continue; }
+      n.waiting = (n.waiting || 0) + 1;
+      if (n.waiting === 1) PN.news(G, n.name + ' (' + n.company + ') czeka na przyłączenie. Masz rok na linię do sieci.', 'warn', { node: n.id });
+      if (n.waiting > 12) G.rep = Math.max(0, G.rep - 0.25);
+      if (n.waiting === 13) PN.news(G, n.company + ' skarży się na brak przyłączenia (' + n.name + '). Reputacja spada co miesiąc.', 'warn', { node: n.id });
+      if (n.waiting > 36) { PN.news(G, n.company + ' rezygnuje z ' + n.name + ' po trzech latach bez przyłączenia.', 'warn'); PN.demolish(G, n); }
+    }
+  }
+
   function bankruptcy(G) {
     if (G.money < 0) {
       const need = -G.money * 1.1 + 1;
@@ -5348,14 +5603,14 @@ window.PN_EVENTS_US = [
 
   /* -------------------------------------------------------------- save/load */
   PN.serialize = function (G) {
-    const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; return c; };
+    const strip = (o) => { const c = Object.assign({}, o); delete c.src; delete c.demS; delete c.capS; delete c.genS; delete c.srcTop; delete c.dstTop; delete c._src; delete c._dst; return c; };
     return JSON.stringify({ v: 1, code: G.code, y: G.y, m: G.m, months: G.months, money: G.money, debt: G.debt, rep: G.rep, nodes: G.nodes.map(strip), lines: G.lines, nextId: G.nextId,
       unlocked: G.unlocked, rules: G.rules, terr: G.terr, regime: G.regime, fx: G.fx, lambda: G.lambda, prosumerMW: G.prosumerMW, prosumer: G.prosumer, fired: G.fired, missions: G.missions,
-      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone });
+      news: G.news.slice(0, 40), hist: G.hist, months12: G.months12, settings: G.settings, seed: G.seed, offers: G.offers, capexYear: G.capexYear, capexPrev: G.capexPrev, indDone: G.indDone, techSeen: G.techSeen, techGone: G.techGone, ippScope: G.ippScope, ippOffers: G.ippOffers, ippStats: G.ippStats });
   };
   PN.deserialize = function (str) {
     const S = JSON.parse(str); const G = PN.newGame(S.code);
-    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone'];
+    const keep = ['y', 'm', 'months', 'money', 'debt', 'rep', 'nextId', 'unlocked', 'rules', 'terr', 'regime', 'fx', 'lambda', 'prosumerMW', 'prosumer', 'fired', 'missions', 'news', 'hist', 'months12', 'settings', 'seed', 'offers', 'capexYear', 'capexPrev', 'indDone', 'techSeen', 'techGone', 'ippScope', 'ippOffers', 'ippStats'];
     for (const k of keep) if (S[k] !== undefined) G[k] = S[k];
     G.rnd = PN.rng(G.seed + G.months);
     const cityByCi = {}; G.cities.forEach((c) => (cityByCi[c.ci] = c));
@@ -6276,6 +6531,7 @@ window.PN_EVENTS_US = [
     this.drawLines();
     this.drawCities();
     this.drawNodes();
+    this.drawOffers();
     this.drawIncidents();
     this.drawTool();
     this.screenT();
@@ -6354,8 +6610,9 @@ window.PN_EVENTS_US = [
         if (G.nodes.some((n) => n.site === h.k && n.type === 'plant')) continue;
         const want = !tool || (tool === 'pumped' ? h.type === 'pumped' : tool === 'hydro_dam' ? h.type !== 'pumped' : true);
         if (!want) continue;
+        const live = PN.techAvail(G, h.type === 'pumped' ? 'pumped' : h.type === 'ror' ? 'hydro_small' : 'hydro_dam') || (h.type === 'ror' && PN.techAvail(G, 'hydro_dam'));
         const x = h.tx + 0.5, yy = h.ty + 0.5, r = 0.32;
-        ctx.globalAlpha = 0.9; ctx.strokeStyle = th.water; ctx.lineWidth = 1.4 / s;
+        ctx.globalAlpha = live ? 0.9 : 0.3; ctx.strokeStyle = th.water; ctx.lineWidth = 1.4 / s;
         ctx.beginPath(); ctx.arc(x, yy, r, 0, 6.3); ctx.stroke();
         ctx.beginPath(); for (let k = 0; k < 2; k++) { const yy2 = yy - 0.06 + k * 0.12; ctx.moveTo(x - 0.18, yy2); ctx.quadraticCurveTo(x - 0.09, yy2 - 0.07, x, yy2); ctx.quadraticCurveTo(x + 0.09, yy2 + 0.07, x + 0.18, yy2); } ctx.stroke();
         if (h.type === 'pumped') { ctx.beginPath(); ctx.moveTo(x, yy - 0.42); ctx.lineTo(x, yy - 0.55); ctx.moveTo(x - 0.05, yy - 0.5); ctx.lineTo(x, yy - 0.55); ctx.lineTo(x + 0.05, yy - 0.5); ctx.stroke(); }
@@ -6380,9 +6637,10 @@ window.PN_EVENTS_US = [
     for (const p of list) {
       const t = M.toTile(p.lon, p.lat); const tech = PN.TECH[p.tech];
       const future = p.year > y;
-      ctx.globalAlpha = future ? 0.45 : 0.8; ctx.strokeStyle = (tech && tech.color) || th.ink; ctx.lineWidth = 1.6 / s; ctx.setLineDash([2.5 / s, 2.5 / s]);
+      if (future && this.cam.z < 0.9) continue;
+      ctx.globalAlpha = future ? 0.25 : 0.8; ctx.strokeStyle = (tech && tech.color) || th.ink; ctx.lineWidth = 1.6 / s; ctx.setLineDash([2.5 / s, 2.5 / s]);
       const r = Math.max(0.35, 9 / s); ctx.beginPath(); ctx.arc(t[0], t[1], r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
-      if (this.cam.z > 0.7) { ctx.fillStyle = th.ink; ctx.font = '600 ' + (12 / s) + 'px Caveat, cursive'; ctx.fillText(p.name + ' · ' + p.year, t[0], t[1] + r * 1.15); }
+      if (this.cam.z > (future ? 1.2 : 0.7)) { ctx.fillStyle = th.ink; ctx.font = (future ? 'italic 500 ' : '600 ') + (12 / s) + 'px Caveat, cursive'; ctx.fillText(future ? p.name + ' · w historii ' + p.year : p.name + ' · ' + p.year, t[0], t[1] + r * 1.15); }
     }
     ctx.restore();
   };
@@ -6392,17 +6650,18 @@ window.PN_EVENTS_US = [
     const kindFor = { coal_mine: 'coal', lignite_mine: 'lignite', lignite: 'lignite', gas_well: 'gas', geothermal: 'geothermal' }[tool];
     for (const d of M.deposits) {
       if (kindFor && d.kind !== kindFor) continue;
-      const col = th[DEP_COL[d.kind]] || DEP_COL[d.kind] || th.ink;
-      ctx.save();
+      const st = d.kind === 'geothermal' ? { ok: PN.techAvail(G, 'geothermal') } : PN.depositState(G, d), live = st.ok;
+      const col = live ? th[DEP_COL[d.kind]] || DEP_COL[d.kind] || th.ink : th.ink;
+      ctx.save(); ctx.globalAlpha = live ? 1 : 0.32;
       const p = new Path2D();
       if (d.ring) { p.moveTo(d.ring[0], d.ring[1]); for (let i = 2; i < d.ring.length; i += 2) p.lineTo(d.ring[i], d.ring[i + 1]); p.closePath(); }
       else p.arc(d.x, d.y, Math.max(0.7, d.r || 1), 0, 6.3);
       ctx.clip(p);
       const bb = d.ring ? bbox(d.ring) : { x: d.x - (d.r || 1), y: d.y - (d.r || 1), w: 2 * (d.r || 1), h: 2 * (d.r || 1) };
-      S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, d.kind === 'coal' ? 0.8 : d.kind === 'lignite' ? -0.5 : 1.3, d.kind === 'coal' ? 0.18 : 0.26, PN.rng(d.k + 9), { color: col, w: 1.1 / s, alpha: 0.55 });
-      if (d.kind === 'coal') S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, -0.8, 0.26, PN.rng(d.k + 19), { color: col, w: 0.8 / s, alpha: 0.35 });
+      S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, d.kind === 'coal' ? 0.8 : d.kind === 'lignite' ? -0.5 : 1.3, live ? (d.kind === 'coal' ? 0.18 : 0.26) : 0.42, PN.rng(d.k + 9), { color: col, w: 1.1 / s, alpha: live ? 0.6 : 0.5 });
+      if (d.kind === 'coal' && live) S.hatch(ctx, bb.x - 0.5, bb.y - 0.5, bb.w + 1, bb.h + 1, -0.8, 0.26, PN.rng(d.k + 19), { color: col, w: 0.8 / s, alpha: 0.35 });
       ctx.restore();
-      ctx.globalAlpha = 0.85; ctx.strokeStyle = col; ctx.lineWidth = 1.4 / s; ctx.stroke(p); ctx.globalAlpha = 1;
+      ctx.globalAlpha = live ? 0.9 : 0.4; ctx.strokeStyle = col; ctx.lineWidth = (live ? 1.8 : 1.1) / s; if (!live) ctx.setLineDash([4 / s, 4 / s]); ctx.stroke(p); ctx.setLineDash([]); ctx.globalAlpha = 1;
     }
   };
   function bbox(r) { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let i = 0; i < r.length; i += 2) { x0 = Math.min(x0, r[i]); x1 = Math.max(x1, r[i]); y0 = Math.min(y0, r[i + 1]); y1 = Math.max(y1, r[i + 1]); } return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }; }
@@ -6497,7 +6756,9 @@ window.PN_EVENTS_US = [
       const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue;
       if (Math.max(a.x, b.x) < vr.x0 || Math.min(a.x, b.x) > vr.x1 || Math.max(a.y, b.y) < vr.y0 || Math.min(a.y, b.y) > vr.y1) continue;
       const g = this.geo(l), w = (LW[l.type] || 1.2) * PN.clamp(z * 0.9, 0.7, 1.7);
-      if (l.local) { ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.45; ctx.lineWidth = px(0.9); ctx.setLineDash([px(2), px(3)]); ctx.stroke(g.path); ctx.setLineDash([]); ctx.globalAlpha = 1; continue; }
+      const traced = this.trace && this.trace.lines.has(l.id);
+      if (traced) { ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.42; ctx.lineWidth = px((l.local ? 1 : w) + 9); ctx.stroke(g.path); ctx.globalAlpha = 1; }
+      if (l.local) { ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.6; ctx.lineWidth = px(1.1); ctx.setLineDash([px(2), px(3)]); ctx.stroke(g.path); ctx.setLineDash([]); ctx.globalAlpha = 1; continue; }
       const out = l.out > y, sel = this.sel === l;
       if (!l.built) {
         ctx.strokeStyle = th.ink; ctx.globalAlpha = 0.45; ctx.lineWidth = px(w * 0.8); ctx.setLineDash([px(5), px(5)]); ctx.stroke(g.path); ctx.setLineDash([]);
@@ -6664,7 +6925,9 @@ window.PN_EVENTS_US = [
       ctx.globalAlpha = building ? 0.38 : n.dmg ? 0.6 : n.on === false ? 0.5 : (n.type === 'load' && !n.links.length) || n.closed ? 0.5 : 1;
       ctx.drawImage(spr, ox, oy, w, w);
       ctx.globalAlpha = 1;
+      if (this.trace && this.trace.nodes.has(n.id) && n !== this.sel) { ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.9; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.ellipse(n.x, n.y - w * 0.2, w * 0.55, w * 0.45, 0, 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
       if (building) {
+        if (n.owner === 'ipp') this.flag(n.x - w * 0.36, n.y - w * 0.08, w, s);
         ctx.drawImage(PN.Sprites.get('construction'), ox, oy, w, w);
         const bw = w * 0.6, bx = n.x - bw / 2, by = n.y + 0.12;
         ctx.strokeStyle = th.ink; ctx.lineWidth = 1 / s; ctx.strokeRect(bx, by, bw, 4 / s);
@@ -6716,6 +6979,7 @@ window.PN_EVENTS_US = [
         g.addColorStop(0, hexA(col, 0.65 * pulse)); g.addColorStop(1, hexA(col, 0));
         ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(gx, gy, m.glow[2] * sc * 1.6, m.glow[3] * sc * 1.6, 0, 0, 6.3); ctx.fill(); ctx.restore();
       }
+      if (n.owner === 'ipp') this.flag(n.x - w * 0.36, n.y - w * 0.08, w, s);
       // not connected to anything: dangling plug marker
       if ((n.type === 'plant' || n.type === 'mine') && !n.links.length) {
         const bx = n.x + w * 0.38, by = n.y - w * 0.62, k2 = 7 / s;
@@ -6725,6 +6989,25 @@ window.PN_EVENTS_US = [
       if ((n.type === 'load' || n.type === 'mine') && n.links.length && n.demE > 0 && n.servedE < n.demE * 0.9) {
         ctx.fillStyle = th.red; ctx.font = 'bold ' + (16 / s) + 'px Caveat, cursive'; ctx.textAlign = 'center'; ctx.fillText('!', n.x + w * 0.35, n.y - w * 0.55);
       }
+    }
+  };
+  /* a small violet pennant: this plant belongs to a private investor */
+  View.prototype.flag = function (x, y, w, s) {
+    const ctx = this.ctx, th = S.th, hgt = Math.max(w * 0.42, 15 / s), fw = hgt * 0.62;
+    ctx.save(); ctx.strokeStyle = th.ink; ctx.lineWidth = 1.3 / s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - hgt); ctx.stroke();
+    ctx.fillStyle = th.violet; ctx.beginPath(); ctx.moveTo(x + 0.6 / s, y - hgt); ctx.lineTo(x + fw, y - hgt * 0.78); ctx.lineTo(x + 0.6 / s, y - hgt * 0.56); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  };
+  /* proposed sites of investor projects that wait for a decision */
+  View.prototype.drawOffers = function () {
+    const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), t = this.time;
+    for (const o of G.ippOffers || []) {
+      const x = o.tx + 0.5, y = o.ty + 0.5, foc = this.focusOffer === o, r = Math.max(0.45, 16 / s) * (foc ? 1 + 0.12 * Math.sin(t * 4) : 1);
+      ctx.save(); ctx.strokeStyle = th.violet; ctx.lineWidth = (foc ? 2.6 : 1.6) / s; ctx.setLineDash([5 / s, 4 / s]); ctx.globalAlpha = foc ? 1 : 0.75;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
+      const spr = PN.Sprites.get(o.tech); if (spr) { const w = Math.max(1.2, 26 / s), sc = w / PN.SPRITE_U, m = spr.meta; ctx.globalAlpha = 0.45; ctx.drawImage(spr, x - m.anchor[0] * sc, y - m.anchor[1] * sc, w, w); }
+      ctx.restore(); this.flag(x - r * 0.75, y - r * 0.2, Math.max(1.2, 26 / s), s);
     }
   };
   function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a.toFixed(3) + ')'; }
@@ -6737,6 +7020,7 @@ window.PN_EVENTS_US = [
       ctx.strokeStyle = i.kind === 'heat' ? th.orange : th.red; ctx.globalAlpha = 0.7 * a; ctx.lineWidth = 2 / s; ctx.setLineDash([8 / s, 6 / s]);
       ctx.beginPath(); ctx.arc(i.reg.x, i.reg.y, i.reg.r, 0, 6.3); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
     }
+    if (this.trace && this.trace.dir === 'down') for (const [id] of this.trace.nodes) { const c = this.G.byId[id]; if (!c || c.type !== 'city') continue; ctx.strokeStyle = th.yellow; ctx.globalAlpha = 0.9; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.arc(c.x, c.y, Math.max(0.4, c.rad * 0.85 + 0.15), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     for (const f of this.flash) { const a = PN.clamp((f.until - now) / 900, 0, 1); if (a <= 0) continue; ctx.strokeStyle = th.yellow; ctx.globalAlpha = a; ctx.lineWidth = 3 / s; ctx.beginPath(); ctx.arc(f.x, f.y, 1.4 * (1.6 - a), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     this.flash = this.flash.filter((f) => f.until > now);
   };
@@ -6744,7 +7028,10 @@ window.PN_EVENTS_US = [
   /* tool previews */
   View.prototype.drawTool = function () {
     const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), h = this.hover, tool = this.tool;
+    this.reachLabels = null;
     if (!tool || !h) return;
+    if (tool.kind === 'build' && h.check) this.drawReach(tool.id, h.tx + 0.5, h.ty + 0.5, h.check);
+    if (tool.kind === 'line') { const a = this.lineStart; this.lineReach(tool.id, a ? a.x : h.snap ? h.snap.x : h.tx + 0.5, a ? a.y : h.snap ? h.snap.y : h.ty + 0.5); }
     if (tool.kind === 'build' && h.check) {
       const tx = h.tx + 0.5, ty = h.ty + 0.5;
       ctx.strokeStyle = h.check.ok ? th.green : th.red; ctx.lineWidth = 2 / s; ctx.globalAlpha = 0.9; ctx.setLineDash([5 / s, 4 / s]);
@@ -6762,6 +7049,37 @@ window.PN_EVENTS_US = [
     }
     if (tool.kind === 'line' && h.snap) { ctx.strokeStyle = th.yellow; ctx.lineWidth = 3 / s; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(h.snap.x, h.snap.y, Math.max(0.45, 12 / s), 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1; }
     if (tool.kind === 'demolish' && h.pick) { const p = h.pick.obj; const x = p.a ? (G.byId[p.a].x + G.byId[p.b].x) / 2 : p.x, y = p.a ? (G.byId[p.a].y + G.byId[p.b].y) / 2 : p.y; ctx.strokeStyle = th.red; ctx.lineWidth = 3 / s; const k = Math.max(0.4, 12 / s); ctx.beginPath(); ctx.moveTo(x - k, y - k); ctx.lineTo(x + k, y + k); ctx.moveTo(x + k, y - k); ctx.lineTo(x - k, y + k); ctx.stroke(); }
+  };
+
+  /* how far power from a plant built here can travel: in the town by the low-voltage network,
+     further only by lines, and only as far as the voltages invented so far allow */
+  View.prototype.drawReach = function (id, x, y, check) {
+    const G = this.G, ctx = this.ctx, th = S.th, s = this.scale(), M = G.map, t = PN.TECH[id], L = [];
+    if (!t || (t.cat !== 'gen' && t.cat !== 'store')) return;
+    ctx.save(); ctx.lineWidth = 1.7 / s; ctx.setLineDash([7 / s, 5 / s]);
+    if (id === 'steam_dc') {
+      const c = check.city || PN.nearestCity(G, x, y, 3, true);
+      if (c) { const r = c.rad + 0.6; ctx.strokeStyle = check.ok ? th.water : th.red; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, 6.3); ctx.stroke(); L.push({ x: c.x, y: c.y - r, t: 'prąd stały 110 V: tylko to miasto (ok. 1,5 km)', c: check.ok ? th.water : th.red }); }
+    } else {
+      if (check.city) L.push({ x, y: y + 0.9, t: 'w mieście: zasila je wprost siecią nN', c: th.ink });
+      const lines = PN.LINE_ORDER.filter((lid) => PN.techAvail(G, lid) && !PN.TECH[lid].sea);
+      const show = lines.length ? [lines[0]].concat(lines.length > 1 ? [lines[lines.length - 1]] : []) : [];
+      for (const lid of show) {
+        const lt = PN.TECH[lid], r = lt.maxKm / (1.08 * M.T);
+        ctx.strokeStyle = th.water; ctx.globalAlpha = lid === show[0] ? 0.9 : 0.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.3); ctx.stroke();
+        L.push({ x, y: y - r, t: 'linia ' + lt.short + ': do ' + lt.maxKm + ' km', c: th.water });
+      }
+      if (!lines.length && !check.city) L.push({ x, y: y - 1, t: 'linii jeszcze nie ma – postaw ją w mieście', c: th.red });
+    }
+    ctx.restore(); this.reachLabels = L;
+  };
+  View.prototype.lineReach = function (id, x, y) {
+    const ctx = this.ctx, th = S.th, s = this.scale(), t = PN.TECH[id]; if (!t || !t.maxKm) return;
+    const r1 = t.maxKm / (1.08 * this.G.map.T), r2 = r1 * 1.6;
+    ctx.save(); ctx.strokeStyle = th.water; ctx.lineWidth = 1.7 / s;
+    ctx.setLineDash([7 / s, 5 / s]); ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(x, y, r1, 0, 6.3); ctx.stroke();
+    ctx.setLineDash([2 / s, 5 / s]); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(x, y, r2, 0, 6.3); ctx.stroke(); ctx.restore();
+    this.reachLabels = [{ x, y: y - r1, t: t.short + ': rozsądnie do ' + t.maxKm + ' km', c: th.water }, { x, y: y - r2, t: 'najdalej ok. ' + Math.round(t.maxKm * 1.6) + ' km', c: th.water, a: 0.7 }];
   };
 
   /* ------------------------------------------------------------------ labels */
@@ -6800,6 +7118,29 @@ window.PN_EVENTS_US = [
       const size = Math.round(PN.clamp(11 + 5.5 * Math.log10(c.pop / 30000), 12, 26) * PN.clamp(0.75 + z * 0.2, 0.8, 1.2));
       txt(PN.cityName(c, G.y), sx, sy + size * 0.35, size, th.label, { alpha: PN.cityOwned(G, c) ? 1 : 0.6 });
     }
+    // voltage written along the lines (and nN on a town's own network) when zoomed in
+    if (z > 1.25) for (const l of G.lines) {
+      if (!l.built) continue; const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue;
+      const [ax, ay] = this.toScreen(a.x, a.y), [bx, by] = this.toScreen(b.x, b.y); if (Math.hypot(bx - ax, by - ay) < (l.local ? 64 : 110)) continue;
+      const g = this.geo(l), [sx, sy] = this.toScreen((a.x + 2 * g.cx + b.x) / 4, (a.y + 2 * g.cy + b.y) / 4);
+      if (sx < -40 || sx > this.W + 40 || sy < -20 || sy > this.H + 20) continue;
+      const t = PN.TECH[l.type], lab = l.local ? 'nN' : t ? (Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, y) : t.kvLabel) || t.short : '';
+      txt(lab, sx, sy - 9, 12.5, th.ink, { alpha: 0.85, weight: 700 });
+    }
+    if (this.trace) for (const [id, sh] of this.trace.nodes) {
+      const n = G.byId[id]; if (!n || n === this.sel) continue; const [sx, sy] = this.toScreen(n.x, n.y);
+      if (sx < -30 || sx > this.W + 30 || sy < -30 || sy > this.H + 30) continue;
+      txt(PN.pct(sh, sh < 0.1 ? 1 : 0), sx + 20, sy - 26, 16, th.label, { weight: 700 });
+    }
+    if (this.overlay === 'res' || (this.tool && PN.RES_ORDER.indexOf(this.tool.id) >= 0)) for (const d of G.map.deposits) {
+      if (!d.name || z < 0.55) continue; const st = PN.depositState(G, d);
+      if (this.tool && PN.RES_ORDER.indexOf(this.tool.id) >= 0 && st.tech !== this.tool.id && !(st.why && PN.TECH[this.tool.id].fuel === d.kind)) continue;
+      const [sx, sy] = this.toScreen(d.x, d.y); if (sx < -80 || sx > this.W + 80 || sy < -30 || sy > this.H + 30) continue;
+      const lab = st.ok ? d.name : d.name + (st.why === 'unknown' && st.year ? ' · wydobycie od ' + st.year : st.info ? '' : ' · jeszcze niedostępne');
+      txt(lab, sx, sy, st.ok ? 14 : 12.5, th.ink, { alpha: st.ok ? 0.95 : 0.5, weight: st.ok ? 700 : 500, italic: !st.ok });
+    }
+    for (const o of G.ippOffers || []) { const [sx, sy] = this.toScreen(o.tx + 0.5, o.ty + 0.5); if (sx > -60 && sx < this.W + 60 && sy > -30 && sy < this.H + 30) txt(o.company, sx, sy + 26, 13, th.violet, { weight: 700 }); }
+    if (this.reachLabels) for (const r of this.reachLabels) { const [sx, sy] = this.toScreen(r.x, r.y); txt(r.t, PN.clamp(sx, 110, this.W - 110), PN.clamp(sy - 10, 84, this.H - 20), 14, r.c || th.water, { weight: 700, alpha: r.a || 1 }); }
     // node names: selected or hovered, plus plants at very high zoom
     const hov = this.hover && this.hover.node;
     for (const n of G.nodes) {
@@ -6839,6 +7180,14 @@ window.PN_EVENTS_US = [
         const a = G.byId[l.a], b = G.byId[l.b]; const g = this.geo(l);
         let dmin = 1e9; for (let k = 0; k <= 20; k++) { const t = k / 20, it = 1 - t; const x = it * it * a.x + 2 * it * t * g.cx + t * t * b.x, y = it * it * a.y + 2 * it * t * g.cy + t * t * b.y; dmin = Math.min(dmin, Math.hypot(x - wx, y - wy)); }
         if (dmin < Math.max(0.15, 7 / s) && dmin < bd) { bd = dmin; best = { type: 'line', obj: l }; }
+      }
+      if (best) return best;
+      if (!opts.noLocal) for (const l of G.lines) {
+        if (!l.local) continue;
+        const a = G.byId[l.a], b = G.byId[l.b]; if (!a || !b) continue; const c = a.type === 'city' ? a : b;
+        if (Math.hypot(c.x - wx, c.y - wy) < Math.max(c.rad * 0.45, 8 / s)) continue;
+        let dmin = 1e9; for (let k = 0; k <= 10; k++) { const t = k / 10; dmin = Math.min(dmin, Math.hypot(a.x + (b.x - a.x) * t - wx, a.y + (b.y - a.y) * t - wy)); }
+        if (dmin < Math.max(0.08, 5 / s) && dmin < bd) { bd = dmin; best = { type: 'line', obj: l }; }
       }
       if (best) return best;
     }
@@ -6908,9 +7257,13 @@ window.PN_EVENTS_US = [
     PN.bus.on('mission', () => { if (UI.tab === 'overview' || UI.tab === 'goals') UI.refreshInfo(true); });
     PN.bus.on('completed', (o) => { const n = o.a ? null : o; if (n && n.x != null) V.flash.push({ x: n.x, y: n.y, until: performance.now() + 900 }); });
     PN.bus.on('gameover', (k) => UI.gameOver(k));
-    PN.bus.on('month', () => { UI.refreshInfo(); if (UI.G.m === 0) PN.autosave && PN.autosave(); });
+    PN.bus.on('month', () => { if (UI.sel) UI.V.trace = UI.traceFor(UI.sel); UI.refreshInfo(); if (PN.Cards) PN.Cards.sync(); if (UI.G.m === 0) PN.autosave && PN.autosave(); });
+    PN.bus.on('tech', (ids) => { if (PN.Cards) { PN.Cards.tech(ids); PN.Cards.updateLayers(); } if (UI.flyCat && !$('#fly').hidden) UI.openFly(UI.flyCat); });
+    PN.bus.on('ipp', (o) => { if (PN.Cards) PN.Cards.ipp(o); });
+    PN.bus.on('transformation', (t) => { if (PN.Cards) PN.Cards.transformation(t); });
     PN.bus.on('news', () => UI.renderTicker());
     UI.buildTools();
+    if (PN.Cards) { PN.Cards.clear(); PN.Cards.updateLayers(); }
     UI.openTab('overview');
     UI.showPanel(!(window.matchMedia && window.matchMedia('(max-width: 820px)').matches));
     UI.renderTicker();
@@ -6934,21 +7287,26 @@ window.PN_EVENTS_US = [
   }
 
   /* -------------------------------------------------------------- flyout */
-  UI.openFly = function (cat) {
+  const FLY_EMPTY = {
+    store: 'Magazynów energii jeszcze nie wynaleziono. Gdy technika do tego dojrzeje, przeczytasz o tym w gazecie, a tutaj pojawią się nowe pozycje.',
+    grid: 'Linii przesyłowych jeszcze nie ma. Na razie elektrownie stoją w miastach i zasilają je bezpośrednio siecią niskiego napięcia (nN). Gdy pojawią się pierwsze linie, dostaniesz wiadomość i krótki samouczek.',
+    res: 'Na razie nie umiemy tu nic zbudować.', gen: 'Brak dostępnych elektrowni.',
+  };
+  UI.catOf = (id) => { const c = CATS.find((q) => q.items().indexOf(id) >= 0); return c ? c.id : 'gen'; };
+  UI.openFly = function (cat, mark) {
     const G = UI.G, fly = $('#fly'), c = CATS.find((q) => q.id === cat); UI.flyCat = cat;
     document.querySelectorAll('#tools .tool').forEach((b) => b.classList.toggle('on', b.dataset.cat === cat));
-    const y = PN.ym(G);
-    let html = '<div class="fly-h">' + esc(c.name) + '</div><div class="fly-list">';
+    let html = '<div class="fly-h">' + esc(c.name) + '</div><div class="fly-list">', shown = 0;
     for (const id of c.items()) {
-      const t = PN.TECH[id]; if (!t) continue;
-      const w = PN.techWindows(t, G.code); if (!w.length) continue;
-      const last = w[w.length - 1]; if (last[1] != null && y >= last[1] && !PN.techAvail(G, id)) continue;
-      const av = PN.techAvail(G, id), soon = PN.techSoon(G, id);
-      if (!av && soon && soon - y > 40) continue;
-      html += '<div class="item' + (av ? '' : ' off') + '" data-tech="' + id + '" title="' + esc(t.desc || '') + '"><span class="ic" data-icon="' + (id.indexOf('line') === 0 || id === 'hvdc' || id === 'cable_sea' ? 'line:' + id : id) + '"></span><span class="tx"><b>' + esc(t.name) + '</b><small>' + UI.techLine(id) + (av ? '' : ' · <em>od ' + Math.floor(soon || 0) + ' r.</em>') + '</small></span></div>';
+      const t = PN.TECH[id]; if (!t || !PN.techAvail(G, id)) continue; // the future stays hidden until history brings it
+      const isNew = PN.techIsNew(G, id); shown++;
+      html += '<div class="item' + (isNew ? ' new' : '') + (mark === id ? ' mark' : '') + '" data-tech="' + id + '" title="' + esc(t.desc || '') + '"><span class="ic" data-icon="' + (t.cat === 'line' ? 'line:' + id : id) + '"></span><span class="tx"><b>' + esc(t.name) + (isNew ? '<i class="badge">nowość</i>' : '') + '</b><small>' + UI.techLine(id) + '</small></span></div>';
     }
     html += '</div>';
+    if (!shown) html += '<p class="fly-empty">' + esc(FLY_EMPTY[cat] || FLY_EMPTY.res) + '</p>';
+    else if (cat === 'grid') html += '<p class="fly-tip">Linia: wybierz napięcie, kliknij początek (elektrownia, miasto albo puste pole), potem koniec. Krąg na mapie pokazuje zasięg.</p>';
     fly.innerHTML = html; fly.hidden = false;
+    const mk = mark && fly.querySelector('.item.mark'); if (mk) mk.scrollIntoView({ block: 'nearest' });
     fly.querySelectorAll('[data-icon]').forEach((s) => {
       const k = s.dataset.icon;
       if (k.indexOf('line:') === 0) s.appendChild(lineIcon(k.slice(5)));
@@ -6965,19 +7323,18 @@ window.PN_EVENTS_US = [
     x.font = '700 9px Caveat, cursive'; x.fillStyle = S.th.ink; x.fillText(t.short, 3, 12);
     return c;
   }
+  UI.lineIcon = lineIcon;
   UI.closeFly = function () { $('#fly').hidden = true; UI.flyCat = null; document.querySelectorAll('#tools .tool').forEach((b) => b.classList.toggle('on', UI.tool && ((b.dataset.cat === 'demolish' && UI.tool.kind === 'demolish')))); };
   UI.techLine = function (id) {
     const G = UI.G, t = PN.TECH[id], y = PN.ym(G);
-    if (t.cat === 'line') {
-      const label = Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, y) : t.kvLabel;
-      return esc(label || '') + ' · ' + PN.mw(PN.tv(t.cap, y)) + ' · ' + PN.money(PN.tv(t.cost, y)) + '/km';
-    }
+    if (t.cat === 'line') return esc(UI.kv(id) || '') + ' · ' + PN.mw(PN.tv(t.cap, y)) + ' · do ' + t.maxKm + ' km · ' + PN.money(PN.tv(t.cost, y)) + '/km';
     if (id === 'substation') return PN.money(PN.tv(t.cost, y));
     if (t.cat === 'res') { const out = t.outputMt ? PN.tv(t.outputMt, y) : PN.tv(t.outputGJ, y) / 1e6; return (t.outputMt ? PN.nf(out, 1) + ' mln t/rok' : PN.nf(out, 0) + ' PJ/rok') + ' · ' + PN.money((t.outputMt ? out * 1e6 : out * 1e6) * PN.tv(t.capexPerT || t.capexPerGJ, y, G.code)); }
     const u = PN.unitMW(t, y, G.code) || 0, capex = PN.tv(t.capex, y, G.code);
     return 'blok ' + PN.mw(u) + ' · ' + PN.money(capex * u * 1000) + ' · ' + PN.months(PN.tv(t.build, y, G.code));
   };
 
+  UI.kv = function (id) { const t = PN.TECH[id]; if (!t) return ''; return Array.isArray(t.kvLabel) ? PN.tv(t.kvLabel, PN.ym(UI.G)) : t.kvLabel; };
   UI.setTool = function (tool) {
     UI.tool = tool; UI.V.tool = tool; UI.V.lineStart = null; UI.pendingDemolish = null;
     document.body.classList.toggle('tooling', !!tool);
@@ -7055,8 +7412,14 @@ window.PN_EVENTS_US = [
     document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab && !UI.sel));
     UI.refreshInfo(true);
   };
+  UI.traceFor = function (o) {
+    const G = UI.G; if (!o || o.a) return null;
+    const sinks = o.type === 'city' || o.type === 'load' || o.type === 'mine', top = sinks ? o.srcTop : o.dstTop;
+    if (!top || !(o.type === 'plant' || o.type === 'border' || sinks)) return null;
+    return { dir: sinks ? 'up' : 'down', lines: PN.traceLines(G, o, sinks ? 'up' : 'down'), nodes: new Map(top.list.map(([id, e]) => [id, e / top.tot])) };
+  };
   UI.select = function (obj) {
-    UI.sel = obj; UI.V.sel = obj; UI.pendingDemolish = null;
+    UI.sel = obj; UI.V.sel = obj; UI.pendingDemolish = null; UI.V.trace = UI.traceFor(obj);
     document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', !obj && b.dataset.tab === UI.tab));
     if (obj) UI.showPanel(true);
     UI.refreshInfo(true);
@@ -7092,11 +7455,23 @@ window.PN_EVENTS_US = [
       s += '<h3>Oferty</h3>';
       for (const o of G.offers) { const c = G.byId[o.city]; s += '<div class="offer"><b>' + esc(o.company) + '</b> chce zbudować ' + (o.ai ? 'centrum obliczeń AI' : 'centrum danych') + ' (okolice: ' + esc(c ? PN.cityName(c, G.y) : '?') + '): docelowo <b>' + PN.mw(o.mw) + '</b>, taryfa +' + PN.pct(o.premium) + '.<div class="row">' + btn('offer-yes:' + o.id, 'Podpisz umowę') + btn('offer-no:' + o.id, 'Odrzuć') + '</div></div>'; }
     }
+    if ((G.ippOffers || []).length || G.ippScope) s += UI.ippHtml();
     const act = G.sc.missions.filter((m) => G.missions[m.id] && G.missions[m.id].state === 'active').slice(0, 3);
     if (act.length) { s += '<h3>Zadania</h3>'; for (const m of act) s += UI.missionHtml(m); }
     if (G.satR > 0.02) { const rc = PN.ruralAllCost(G); s += '<h3>Elektryfikacja wsi</h3><p class="note">Wieś zelektryfikowana: ' + PN.pct(H.ruralShare(), 0) + '. Program obejmuje wszystkie powiaty z dostępem do prądu.</p>' + (rc > 0 ? btn('rural-all', 'Kolejny etap programu w całym kraju', rc, G.money < rc) : '<p class="note">Wszystkie zasilane powiaty mają pełną elektryfikację albo brak im prądu.</p>'); }
     const dmg = PN.repairAllCost(G); if (dmg > 0) s += '<div class="warnbox">Zniszczone obiekty czekają na odbudowę.' + btn('repair-all', 'Odbuduj wszystko', dmg, G.money < dmg) + '</div>';
     s += '<h3>Ustawienia</h3><label class="chk"><input type="checkbox" id="autoDist" ' + (G.settings.autoDist ? 'checked' : '') + '> Automatyczna rozbudowa sieci miejskich (nN)</label><label class="chk"><input type="checkbox" id="pauseEv" ' + (G.settings.pauseOnEvents ? 'checked' : '') + '> Pauza przy ważnych wydarzeniach</label>';
+    return s;
+  };
+  UI.ippHtml = function () {
+    const G = UI.G, net = PN.ippNet(G), mine = G.nodes.filter((n) => n.owner === 'ipp');
+    let s = '<h3>Inwestorzy prywatni</h3>';
+    const wait = mine.filter((n) => n.built && !n.links.length);
+    s += '<p class="note">Elektrownie inwestorów: ' + mine.length + ' (' + PN.mw(mine.reduce((a, n) => a + n.cap, 0)) + ')' + (wait.length ? ', czeka na przyłączenie: <b class="neg">' + wait.length + '</b>' : '') + '. Kupujesz ich energię po cenie z umowy; z taryfy zostaje Ci ' + PN.price(net) + ' na wytworzenie 1 MWh.</p>';
+    for (const o of G.ippOffers || []) {
+      const t = PN.TECH[o.tech], near = o.near != null ? G.byId[o.near] : null;
+      s += '<div class="offer"><b>' + esc(o.company) + '</b>: ' + esc(t.name.toLowerCase()) + ' ' + PN.mw(o.cap) + (near ? ' (okolice: ' + esc(PN.cityName(near, G.y)) + ')' : '') + '. Odkup ' + PN.price(o.ppa) + ' – marża <b class="' + (net - o.ppa >= 0 ? 'pos' : 'neg') + '">' + PN.price(net - o.ppa) + '</b>.<div class="row">' + btn('ipp-yes:' + o.id, 'Przyłącz') + btn('ipp-no:' + o.id, 'Odrzuć') + btn('ipp-show:' + o.id, 'Pokaż') + '</div></div>';
+    }
     return s;
   };
   /* advisor: the few things that most need the player's attention right now */
@@ -7113,11 +7488,13 @@ window.PN_EVENTS_US = [
     const dry = G.nodes.filter((n) => n.type === 'plant' && n.built && PN.TECH[n.tech].dispatch === 'thermal' && n.fuelOK < 0.5);
     if (dry.length) out.push({ p: 9, t: dry[0].name + ': brak paliwa' + (dry[0].tech === 'lignite' ? ' – zbuduj odkrywkę na złożu obok' : '') + '.', id: dry[0].id });
     const net = PN.curve(G.sc.price, y) - PN.curve(G.sc.dcost, y);
-    const loss = G.nodes.filter((n) => n.type === 'plant' && n.built && n.on !== false && PN.TECH[n.tech].dispatch === 'thermal' && n.mc > net && (n.gen || 0) > 0).sort((a, b) => b.mc - a.mc);
+    const loss = G.nodes.filter((n) => n.type === 'plant' && n.built && n.owner !== 'ipp' && n.on !== false && PN.TECH[n.tech].dispatch === 'thermal' && n.mc > net && (n.gen || 0) > 0).sort((a, b) => b.mc - a.mc);
     if (loss.length) out.push({ p: 6, t: 'Nierentowne: ' + loss[0].name + (loss.length > 1 ? ' i ' + (loss.length - 1) + ' inne' : '') + ' – koszt zmienny ' + PN.price(loss[0].mc) + ' przewyższa marżę z taryfy (' + PN.price(net) + '). Zastąp nowocześniejszym blokiem.', id: loss[0].id });
-    const old = G.nodes.filter((n) => n.type === 'plant' && n.built && n.age > PN.TECH[n.tech].life);
+    const old = G.nodes.filter((n) => n.type === 'plant' && n.built && n.owner !== 'ipp' && n.age > PN.TECH[n.tech].life);
+    const waitI = G.nodes.filter((n) => n.owner === 'ipp' && n.built && !n.links.length);
+    if (waitI.length) out.push({ p: 8, t: waitI[0].name + ' (inwestor ' + waitI[0].company + ') czeka na przyłączenie – poprowadź do niej linię.', id: waitI[0].id });
     if (old.length) out.push({ p: 4, t: 'Bloki po okresie eksploatacji: ' + old.length + ' (np. ' + old[0].name + '). Remont albo zastąpienie.', id: old[0].id });
-    const fresh = PN.GEN_ORDER.concat(PN.STORE_ORDER, PN.LINE_ORDER).filter((id) => PN.techAvail(G, id) && (G.unlocked[id] || PN.techFirstYear(PN.TECH[id], G.code) || 0) > y - 1.5);
+    const fresh = PN.GEN_ORDER.concat(PN.STORE_ORDER, PN.LINE_ORDER).filter((id) => PN.techAvail(G, id) && G.techSeen && G.techSeen[id] > y - 1.5);
     if (fresh.length) out.push({ p: 5, t: 'Nowa technologia: ' + fresh.map((id) => PN.TECH[id].name).join(', ') + '.' });
     if (G.satR > 0.05 && PN.helpers(G).ruralShare() < G.satR * 0.5 && PN.ruralAllCost(G) > 0) out.push({ p: 5, t: 'Wieś czeka na prąd: uruchom program elektryfikacji (niżej).' });
     if (G.debt > PN.creditLimit(G) * 0.8) out.push({ p: 7, t: 'Dług blisko limitu kredytowego – uważaj na płynność.' });
@@ -7139,7 +7516,7 @@ window.PN_EVENTS_US = [
     if (!list.length) s += '<p>Zadania pojawią się wraz z epokami.</p>';
     for (const m of list.slice().reverse()) s += UI.missionHtml(m);
     const fut = G.sc.missions.filter((m) => !G.missions[m.id] || G.missions[m.id].state === 'hidden');
-    if (fut.length) s += '<h3>Przed Tobą</h3><ul class="future">' + fut.map((m) => '<li>' + m.from + ': ' + esc(m.title) + '</li>').join('') + '</ul>';
+    if (fut.length) s += '<p class="note">Kolejne zadania przyniesie historia – jeszcze ' + fut.length + '.</p>';
     return s;
   };
   UI.finHtml = function () {
@@ -7148,7 +7525,7 @@ window.PN_EVENTS_US = [
     const cl = PN.creditLimit(G), step = Math.max(G.sc.money, cl * 0.1);
     s += '<div class="row">' + btn('loan', 'Weź kredyt', step, cl - G.debt < 1) + btn('repay', 'Spłać', Math.min(G.debt, step), G.debt <= 0 || G.money <= 0) + '</div>';
     s += '<h3>Ostatni miesiąc</h3><div class="kvs">';
-    const lines = [['Sprzedaż energii', F.rev], ['Paliwo', -F.fuel], ['Uprawnienia CO₂', -F.co2], ['Eksploatacja elektrowni', -F.om], ['Utrzymanie linii i stacji', -F.grid], ['Sieci dystrybucyjne', -F.dist], ['Obsługa odbiorców', -F.retail], ['Import energii', -F.imp], ['Kopalnie (saldo)', -F.mine], ['Kary umowne', -F.penalty], ['Odsetki', -F.interest]];
+    const lines = [['Sprzedaż energii', F.rev], ['Paliwo', -F.fuel], ['Uprawnienia CO₂', -F.co2], ['Eksploatacja elektrowni', -F.om], ['Utrzymanie linii i stacji', -F.grid], ['Sieci dystrybucyjne', -F.dist], ['Obsługa odbiorców', -F.retail], ['Import energii', -F.imp], ['Energia od inwestorów prywatnych', -F.ipp], ['Kopalnie (saldo)', -F.mine], ['Kary umowne', -F.penalty], ['Odsetki', -F.interest]];
     for (const [k, v] of lines) if (v && Math.abs(v) > 1) s += row(k, PN.money(v), v < 0 ? 'neg' : 'pos');
     s += row('Wynik', PN.money(F.profit || 0), (F.profit || 0) < 0 ? 'neg tot' : 'pos tot') + '</div>';
     s += '<h3>Historia</h3><canvas class="chart" data-chart="hist" width="560" height="230"></canvas><div class="legend"><span><i style="background:' + S.th.ink + '"></i>szczyt zapotrzebowania</span><span><i style="background:' + S.th.orange + '"></i>moc zainstalowana</span></div>';
@@ -7165,10 +7542,17 @@ window.PN_EVENTS_US = [
   UI.objHtml = function (o) {
     const G = UI.G, y = PN.ym(G);
     let s = '<button class="close" data-act="close" aria-label="Zamknij">×</button>';
+    if (o.a && o.local) { // a plant inside a town feeds the town's own low-voltage network
+      const A = G.byId[o.a], B = G.byId[o.b], P = A && A.type !== 'city' ? A : B, Cc = P === A ? B : A;
+      s += '<h2>Sieć niskiego napięcia (nN)</h2><p class="era">' + esc(nm(P)) + ' – ' + esc(nm(Cc)) + '</p>';
+      s += '<p>' + (P && P.tech === 'steam_dc' ? 'Elektrownia stoi w mieście i zasila je prądem stałym 110 V wprost, bez linii przesyłowej. Prądu stałego nie da się transformować, więc dociera najwyżej ok. 1,5 km – dlatego każde miasto stawiało własną elektrownię.' : 'Elektrownia stoi w obrębie miasta i oddaje prąd wprost do sieci miejskiej przez własną stację. Linia przesyłowa nie jest potrzebna.') + '</p>';
+      s += '<div class="kvs">' + row('Przepływ w szczycie', PN.mw(Math.abs(o.flow || 0))) + '</div><p class="note">Żeby wysłać prąd do innego miasta, zbuduj linię z menu Sieć.</p>';
+      return s;
+    }
     if (o.a) { // line
       const t = PN.TECH[o.type] || { name: 'Połączenie lokalne' }, A = G.byId[o.a], B = G.byId[o.b];
       s += '<h2>' + esc(t.name) + '</h2><p class="era">' + esc(nm(A)) + ' – ' + esc(nm(B)) + '</p><div class="kvs">';
-      s += row('Długość', PN.nf(o.km, 0) + ' km') + row('Przepustowość', PN.mw(o.cap));
+      s += row('Napięcie', esc(UI.kv(o.type) || '–')) + row('Długość', PN.nf(o.km, 0) + ' km' + (t.maxKm && o.km > t.maxKm ? ' (ponad ' + t.maxKm + ' km – duże straty)' : ''), t.maxKm && o.km > t.maxKm ? 'warn' : '') + row('Przepustowość', PN.mw(o.cap));
       if (!o.built) s += row('Budowa', PN.pct(o.prog) + ' · zostało ' + PN.months((1 - o.prog) * o.buildM));
       else { s += row('Przepływ w szczycie', PN.mw(Math.abs(o.flow)) + ' (' + PN.pct(o.load) + ' maks.)', o.load > 0.98 ? 'neg' : ''); s += row('Straty (miesiąc)', PN.mwh(o.lossE || 0)); }
       if (o.out > y) s += row('Stan', 'awaria – wyłączona', 'neg'); if (o.dmg) s += row('Stan', 'zniszczona', 'neg');
@@ -7185,13 +7569,25 @@ window.PN_EVENTS_US = [
       if (!own) { s += '</div><p class="hint">To miasto leży poza Twoim obszarem działania (do ' + (o.region === 3 ? '1945' : o.region === 2 ? '1922' : '1920') + ' r.).</p>'; return s; }
       s += row('Zelektryfikowane: miasto', PN.pct(o.eU, 1)) + row('Zelektryfikowane: wieś', PN.pct(o.eR, 1)) + row('Możliwe dziś (miasto)', PN.pct(G.satU, 1)) + row('Zapotrzebowanie w szczycie', PN.mw(o.demPk || 0)) + row('Zasilono', o.demE > 0 ? PN.pct(o.served, 1) : '–', o.demE > 0 && o.served < 0.97 ? 'neg' : '') + row('Sieć miejska nN', PN.mw(o.distCap) + ' / potrzeba ' + PN.mw(o.potU || 0), o.distCap < (o.potU || 0) * 0.95 ? 'warn' : '') + row('Elektryfikacja wsi', o.ruralLvl + ' / 4') + '</div>';
       if (!o.energized) s += '<p class="hint">Miasto nie ma jeszcze źródła prądu. Zbuduj elektrownię w mieście albo doprowadź linię z elektrowni.</p>';
+      s += UI.flowList(o.srcTop, 'Skąd płynie prąd', 'Udział w energii zużytej w tym miesiącu. Na mapie żółta poświata pokazuje drogę prądu.');
       const step = PN.distStepMW(o), dc = PN.distCostFor(G, step);
       s += '<div class="row">' + btn('dist', 'Rozbuduj sieć nN (+' + PN.mw(step) + ')', dc, G.money < dc) + '</div>';
       if (G.satR > 0.001 || o.ruralLvl > 0) { const rc = PN.ruralCostFor(G, o); s += '<div class="row">' + btn('rural', o.ruralLvl >= 4 ? 'Wsie zelektryfikowane' : 'Elektryfikacja wsi (etap ' + (o.ruralLvl + 1) + '/4)', o.ruralLvl >= 4 ? null : rc, o.ruralLvl >= 4 || G.money < rc) + '</div><p class="note">Każdy etap doprowadza linie SN i stacje transformatorowe do kolejnej ćwiartki okolicznych wsi.</p>'; }
-      else s += '<p class="note">Elektryfikacja wsi stanie się możliwa, gdy pojawią się pierwsi chętni odbiorcy na wsi (lata 20.–30.).</p>';
+      else s += '<p class="note">Elektryfikacja wsi stanie się możliwa, gdy pojawią się pierwsi chętni odbiorcy na wsi (lata 20.–30.). To program, nie rysowanie linii: każdy etap sam doprowadza linie SN i transformatory do części wsi wokół miasta.</p>';
       return s;
     }
     const t = PN.TECH[o.tech] || {};
+    if (o.type === 'plant' && o.owner === 'ipp') {
+      s += '<h2>' + esc(o.name) + '</h2><p class="era"><b class="ownr">Elektrownia prywatna</b> · ' + esc(t.name) + ' · inwestor ' + esc(o.company) + '</p>';
+      s += '<div class="kvs">' + row('Stan', !o.built ? 'w budowie ' + PN.pct(o.prog) : o.dmg ? 'zniszczona – inwestor odbudowuje' : !o.links.length ? 'czeka na przyłączenie' : 'pracuje', !o.built ? 'warn' : !o.links.length ? 'neg' : '') + row('Moc', PN.mw(o.cap));
+      if (!o.built) s += row('Zostało', PN.months((1 - o.prog) * o.buildM));
+      else s += row('Produkcja (miesiąc)', PN.mwh(o.gen || 0)) + row('Wykorzystanie mocy', PN.pct(o.lastCF || 0, 0)) + row('Płacisz inwestorowi', PN.money((o.gen || 0) * o.ppa) + '/mies.');
+      s += row('Cena z umowy', PN.price(o.ppa)) + row('Marża z taryfy', PN.price(PN.ippNet(G) - o.ppa), PN.ippNet(G) - o.ppa < 0 ? 'neg' : 'pos') + row('Umowa do', Math.floor(o.until) + ' r.') + row('Nakłady inwestora', PN.money(o.capex || 0)) + '</div>';
+      if (o.built && !o.links.length) s += '<p class="hint">Inwestor czeka na przyłączenie' + (o.waiting > 12 ? ' już ponad rok – reputacja spada co miesiąc, a po trzech latach projekt przepadnie' : ': zostało ok. ' + PN.months(Math.max(0, 12 - (o.waiting || 0))) + ' do skargi') + '. Zbuduj linię z menu Sieć.</p>';
+      s += UI.connHtml(o) + UI.flowList(o.dstTop, 'Dokąd płynie prąd');
+      s += '<p class="note">Elektrownia należy do inwestora: nie rozbudujesz jej, nie wyłączysz ani nie wyburzysz. Ty odpowiadasz za przyłączenie i odbiór energii.</p>';
+      return s;
+    }
     if (o.type === 'plant') {
       s += '<h2>' + esc(o.name) + '</h2><p class="era">' + esc(t.name) + ' · od ' + Math.floor(o.since) + ' r.</p>';
       const status = !o.built ? 'w budowie ' + PN.pct(o.prog) : o.dmg ? 'zniszczona' : o.on === false ? 'wyłączona' : o.age > t.life ? 'po okresie projektowym' : 'pracuje';
@@ -7211,6 +7607,7 @@ window.PN_EVENTS_US = [
       s += row('Nakłady', PN.money(o.cost || 0)) + '</div>';
       if (t.fuel === 'lignite' && o.built && o.fuelOK < 0.99) s += '<p class="hint">Elektrowni brakuje węgla brunatnego. Zbuduj odkrywkę na złożu w promieniu ok. 25 km.</p>';
       if (o.built && !o.links.length) s += '<p class="hint">Elektrownia nie jest podłączona do sieci. Zbuduj linię do miasta lub stacji.</p>';
+      s += UI.connHtml(o) + UI.flowList(o.dstTop, 'Dokąd płynie prąd');
       s += '<div class="row">';
       if (o.built && !o.dmg && o.units < o.maxUnits && t.cat !== 'res') { const c = PN.unitCost(G, o); s += btn('unit', o.pending ? 'Budowa bloku ' + PN.pct(o.pending.prog) : 'Dobuduj blok +' + PN.mw(o.unitMW), o.pending ? null : c, !!o.pending || G.money < c || !PN.techAvail(G, o.tech)); }
       if (o.built && t.pollution && !o.fgd && y > 1970) { const c = PN.retrofitCost(G, o); s += btn('fgd', 'Instalacja odsiarczania', c, G.money < c); }
@@ -7251,6 +7648,26 @@ window.PN_EVENTS_US = [
     return s;
   };
   function nm(n) { return n ? (n.type === 'city' ? PN.cityName(n, UI.G.y) : n.name) : '?'; }
+  UI.nm = nm;
+  /* who feeds whom: shares of this month's energy, from the proportional-sharing trace */
+  UI.flowList = function (top, title, note) {
+    const G = UI.G; if (!top || !top.list.length) return '';
+    let s = '<h3>' + esc(title) + '</h3><ul class="srcs">';
+    for (const [id, e] of top.list.slice(0, 5)) {
+      const n = G.byId[id]; if (!n) continue; const sh = e / top.tot;
+      s += '<li><a href="#" data-goto="' + id + '">' + esc(nm(n)) + (n.owner === 'ipp' ? ' <small class="ownr">(prywatna)</small>' : '') + '</a><b>' + PN.pct(sh, sh < 0.1 ? 1 : 0) + '</b><i><em style="width:' + Math.max(2, Math.round(sh * 100)) + '%"></em></i></li>';
+    }
+    return s + '</ul>' + (note ? '<p class="note">' + esc(note) + '</p>' : '');
+  };
+  /* how a plant is hooked up, and why */
+  UI.connHtml = function (o) {
+    const G = UI.G, ls = o.links.map((id) => G.byId[id]).filter(Boolean), local = ls.filter((l) => l.local), real = ls.filter((l) => !l.local);
+    if (!ls.length) return '';
+    let s = '<h3>Przyłączenie</h3>';
+    if (local.length) { const l = local[0], c = G.byId[l.a === o.id ? l.b : l.a]; s += '<p>Bezpośrednio do sieci miejskiej nN – ' + esc(nm(c)) + '. ' + (o.tech === 'steam_dc' ? 'Prąd stały 110 V dociera tylko ok. 1,5 km, więc elektrownia musi stać w mieście i zasila tylko to miasto.' : 'Elektrownia stoi w mieście, więc linia przesyłowa nie jest potrzebna. Nadwyżkę możesz wysłać liniami do innych miast.') + '</p>'; }
+    if (real.length) s += '<ul class="srcs">' + real.map((l) => { const other = G.byId[l.a === o.id ? l.b : l.a], lt = PN.TECH[l.type]; return '<li><a href="#" data-goto="' + l.id + '">' + esc(lt.short) + ' → ' + esc(nm(other)) + '</a><b>' + PN.nf(l.km, 0) + ' km</b></li>'; }).join('') + '</ul>';
+    return s;
+  };
 
   UI.onInfoClick = function (e) {
     const G = UI.G;
@@ -7275,7 +7692,11 @@ window.PN_EVENTS_US = [
       case 'repay': PN.repay(G, Math.max(G.sc.money, PN.creditLimit(G) * 0.1)); break;
       case 'offer-yes': { const of = G.offers.find((x) => x.id === arg); if (of) { const n = PN.acceptOffer(G, of); if (n) { UI.V.centerOn(n.x, n.y); UI.select(n); } } break; }
       case 'offer-no': { const of = G.offers.find((x) => x.id === arg); if (of) PN.declineOffer(G, of); break; }
+      case 'ipp-yes': { const of = (G.ippOffers || []).find((x) => x.id === arg); if (of) { const n = PN.acceptIpp(G, of); if (n) { UI.V.centerOn(n.x, n.y, Math.max(UI.V.cam.z, 1.4)); UI.select(n); } } if (PN.Cards) PN.Cards.sync(); break; }
+      case 'ipp-no': { const of = (G.ippOffers || []).find((x) => x.id === arg); if (of) PN.declineIpp(G, of); if (PN.Cards) PN.Cards.sync(); break; }
+      case 'ipp-show': { const of = (G.ippOffers || []).find((x) => x.id === arg); if (of) { UI.V.centerOn(of.tx + 0.5, of.ty + 0.5, Math.max(UI.V.cam.z, 1.4)); UI.V.focusOffer = of; } break; }
       case 'demolish':
+        if (o && o.owner === 'ipp') { UI.toast('To elektrownia prywatnego inwestora – nie możesz jej wyburzyć.', 'warn'); break; }
         if (UI.pendingDemolish !== o) { UI.pendingDemolish = o; break; }
         PN.demolish(G, o); UI.select(null); break;
       default: break;
@@ -7392,15 +7813,14 @@ window.PN_EVENTS_US = [
       case 'regime': return { state: 'Energetyka państwowa: dotacje do inwestycji, niższe odsetki', market: 'Rynek energii: liczą się koszty', concession: 'Koncesje prywatne', private: 'Prywatne spółki' }[e.regime] || 'Zmiana ustroju energetyki';
       case 'prosumer': return 'Prosumenci: +' + PN.mw(e.mwPerYear) + ' fotowoltaiki na dachach rocznie';
       case 'territory': return 'Zmiana granic: nowe ziemie w Twoim zasięgu';
+      case 'ipp': return e.scope === 'small' ? 'Mali niezależni wytwórcy zgłaszają projekty' : 'Prywatni inwestorzy zgłaszają własne elektrownie';
       default: return '';
     }
   };
   UI.onEvent = function (ev) {
-    const G = UI.G;
-    const major = (ev.effects && ev.effects.length) || ['war', 'nuclear', 'crisis', 'blackout', 'fusion', 'data'].indexOf(ev.icon) >= 0;
-    if (major) UI.showEvent(ev, false);
-    else UI.renderTicker();
-    void G;
+    if (PN.eventImportant(ev) || !PN.Cards) UI.showEvent(ev, false);
+    else PN.Cards.clip(ev);
+    UI.renderTicker();
   };
   UI.showEvent = function (ev, fromArchive) {
     const G = UI.G;
@@ -7412,9 +7832,10 @@ window.PN_EVENTS_US = [
     if (ev.hint) html += '<p class="hint">' + esc(ev.hint) + '</p>';
     if (ev.sources && ev.sources.length) html += '<p class="src">Źródło: ' + ev.sources.slice(0, 2).map((u, i) => '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + (i + 1) + '</a>').join(', ') + (ev.certainty === 'medium' ? ' · data przybliżona' : '') + '</p>';
     html += '</div><div class="row end"><button class="act" data-m="ok">Dalej</button></div>';
-    UI.modal(html, { cls: 'news', pause: !fromArchive && G.settings.pauseOnEvents, queue: !fromArchive });
+    UI.modal(html, { cls: 'news', pause: fromArchive === 'card' || (!fromArchive && G.settings.pauseOnEvents), queue: !fromArchive });
   };
   UI.onOffer = function (o) {
+    if (PN.Cards) { PN.Cards.dc(o); return; }
     const G = UI.G, c = G.byId[o.city];
     const html = '<h2>Propozycja umowy</h2><canvas class="evicon" width="200" height="200" data-icon="data"></canvas><p><b>' + esc(o.company) + '</b> planuje ' + (o.ai ? 'centrum obliczeń sztucznej inteligencji' : 'centrum danych') + '. Lokalizacja: <b>' + esc(c ? PN.cityName(c, G.y) : '?') + '</b> i okolice.</p><div class="kvs">' + row('Moc docelowa', PN.mw(o.mw)) + row('Dojście do pełnej mocy', PN.months(o.years * 12)) + row('Taryfa', '+' + PN.pct(o.premium) + ' ponad cenę') + row('Warunek', 'zasilanie 24/7, kara za braki') + '</div><p class="note">Oferta czeka pół roku w zakładce Przegląd.</p><div class="row end"><button class="act" data-m="later">Później</button><button class="act" data-m="no">Odrzuć</button><button class="act prim" data-m="yes">Podpisz umowę</button></div>';
     UI.modal(html, { cls: 'offer', queue: true, pause: G.settings.pauseOnEvents, on: (k) => { if (k === 'yes') { const n = PN.acceptOffer(G, o); if (n) { UI.V.centerOn(n.x, n.y); UI.select(n); } } else if (k === 'no') PN.declineOffer(G, o); UI.refreshInfo(true); } });
@@ -7438,7 +7859,7 @@ window.PN_EVENTS_US = [
     } });
   };
   UI.help = function () {
-    UI.modal('<h2>Jak grać</h2><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Najpierw parowe w miastach, potem wodne, węglowe, aż po atom, wiatr, słońce i fuzję – technologie odblokowują się zgodnie z historią.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: kliknij miasto, by rozbudować sieć miejską i zelektryfikować okoliczne wsie.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
+    UI.modal('<h2>Jak grać</h2><ul class="help"><li><b>Elektrownie</b> stawiasz z lewego paska. Na początku są tylko parowe elektrownie w miastach. Kolejne wynalazki przychodzą same, razem z historią – w menu widzisz tylko to, co już istnieje, a nowość ogłasza gazeta.</li><li><b>Linie</b>: wybierz napięcie i kliknij dwa punkty (elektrownia, miasto, stacja lub puste pole – tam powstanie stacja). Wyższe napięcie = większa przepustowość i mniejsze straty.</li><li><b>Niskie napięcie</b>: elektrownia w mieście zasila je wprost (kropkowana kreska nN). Kliknij miasto, by rozbudować sieć miejską; elektryfikacja wsi to program uruchamiany przyciskiem, gdy na wsi pojawią się chętni.</li><li><b>Skąd płynie prąd</b>: kliknij miasto albo elektrownię – panel pokaże udziały, a mapa drogę prądu.</li><li><b>Inwestorzy prywatni</b> pojawiają się po otwarciu rynku. Ich projekty przychodzą jako karty: przyłączasz je linią i kupujesz energię po cenie z umowy.</li><li><b>Wiatr i słońce</b>: warstwy mapy pokazują, gdzie wieje i świeci. Produkcja zależy od pogody i pory dnia – wykres doby pokazuje, kto pokrywa zapotrzebowanie.</li><li><b>Zasoby</b>: kopalnia węgla obniża koszt paliwa, węgiel brunatny wymaga odkrywki tuż obok elektrowni. Kopalnie same potrzebują prądu.</li><li><b>Niezawodność</b>: burze i oblodzenie wyłączają linie. Miasto zasilone kilkoma drogami nie gaśnie.</li><li><b>Sterowanie</b>: przeciągnij mapę, kółko lub szczypanie = zoom, spacja = pauza, 1–4 = prędkość, Esc = anuluj.</li></ul><h3>Legenda</h3><p class="note">Pełna legenda linii i znaczków: przycisk „Legenda” w prawym dolnym rogu.</p><ul class="help"><li>Żółte kreski płynące po linii – prąd i kierunek przepływu w szczycie; pomarańczowa linia – obciążenie powyżej 80%, czerwona – przeciążenie.</li><li>Żółte okna w miastach i kropki przy wsiach – odbiorcy z prądem; czerwone kreski – niedobór mocy.</li><li>Kreskowane obszary – ziemie poza Twoim zasięgiem w danej epoce; koła z falą – miejsca na zapory; przerywane zielone koła – parki narodowe.</li><li>Czerwona wtyczka przy budynku – brak podłączenia do sieci.</li></ul><p class="note">Kontury mapy: Natural Earth. Szkice: Rough.js. Daty, liczby i źródła wydarzeń są podane w wycinkach prasowych (link „Źródło”). Wydarzenia po połowie 2026 r. to scenariusz oparty na ogłoszonych planach.</p><div class="row end"><button class="act prim" data-m="ok">Do pracy</button></div>');
   };
 
   /* small sketched icons for news clippings */
@@ -7462,6 +7883,177 @@ window.PN_EVENTS_US = [
 })();
 
 </script>
+<script>/* ui/cards.js */
+'use strict';
+/* The world keeps moving while the clock runs: newspaper clippings, new inventions and investor
+   projects arrive as cards that do not stop the game. Also the map legend and the layer buttons,
+   which appear together with the technologies that need them. */
+(function () {
+  const PN = window.PN, UI = PN.UI, S = PN.Sketch, esc = PN.esc;
+  const $ = (s) => document.querySelector(s);
+  const C = (PN.Cards = {});
+  const kv = (k, v, cls) => '<div class="kv' + (cls ? ' ' + cls : '') + '"><span>' + k + '</span><b>' + v + '</b></div>';
+  const LW = { line_sn: 1, line_60: 1.3, line_110: 1.6, line_220: 2, line_345: 2.4, line_400: 2.5, line_500: 2.8, line_750: 3.2, hvdc: 2.6, cable_sea: 1.8 };
+
+  /* ---------------------------------------------------------------- cards */
+  const box = () => $('#cards');
+  const maxCards = () => (window.innerWidth <= 820 ? 2 : window.innerHeight < 760 ? 2 : 3);
+  C.add = function (kind, html, opts) {
+    opts = opts || {};
+    const b = box(); if (!b) return null;
+    if (opts.key) { for (const old of b.children) if (old.dataset.key === opts.key) { old.remove(); break; } }
+    const d = document.createElement('div');
+    d.className = 'gcard ' + kind + 'c'; d.setAttribute('role', 'status');
+    d.innerHTML = '<button class="x" data-c="close" aria-label="Zamknij">×</button>' + html;
+    if (opts.key) d.dataset.key = opts.key;
+    if (opts.sticky) d.dataset.sticky = '1';
+    // decisions sit at the bottom of the stack (always visible); news piles up above them
+    if (opts.sticky) b.insertBefore(d, b.firstChild); else b.appendChild(d);
+    let extra = b.children.length - maxCards();
+    for (const c of [...b.children]) { if (extra <= 0) break; if (c !== d && !c.dataset.sticky) { c.remove(); extra--; } }
+    for (const c of [...b.children]) { if (extra <= 0) break; if (c !== d) { c.remove(); extra--; } }
+    d.querySelectorAll('canvas[data-spr]').forEach((cv) => { const sp = PN.Sprites.get(cv.dataset.spr); if (sp) cv.getContext('2d').drawImage(sp, 0, 0, cv.width, cv.height); });
+    d.querySelectorAll('[data-lineicon]').forEach((sp) => sp.appendChild(UI.lineIcon(sp.dataset.lineicon)));
+    d.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-c]'); if (!btn) return;
+      if (btn.dataset.c === 'close') { C.drop(d); return; }
+      if (opts.on) opts.on(btn.dataset.c, d, btn);
+    });
+    if (opts.life) { // fades on its own; hovering or an open dialog holds it
+      let left = opts.life, last = performance.now();
+      const tick = () => { if (!d.isConnected) return; const now = performance.now(); if (!d.matches(':hover') && !UI.modalOpen && !document.hidden) left -= now - last; last = now; if (left <= 0) C.drop(d); else setTimeout(tick, 400); };
+      setTimeout(tick, 400);
+    }
+    return d;
+  };
+  C.drop = function (d) { if (!d || !d.isConnected || d.classList.contains('out')) return; d.classList.add('out'); setTimeout(() => d.remove(), 420); };
+  C.clear = function () { const b = box(); if (b) b.innerHTML = ''; const l = $('#legend'); if (l) l.hidden = true; };
+
+  /* newspaper clipping for an event that does not change the rules */
+  C.clip = function (ev) {
+    const G = UI.G, [yy, mm] = ev.date.split('-').map(Number);
+    const fx = (ev.effects || []).map(UI.effectText).filter(Boolean);
+    const short = ev.text.length > 130 ? ev.text.slice(0, 125).replace(/\s+\S*$/, '') + '…' : ev.text;
+    const html = '<div class="k">' + esc(ev.paper || (G.code === 'PL' ? 'Kronika Energetyczna' : 'The Electrical World')) + ' · ' + PN.MONTHS[mm - 1] + ' ' + yy + '</div><h4>' + esc(ev.title) + '</h4><p>' + esc(short) + '</p>' +
+      (fx.length ? '<p class="fxs">W grze: ' + esc(fx.slice(0, 2).join('; ')) + (fx.length > 2 ? ' …' : '') + '</p>' : '') +
+      '<div class="row end"><button class="act" data-c="read">Czytaj całość</button></div>';
+    C.add('clip', html, { life: 16000, key: 'ev:' + ev.id, on: (k, d) => { if (k === 'read') { C.drop(d); UI.showEvent(ev, 'card'); } } });
+  };
+
+  /* a new technology: what it is and what it changes */
+  const isLine = (id) => PN.TECH[id] && PN.TECH[id].cat === 'line';
+  function whatChanges(G, id) {
+    const t = PN.TECH[id], y = PN.ym(G);
+    if (id === 'line_sn' && !G.lines.some((l) => !l.local)) return 'Prąd przemienny i transformatory: linia średniego napięcia (' + UI.kv(id) + ') przesyła do ' + PN.mw(PN.tv(t.cap, y)) + ' na odległość do ok. ' + t.maxKm + ' km. Elektrownia nie musi już stać w mieście – jedna może zasilać kilka miast.';
+    if (isLine(id)) return t.name + ' przesyła do ' + PN.mw(PN.tv(t.cap, y)) + ' na odległość do ok. ' + t.maxKm + ' km, z mniejszymi stratami niż niższe napięcia. ' + (t.desc || '');
+    if (id === 'substation') return 'Stacja rozgałęzia linie i zmienia napięcie. Linię możesz też zacząć na pustym polu – stacja powstanie sama.';
+    return t.desc || '';
+  }
+  C.tech = function (ids) {
+    const G = UI.G; ids = ids.filter((id) => PN.TECH[id]); if (!ids.length) return;
+    const main = ids.find((id) => id !== 'substation') || ids[0], t = PN.TECH[main];
+    const firstLine = ids.some(isLine) && !G.lines.some((l) => !l.local);
+    const pic = isLine(main) ? '<span class="pic" data-lineicon="' + main + '"></span>' : '<canvas width="104" height="104" data-spr="' + esc(main) + '"></canvas>';
+    const html = pic + '<div class="k">' + (ids.length > 1 ? 'Nowe technologie' : 'Nowa technologia') + '</div><h4>' + esc(ids.map((id) => PN.TECH[id].name).join(' i ')) + '</h4><p>' + esc(whatChanges(G, main)) + '</p><p class="fxs">' + UI.techLine(main) + '</p>' +
+      '<div class="row end">' + (firstLine ? '<button class="act prim" data-c="howline">Pokaż, jak postawić linię</button>' : '') + '<button class="act" data-c="show">Pokaż w menu</button></div>';
+    C.add('tech', html, { life: firstLine ? 60000 : 22000, key: 'tech:' + ids.join(','), on: (k, d) => {
+      if (k === 'show') { C.drop(d); UI.setTool(null); UI.openFly(UI.catOf(main), main); }
+      if (k === 'howline') { C.drop(d); if (PN.Tutorial && PN.Tutorial.startLines) PN.Tutorial.startLines(); }
+    } });
+  };
+
+  /* an investor's project waiting for the player's yes or no */
+  C.ipp = function (o) {
+    const G = UI.G, t = PN.TECH[o.tech], near = o.near != null ? G.byId[o.near] : null, net = PN.ippNet(G), margin = net - o.ppa;
+    const html = '<canvas width="104" height="104" data-spr="' + esc(o.tech) + '"></canvas><div class="k">Projekt inwestora prywatnego</div><h4>' + esc(o.company) + ': ' + esc(t.name.toLowerCase()) + ', ' + PN.mw(o.cap) + '</h4>' +
+      '<div class="kvs">' + kv('Miejsce', near ? 'okolice: ' + esc(PN.cityName(near, G.y)) : '–') + kv('Odkup energii', PN.price(o.ppa)) + kv('Twoja marża', PN.price(margin), margin < 0 ? 'neg' : 'pos') + kv('Umowa', o.years + ' lat') + kv('Przyłączenie', o.inCity ? 'w mieście, bez linii' : 'linia ok. ' + PN.nf(o.gridKm, 0) + ' km') + '</div>' +
+      '<p class="fxs">Inwestor sam płaci za budowę. Ty przyłączasz elektrownię i kupujesz jej energię.</p><div class="row end"><button class="act" data-c="where">Pokaż</button><button class="act" data-c="no">Odrzuć</button><button class="act prim" data-c="yes">Przyłącz</button></div>';
+    C.add('ipp', html, { sticky: true, key: 'ipp:' + o.id, on: (k, d) => {
+      const live = (G.ippOffers || []).find((x) => x.id === o.id); if (!live) { C.drop(d); return; }
+      if (k === 'where') { UI.V.centerOn(o.tx + 0.5, o.ty + 0.5, Math.max(UI.V.cam.z, 1.4)); UI.V.focusOffer = o; return; }
+      if (k === 'yes') { const n = PN.acceptIpp(G, live); C.drop(d); if (n) { UI.V.centerOn(n.x, n.y, Math.max(UI.V.cam.z, 1.4)); UI.select(n); } }
+      if (k === 'no') { PN.declineIpp(G, live); C.drop(d); }
+      UI.V.focusOffer = null; UI.hud(true); UI.refreshInfo(true);
+    } });
+  };
+  /* a data centre wants a contract (offer stays half a year) */
+  C.dc = function (o) {
+    const G = UI.G, c = G.byId[o.city];
+    const html = '<canvas width="104" height="104" data-spr="datacenter"></canvas><div class="k">Propozycja umowy</div><h4>' + esc(o.company) + ': ' + (o.ai ? 'centrum obliczeń AI' : 'centrum danych') + '</h4>' +
+      '<div class="kvs">' + kv('Miejsce', 'okolice: ' + esc(c ? PN.cityName(c, G.y) : '?')) + kv('Moc docelowa', PN.mw(o.mw)) + kv('Dojście do pełnej mocy', PN.months(o.years * 12)) + kv('Taryfa', '+' + PN.pct(o.premium) + ' ponad cenę') + '</div>' +
+      '<p class="fxs">Zasilanie 24/7 – za braki płacisz kary.</p><div class="row end"><button class="act" data-c="no">Odrzuć</button><button class="act prim" data-c="yes">Podpisz</button></div>';
+    C.add('ipp', html, { sticky: true, key: 'dc:' + o.id, on: (k, d) => {
+      const live = G.offers.find((x) => x.id === o.id); C.drop(d); if (!live) return;
+      if (k === 'yes') { const n = PN.acceptOffer(G, live); if (n) { UI.V.centerOn(n.x, n.y, Math.max(UI.V.cam.z, 1.4)); UI.select(n); } }
+      if (k === 'no') PN.declineOffer(G, live);
+      UI.hud(true); UI.refreshInfo(true);
+    } });
+  };
+  /* drop cards of offers that expired or were decided elsewhere */
+  C.sync = function () {
+    const G = UI.G, b = box(); if (!G || !b) return;
+    const ids = new Set((G.ippOffers || []).map((o) => 'ipp:' + o.id).concat(G.offers.map((o) => 'dc:' + o.id)));
+    for (const c of [...b.children]) if (c.dataset.key && /^(ipp|dc):/.test(c.dataset.key) && !ids.has(c.dataset.key)) C.drop(c);
+    if (UI.V && UI.V.focusOffer && !(G.ippOffers || []).includes(UI.V.focusOffer)) UI.V.focusOffer = null;
+  };
+
+  /* the moment private money arrives */
+  C.transformation = function (tr) {
+    const G = UI.G, small = tr.scope === 'small';
+    const lead = small ? 'Ustawa PURPA zobowiązuje Cię do kupowania prądu od małych, niezależnych elektrowni: kogeneracji, wiatru, biomasy i małej wody. Pierwszy raz do sieci przyłączają się cudze źródła.'
+      : G.code === 'PL' ? 'Prawo energetyczne kończy epokę jednego państwowego przedsiębiorstwa. Odtąd do Twojej sieci chcą się przyłączać prywatne firmy z własnymi elektrowniami – najpierw nieliczne, z czasem coraz więcej i coraz większe.'
+        : 'Order 888 otwiera sieci przesyłowe dla wszystkich. Każdy wytwórca może sprzedawać energię, a Ty musisz ją przyjąć i przesłać.';
+    const html = '<h2>' + (small ? 'Niezależni wytwórcy' : 'Transformacja: rynek energii') + '</h2><canvas class="evicon" width="200" height="200" data-icon="handshake"></canvas><p class="lead">' + esc(lead) + '</p><h3>Co się zmienia</h3><ul class="help">' +
+      '<li><b>Projekty inwestorów</b> przychodzą jako karty po lewej stronie (i w zakładce Przegląd). Inwestor sam płaci za budowę.</li>' +
+      '<li><b>Ty przyłączasz</b>: gdy elektrownia stanie, poprowadź do niej linię. Masz na to rok, potem inwestor skarży się regulatorowi, a po trzech latach rezygnuje.</li>' +
+      '<li><b>Kupujesz ich energię</b> po cenie z umowy. Tania energia z wiatru czy słońca poprawia Twój wynik, droga go pogarsza – patrz na marżę.</li>' +
+      '<li><b>Możesz odmówić</b>, ale częste odmowy psują reputację.</li>' +
+      '<li>Elektrownie prywatne mają <b class="ownr">fioletową chorągiewkę</b>. Nie rozbudujesz ich ani nie wyburzysz.</li></ul><div class="row end"><button class="act prim" data-m="ok">Rozumiem</button></div>';
+    UI.modal(html, { queue: true, pause: G.settings.pauseOnEvents });
+  };
+
+  /* ------------------------------------------------------- layers, legend */
+  C.updateLayers = function () {
+    const G = UI.G; if (!G) return;
+    document.querySelectorAll('#layers button[data-ov]').forEach((b) => {
+      const ok = PN.layerAvail(G, b.dataset.ov); b.hidden = !ok;
+      if (!ok && UI.V && UI.V.overlay === b.dataset.ov) { UI.V.overlay = null; b.classList.remove('on'); }
+    });
+  };
+  function sample(kind) {
+    const c = S.canvas(112, 44), x = c.getContext('2d'), th = S.th; c.style.width = '56px'; c.style.height = '22px'; x.scale(2, 2);
+    x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = th.ink; x.fillStyle = th.ink;
+    const path = () => { x.beginPath(); x.moveTo(4, 15); x.quadraticCurveTo(28, 5, 52, 12); };
+    const ticks = (len) => { x.lineWidth = 0.9; x.beginPath(); for (const px of [18, 36]) { x.moveTo(px - 1, 12 - len); x.lineTo(px + 1, 12 + len); } x.stroke(); };
+    if (kind === 'local') { x.globalAlpha = 0.7; x.lineWidth = 1; x.setLineDash([2, 3]); path(); x.stroke(); }
+    else if (LW[kind]) {
+      x.lineWidth = LW[kind]; if (kind === 'hvdc') x.setLineDash([10, 3, 2, 3]); if (kind === 'cable_sea') { x.setLineDash([7, 3]); x.strokeStyle = th.water; }
+      path(); x.stroke(); x.setLineDash([]); if (kind !== 'cable_sea') ticks(kind === 'line_sn' ? 2.5 : 3 + LW[kind]);
+    } else if (kind === 'flow') { x.lineWidth = 1.6; path(); x.stroke(); x.strokeStyle = th.flow; x.lineWidth = 2.2; x.setLineDash([3, 7]); path(); x.stroke(); }
+    else if (kind === 'hot' || kind === 'over') { x.lineWidth = 2; x.strokeStyle = kind === 'hot' ? th.orange : th.red; path(); x.stroke(); }
+    else if (kind === 'trace') { x.strokeStyle = th.yellow; x.globalAlpha = 0.5; x.lineWidth = 9; path(); x.stroke(); x.globalAlpha = 1; x.strokeStyle = th.ink; x.lineWidth = 1.6; path(); x.stroke(); }
+    else if (kind === 'plug') { x.strokeStyle = th.red; x.lineWidth = 1.8; x.beginPath(); x.moveTo(18, 18); x.quadraticCurveTo(24, 22, 28, 13); x.lineTo(34, 7); x.moveTo(30, 4); x.lineTo(38, 11); x.stroke(); }
+    else if (kind === 'ipp') { x.strokeStyle = th.ink; x.lineWidth = 1.3; x.beginPath(); x.moveTo(24, 20); x.lineTo(24, 3); x.stroke(); x.fillStyle = th.violet; x.beginPath(); x.moveTo(24.5, 3.5); x.lineTo(36, 7); x.lineTo(24.5, 11); x.closePath(); x.fill(); }
+    else if (kind === 'reach') { x.strokeStyle = th.water; x.lineWidth = 1.4; x.setLineDash([4, 3]); x.beginPath(); x.ellipse(28, 11, 22, 9, 0, 0, 6.3); x.stroke(); }
+    return c;
+  }
+  C.legend = function () {
+    const G = UI.G, y = PN.ym(G), el = $('#legend'); if (!el) return;
+    if (!el.hidden) { el.hidden = true; return; }
+    const rows = [['local', 'Sieć niskiego napięcia (nN): elektrownia w mieście zasila je wprost, bez linii przesyłowej.']];
+    for (const id of PN.LINE_ORDER) if (PN.techAvail(G, id)) { const t = PN.TECH[id]; rows.push([id, t.name + ' – do ok. ' + t.maxKm + ' km, ' + PN.mw(PN.tv(t.cap, y)) + ' na linię.']); }
+    if (rows.length === 1) rows.push(['reach', 'Linie przesyłowe pojawią się wraz z rozwojem techniki.']);
+    rows.push(['flow', 'Żółte kreski: prąd płynie w tę stronę (w szczycie).'], ['hot', 'Pomarańczowa linia: obciążenie ponad 80%.'], ['over', 'Czerwona linia: przeciążenie – prąd nie dociera.'],
+      ['trace', 'Żółta poświata: droga prądu do zaznaczonego miasta albo z zaznaczonej elektrowni.'], ['plug', 'Czerwona wtyczka: obiekt niepodłączony do sieci.'], ['reach', 'Przerywany krąg przy budowie: zasięg elektrowni albo linii.']);
+    if (G.ippScope) rows.push(['ipp', 'Fioletowa chorągiewka: elektrownia prywatnego inwestora.']);
+    el.innerHTML = '<button class="x" data-legend="1" aria-label="Zamknij legendę">×</button><h4>Legenda</h4>' + rows.map(([k, t]) => '<div class="lg"><span class="sw" data-k="' + k + '"></span><span>' + esc(t) + '</span></div>').join('');
+    el.querySelectorAll('.sw').forEach((sp) => sp.appendChild(sample(sp.dataset.k)));
+    el.hidden = false;
+  };
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-legend]'); if (b) C.legend(); });
+})();
+
+</script>
 <script>/* ui/tutorial.js */
 'use strict';
 /* Interactive tutorial: a pencil note that points at the next thing to do and waits for the player. */
@@ -7479,6 +8071,7 @@ window.PN_EVENTS_US = [
     return (id != null && G.cities.find((c) => c.id === id)) || homeCity();
   };
   const phone = () => window.innerWidth <= 820;
+  const nm = (n) => (n.type === 'city' ? PN.cityName(n, PN.G.y) : n.name);
   const visible = (el) => !!el && el.offsetParent !== null && !el.closest('[hidden]');
 
   T.build = function () {
@@ -7514,46 +8107,89 @@ window.PN_EVENTS_US = [
       { title: 'Zadania', el: '#tabs button[data-tab="goals"]', text: 'Historia stawia cele, a za ich wykonanie dostajesz pieniądze i reputację. Zajrzyj do zakładki Zadania.',
         done: () => UI.tab === 'goals' },
       { title: 'Linie przesyłowe', el: '#tools button[data-cat="grid"]', next: true, enter: () => { if (phone()) UI.showPanel(false); },
-        text: (lineYear > G.y ? 'Od ' + lineYear + ' r.' : 'Już teraz') + ' w menu Sieć znajdziesz linie. Wybierasz napięcie i klikasz dwa punkty: elektrownię, miasto albo puste pole (tam powstanie stacja). Wyższe napięcie to większa moc i mniejsze straty – z czasem dojdziesz do 400 kV i kabli stałoprądowych.' },
-      { title: 'Gdzie wieje i świeci', el: '#layers', next: true,
-        text: 'Warstwy mapy: Wiatr i Słońce pokażą, gdzie stawiać farmy, Zasoby – złoża węgla i gazu oraz miejsca na zapory, Popyt – głód prądu w miastach.' },
+        text: (lineYear > G.y ? 'Linii jeszcze nie wynaleziono – na razie każda elektrownia zasila tylko swoje miasto. Gdy się pojawią, gazeta da znać i pokaże, jak postawić pierwszą.' : 'W menu Sieć są linie.') + ' Linię stawiasz, wybierając napięcie i klikając dwa punkty: elektrownię, miasto albo puste pole (tam powstanie stacja). Wyższe napięcie to większa moc, dalszy zasięg i mniejsze straty.' },
+      { title: 'Warstwy mapy', el: '#layers', next: true,
+        text: 'Zasoby pokazują złoża: wyraźne można zagospodarować już dziś, blade – dopiero w przyszłości. Popyt pokazuje głód prądu w miastach, a Legenda tłumaczy znaczki i linie. Warstwy Wiatr i Słońce pojawią się razem z elektrowniami wiatrowymi i słonecznymi.' },
       { title: 'Historia puka do drzwi', next: true,
-        text: 'Wycinki z gazet przyniosą nowe technologie, wojny, kryzysy i ustawy. Stare elektrownie z czasem przestaną się opłacać – zastępuj je nowszymi, a kopalnie i odkrywki zapewnią tańsze paliwo.' },
+        text: 'Wynalazki przychodzą same, razem z historią: w menu widzisz tylko to, co już istnieje. Wycinki z gazet pojawią się po lewej i nie zatrzymują gry; czas staje tylko przy wojnach, kryzysach i zmianach ustroju. Stare elektrownie z czasem przestaną się opłacać – zastępuj je nowszymi.' },
       { title: 'Do dzieła', next: true, last: true,
         text: 'Dobudowuj bloki, gdy rośnie popyt, elektryfikuj kolejne miasta i pilnuj rezerwy mocy. Samouczek powtórzysz z menu ☰.' },
     ];
   };
 
+  /* a short follow-up when the first transmission lines appear */
+  T.buildLines = function () {
+    const G = PN.G, V = UI.V, lid = PN.LINE_ORDER.find((id) => PN.techAvail(G, id)) || 'line_sn', lt = PN.TECH[lid];
+    const hard = (lt.maxKm * 1.6) / (1.08 * G.map.T);
+    // the closest pair: something that already has power, and a town that has none
+    const pair = () => {
+      const src = G.nodes.filter((n) => n.built && n.energized && !n.dmg && ((n.type === 'plant' && n.owner !== 'ipp') || (n.type === 'city' && PN.cityOwned(G, n)) || n.type === 'sub'));
+      const dst = G.cities.filter((c) => PN.cityOwned(G, c) && !c.energized && c.pop > 0);
+      const pairs = [];
+      for (const a of src) for (const b of dst) pairs.push({ a, b, d: Math.hypot(a.x - b.x, a.y - b.y) });
+      pairs.sort((p, q) => p.d - q.d);
+      // the nearest pair a line can actually join: no sea or foreign land on the way (distance alone can be bridged with stations)
+      for (const pr of pairs.slice(0, 40)) { const c = PN.lineCheck(G, lid, pr.a, pr.b); if (c.ok || c.poor || (c.km && c.km > lt.maxKm * 1.6)) return pr; }
+      return pairs[0] || null;
+    };
+    let P = pair();
+    const start = () => (P && P.a) || homeCity(), end = () => (P && P.b) || homeCity();
+    const reached = () => P && P.b.links.some((id) => { const l = G.byId[id]; return l && !l.local; });
+    const km = () => (P ? P.d * G.map.T * 1.08 : 0);
+    const frame = () => { if (!P) return; const mx = (P.a.x + P.b.x) / 2, my = (P.a.y + P.b.y) / 2, base = V.scale() / V.cam.z; V.centerOn(mx, my, PN.clamp((0.42 * Math.min(V.W, V.H)) / (Math.max(1, P.d) * base), 0.45, 1.8)); };
+    return [
+      { title: 'Pierwsza linia', next: true, enter: () => { P = pair(); },
+        text: 'Linia zanosi prąd z elektrowni do miast, które nie mają własnej. ' + (P ? 'Połączymy ' + nm(P.a) + ' z miastem ' + nm(P.b) + '.' : 'Zbudujesz ją w kilku kliknięciach.') },
+      { title: 'Menu Sieć', el: '#tools button[data-cat="grid"]', text: 'Otwórz menu Sieć na lewym pasku.', done: () => UI.flyCat === 'grid' || (UI.tool && UI.tool.kind === 'line') },
+      { title: 'Wybierz napięcie', el: '#fly [data-tech="' + lid + '"]', text: 'Kliknij „' + lt.name + '”. Wyższe napięcie przesyła więcej i dalej, ale kosztuje więcej.', done: () => UI.tool && UI.tool.kind === 'line', back: () => !UI.flyCat && !UI.tool },
+      { title: 'Kliknij początek', map: start, enter: frame,
+        text: () => 'Kliknij ' + nm(start()) + ' – stąd poprowadzisz linię. Niebieski krąg pokaże, dokąd sięga.', done: () => !!V.lineStart, back: () => !UI.tool },
+      { title: 'Kliknij koniec', map: end,
+        text: () => (!P ? 'Kliknij miasto w zasięgu kręgu. Podpowiedź pokaże koszt, straty i czas budowy.'
+          : P.d > hard * 0.97 ? 'Do miasta ' + nm(P.b) + ' jest ok. ' + PN.nf(km(), 0) + ' km – dalej, niż sięga jedna linia ' + lt.short + '. Kliknij puste pole w stronę miasta, w zasięgu kręgu: powstanie tam stacja, a linia pobiegnie dalej od niej. Powtarzaj, aż dojdziesz do miasta ' + nm(P.b) + '.'
+            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy.'),
+        done: () => reached(), back: () => !UI.tool },
+      { title: 'Linia w budowie', next: true, last: true, enter: () => UI.setTool(null),
+        text: 'Budowa potrwa kilka miesięcy. Gdy linia ruszy, żółte kreski pokażą kierunek przepływu, a panel miasta – skąd płynie prąd. Kolejne linie stawiasz tak samo.' },
+    ];
+  };
+  T.startLines = function () {
+    if (!PN.G || !UI.V) return;
+    T.steps = T.buildLines(); T.i = 0; T.active = true; T.t0 = performance.now(); ensure(); T.go(0);
+  };
+  function ensure() {
+    if (T.card) return;
+    T.card = document.createElement('div'); T.card.className = 'tut-card'; T.card.setAttribute('role', 'dialog'); T.card.setAttribute('aria-live', 'polite');
+    T.ring = document.createElement('div'); T.ring.className = 'tut-ring';
+    document.getElementById('app').append(T.ring, T.card);
+    T.card.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-t]'); if (!b) return;
+      if (b.dataset.t === 'skip') T.stop();
+      if (b.dataset.t === 'next') T.go(T.i + 1);
+    });
+  }
   T.start = function () {
     if (!PN.G || !UI.V) return;
     T.steps = T.build(); T.i = 0; T.active = true; T.t0 = performance.now();
-    if (!T.card) {
-      T.card = document.createElement('div'); T.card.className = 'tut-card'; T.card.setAttribute('role', 'dialog'); T.card.setAttribute('aria-live', 'polite');
-      T.ring = document.createElement('div'); T.ring.className = 'tut-ring';
-      document.getElementById('app').append(T.ring, T.card);
-      T.card.addEventListener('click', (e) => {
-        const b = e.target.closest('[data-t]'); if (!b) return;
-        if (b.dataset.t === 'skip') T.stop();
-        if (b.dataset.t === 'next') T.go(T.i + 1);
-      });
-    }
+    ensure();
     T.go(0);
   };
   T.go = function (i) {
     if (i >= T.steps.length) { T.stop(); return; }
     T.i = Math.max(0, i); const s = T.steps[T.i];
+    document.body.classList.add('tut-on');
     if (s.enter) try { s.enter(); } catch (e) { /* ignore */ }
     T.render(); T.t0 = performance.now();
   };
   T.stop = function () {
-    T.active = false; if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true;
+    T.active = false; document.body.classList.remove('tut-on'); if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true;
     try { localStorage.setItem('pn_tut_done', '1'); } catch (e) { /* storage unavailable */ }
   };
-  T.cancel = function () { T.active = false; if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true; };
+  T.cancel = function () { T.active = false; document.body.classList.remove('tut-on'); if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true; };
   T.done = function () { try { return localStorage.getItem('pn_tut_done') === '1'; } catch (e) { return false; } };
   T.render = function () {
     const s = T.steps[T.i];
-    T.card.innerHTML = '<div class="tut-k">Samouczek · krok ' + (T.i + 1) + ' z ' + T.steps.length + '</div><h3>' + esc(s.title) + '</h3><p>' + esc(s.text) + '</p><div class="row end">' +
+    T.card.innerHTML = '<div class="tut-k">Samouczek · krok ' + (T.i + 1) + ' z ' + T.steps.length + '</div><h3>' + esc(s.title) + '</h3><p>' + esc(typeof s.text === 'function' ? s.text() : s.text) + '</p><div class="row end">' +
       (s.last ? '' : '<button class="act" data-t="skip">Pomiń samouczek</button>') +
       (s.next ? '<button class="act prim" data-t="next">' + (s.last ? 'Zakończ' : 'Dalej') + '</button>' : '<span class="tut-wait">czekam na Twój ruch…</span>') + '</div>';
     T.card.hidden = false;
@@ -7697,7 +8333,8 @@ window.PN_EVENTS_US = [
     if (PN.Tutorial && PN.Tutorial.active) PN.Tutorial.cancel();
     $('#start').hidden = true; document.body.classList.remove('at-start');
     if (!V) V = new PN.View($('#map'), G); else { V.G = G; V.terrain = new PN.Terrain(G); V.citySpr.clear(); V.lineGeo.clear(); V.ovCache = {}; V.prepareLabels(); const v = G.sc.view, t = G.map.toTile(v.lon, v.lat); V.cam = { x: t[0], y: t[1], z: v.zoom || 1 }; V.sel = null; V.tool = null; V.overlay = null; }
-    V.firstFrames = 2;
+    V.firstFrames = 2; V.trace = null; V.focusOffer = null;
+    PN.discoverTech(G); // what already exists at the start is known, not news
     UI.bind(G, V); UI.setTool(null); UI.setSpeed(0);
     PN.energize(G);
     if (fresh) intro(); else UI.setSpeed(1);
@@ -7723,9 +8360,10 @@ window.PN_EVENTS_US = [
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     if (G && !UI.modalOpen && UI.speed > 0 && !G.over && !document.hidden) {
       acc += dt * UI.speed;
-      let n = 0;
-      while (acc >= MONTH_SEC && n < 3) { try { PN.step(G); } catch (e) { console.error(e); } acc -= MONTH_SEC; n++; }
-      if (n === 3) acc = Math.min(acc, MONTH_SEC);
+      let n = 0; const tb = performance.now();
+      // a heavy month (huge late-game grid) gets a frame of its own, so the map never freezes
+      while (acc >= MONTH_SEC && n < 3 && (n === 0 || performance.now() - tb < 25)) { try { PN.step(G); } catch (e) { console.error(e); } acc -= MONTH_SEC; n++; }
+      if (acc > MONTH_SEC * 2) acc = MONTH_SEC;
     }
     if (V && G) { try { V.frame(dt); } catch (e) { console.error(e); } UI.hud(); if (PN.Tutorial) PN.Tutorial.tick(); }
     requestAnimationFrame(loop);
@@ -7774,7 +8412,7 @@ window.PN_EVENTS_US = [
       if (e.key === 'ArrowLeft' || e.key === 'a') V.cam.x -= s; if (e.key === 'ArrowRight' || e.key === 'd') V.cam.x += s;
       if (e.key === 'ArrowUp' || e.key === 'w') V.cam.y -= s; if (e.key === 'ArrowDown' || e.key === 's') V.cam.y += s;
       if (e.key === '+' || e.key === '=') V.zoomAt(V.W / 2, V.H / 2, 1.25); if (e.key === '-') V.zoomAt(V.W / 2, V.H / 2, 0.8);
-      if ((e.key === 'Delete' || e.key === 'Backspace') && UI.sel && UI.sel.type !== 'city') { PN.demolish(G, UI.sel); UI.select(null); }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && UI.sel && UI.sel.type !== 'city' && !UI.sel.local && UI.sel.owner !== 'ipp') { PN.demolish(G, UI.sel); UI.select(null); }
       V.clampCam();
     });
   }
@@ -7805,11 +8443,13 @@ window.PN_EVENTS_US = [
       } else UI.tip(cx, cy, '<b>' + PN.esc(PN.TECH[tool.id].name) + '</b><div>' + (e.node ? 'Początek: ' + PN.esc(nodeName(e.node)) : e.sub.ok ? 'Początek: nowa stacja (' + PN.money(e.sub.cost) + ')' : PN.esc(e.sub.why)) + '</div>', e.node || e.sub.ok);
       cvCursor('crosshair'); return;
     }
-    if (tool.kind === 'demolish') { const p = V.pick(sx, sy); V.hover.pick = p && p.type !== 'city' ? p : null; UI.tip(cx, cy, V.hover.pick ? 'Wyburz: ' + PN.esc(nodeName(p.obj)) : null); cvCursor('crosshair'); }
+    if (tool.kind === 'demolish') { const p = V.pick(sx, sy, { noLocal: true }); V.hover.pick = p && p.type !== 'city' ? p : null; UI.tip(cx, cy, V.hover.pick ? 'Wyburz: ' + PN.esc(nodeName(p.obj)) : null); cvCursor('crosshair'); }
   }
   function nodeName(n) { if (!n) return ''; if (n.a) return (PN.TECH[n.type] ? PN.TECH[n.type].short : '') + ' ' + nodeName(G.byId[n.a]) + ' – ' + nodeName(G.byId[n.b]); return n.type === 'city' ? PN.cityName(n, G.y) : n.name; }
   function quickTip(o) {
-    if (o.a) return '<b>' + PN.esc(nodeName(o)) + '</b><div>' + PN.mw(Math.abs(o.flow || 0)) + ' / ' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie') + '</div>';
+    if (o.a && o.local) return '<b>Sieć niskiego napięcia (nN)</b><div>Elektrownia stoi w mieście i zasila je wprost, bez linii przesyłowej.</div>';
+    if (o.a) { const t = PN.TECH[o.type]; return '<b>' + PN.esc(nodeName(o)) + '</b><div>' + PN.esc(t ? UI.kv(o.type) || t.short : '') + ' · ' + PN.mw(Math.abs(o.flow || 0)) + ' / ' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie') + '</div>'; }
+    if (o.owner === 'ipp') return '<b>' + PN.esc(o.name) + '</b><div>Prywatna · ' + PN.esc(o.company) + ' · ' + PN.mw(o.cap) + (o.built ? (o.links.length ? '' : ' · czeka na przyłączenie') : ' · w budowie ' + PN.pct(o.prog)) + '</div>';
     if (o.type === 'city') return '<b>' + PN.esc(PN.cityName(o, G.y)) + '</b><div>' + PN.nf(o.pop, 0) + ' mieszk. · ' + (o.demE > 0 ? 'zasilono ' + PN.pct(o.served) : PN.cityOwned(G, o) ? 'bez prądu' : 'poza Twoim obszarem') + '</div>';
     return '<b>' + PN.esc(o.name) + '</b>' + (o.cap ? '<div>' + PN.mw(o.cap) + (o.built ? '' : ' · w budowie ' + PN.pct(o.prog)) + '</div>' : '');
   }
@@ -7843,7 +8483,8 @@ window.PN_EVENTS_US = [
       return;
     }
     if (tool.kind === 'demolish') {
-      const p = V.pick(sx, sy); if (!p || p.type === 'city') return;
+      const p = V.pick(sx, sy, { noLocal: true }); if (!p || p.type === 'city') return;
+      if (p.obj.owner === 'ipp') { UI.toast('To elektrownia prywatnego inwestora – nie możesz jej wyburzyć.', 'warn'); return; }
       if (UI.pendingDemolish !== p.obj) { UI.pendingDemolish = p.obj; UI.toast('Kliknij jeszcze raz, aby wyburzyć: ' + PN.esc(nodeName(p.obj)) + '.', 'warn'); return; }
       PN.demolish(G, p.obj); UI.pendingDemolish = null; UI.refreshInfo(true);
     }

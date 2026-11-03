@@ -14,6 +14,7 @@
     return (id != null && G.cities.find((c) => c.id === id)) || homeCity();
   };
   const phone = () => window.innerWidth <= 820;
+  const nm = (n) => (n.type === 'city' ? PN.cityName(n, PN.G.y) : n.name);
   const visible = (el) => !!el && el.offsetParent !== null && !el.closest('[hidden]');
 
   T.build = function () {
@@ -49,46 +50,89 @@
       { title: 'Zadania', el: '#tabs button[data-tab="goals"]', text: 'Historia stawia cele, a za ich wykonanie dostajesz pieniądze i reputację. Zajrzyj do zakładki Zadania.',
         done: () => UI.tab === 'goals' },
       { title: 'Linie przesyłowe', el: '#tools button[data-cat="grid"]', next: true, enter: () => { if (phone()) UI.showPanel(false); },
-        text: (lineYear > G.y ? 'Od ' + lineYear + ' r.' : 'Już teraz') + ' w menu Sieć znajdziesz linie. Wybierasz napięcie i klikasz dwa punkty: elektrownię, miasto albo puste pole (tam powstanie stacja). Wyższe napięcie to większa moc i mniejsze straty – z czasem dojdziesz do 400 kV i kabli stałoprądowych.' },
-      { title: 'Gdzie wieje i świeci', el: '#layers', next: true,
-        text: 'Warstwy mapy: Wiatr i Słońce pokażą, gdzie stawiać farmy, Zasoby – złoża węgla i gazu oraz miejsca na zapory, Popyt – głód prądu w miastach.' },
+        text: (lineYear > G.y ? 'Linii jeszcze nie wynaleziono – na razie każda elektrownia zasila tylko swoje miasto. Gdy się pojawią, gazeta da znać i pokaże, jak postawić pierwszą.' : 'W menu Sieć są linie.') + ' Linię stawiasz, wybierając napięcie i klikając dwa punkty: elektrownię, miasto albo puste pole (tam powstanie stacja). Wyższe napięcie to większa moc, dalszy zasięg i mniejsze straty.' },
+      { title: 'Warstwy mapy', el: '#layers', next: true,
+        text: 'Zasoby pokazują złoża: wyraźne można zagospodarować już dziś, blade – dopiero w przyszłości. Popyt pokazuje głód prądu w miastach, a Legenda tłumaczy znaczki i linie. Warstwy Wiatr i Słońce pojawią się razem z elektrowniami wiatrowymi i słonecznymi.' },
       { title: 'Historia puka do drzwi', next: true,
-        text: 'Wycinki z gazet przyniosą nowe technologie, wojny, kryzysy i ustawy. Stare elektrownie z czasem przestaną się opłacać – zastępuj je nowszymi, a kopalnie i odkrywki zapewnią tańsze paliwo.' },
+        text: 'Wynalazki przychodzą same, razem z historią: w menu widzisz tylko to, co już istnieje. Wycinki z gazet pojawią się po lewej i nie zatrzymują gry; czas staje tylko przy wojnach, kryzysach i zmianach ustroju. Stare elektrownie z czasem przestaną się opłacać – zastępuj je nowszymi.' },
       { title: 'Do dzieła', next: true, last: true,
         text: 'Dobudowuj bloki, gdy rośnie popyt, elektryfikuj kolejne miasta i pilnuj rezerwy mocy. Samouczek powtórzysz z menu ☰.' },
     ];
   };
 
+  /* a short follow-up when the first transmission lines appear */
+  T.buildLines = function () {
+    const G = PN.G, V = UI.V, lid = PN.LINE_ORDER.find((id) => PN.techAvail(G, id)) || 'line_sn', lt = PN.TECH[lid];
+    const hard = (lt.maxKm * 1.6) / (1.08 * G.map.T);
+    // the closest pair: something that already has power, and a town that has none
+    const pair = () => {
+      const src = G.nodes.filter((n) => n.built && n.energized && !n.dmg && ((n.type === 'plant' && n.owner !== 'ipp') || (n.type === 'city' && PN.cityOwned(G, n)) || n.type === 'sub'));
+      const dst = G.cities.filter((c) => PN.cityOwned(G, c) && !c.energized && c.pop > 0);
+      const pairs = [];
+      for (const a of src) for (const b of dst) pairs.push({ a, b, d: Math.hypot(a.x - b.x, a.y - b.y) });
+      pairs.sort((p, q) => p.d - q.d);
+      // the nearest pair a line can actually join: no sea or foreign land on the way (distance alone can be bridged with stations)
+      for (const pr of pairs.slice(0, 40)) { const c = PN.lineCheck(G, lid, pr.a, pr.b); if (c.ok || c.poor || (c.km && c.km > lt.maxKm * 1.6)) return pr; }
+      return pairs[0] || null;
+    };
+    let P = pair();
+    const start = () => (P && P.a) || homeCity(), end = () => (P && P.b) || homeCity();
+    const reached = () => P && P.b.links.some((id) => { const l = G.byId[id]; return l && !l.local; });
+    const km = () => (P ? P.d * G.map.T * 1.08 : 0);
+    const frame = () => { if (!P) return; const mx = (P.a.x + P.b.x) / 2, my = (P.a.y + P.b.y) / 2, base = V.scale() / V.cam.z; V.centerOn(mx, my, PN.clamp((0.42 * Math.min(V.W, V.H)) / (Math.max(1, P.d) * base), 0.45, 1.8)); };
+    return [
+      { title: 'Pierwsza linia', next: true, enter: () => { P = pair(); },
+        text: 'Linia zanosi prąd z elektrowni do miast, które nie mają własnej. ' + (P ? 'Połączymy ' + nm(P.a) + ' z miastem ' + nm(P.b) + '.' : 'Zbudujesz ją w kilku kliknięciach.') },
+      { title: 'Menu Sieć', el: '#tools button[data-cat="grid"]', text: 'Otwórz menu Sieć na lewym pasku.', done: () => UI.flyCat === 'grid' || (UI.tool && UI.tool.kind === 'line') },
+      { title: 'Wybierz napięcie', el: '#fly [data-tech="' + lid + '"]', text: 'Kliknij „' + lt.name + '”. Wyższe napięcie przesyła więcej i dalej, ale kosztuje więcej.', done: () => UI.tool && UI.tool.kind === 'line', back: () => !UI.flyCat && !UI.tool },
+      { title: 'Kliknij początek', map: start, enter: frame,
+        text: () => 'Kliknij ' + nm(start()) + ' – stąd poprowadzisz linię. Niebieski krąg pokaże, dokąd sięga.', done: () => !!V.lineStart, back: () => !UI.tool },
+      { title: 'Kliknij koniec', map: end,
+        text: () => (!P ? 'Kliknij miasto w zasięgu kręgu. Podpowiedź pokaże koszt, straty i czas budowy.'
+          : P.d > hard * 0.97 ? 'Do miasta ' + nm(P.b) + ' jest ok. ' + PN.nf(km(), 0) + ' km – dalej, niż sięga jedna linia ' + lt.short + '. Kliknij puste pole w stronę miasta, w zasięgu kręgu: powstanie tam stacja, a linia pobiegnie dalej od niej. Powtarzaj, aż dojdziesz do miasta ' + nm(P.b) + '.'
+            : 'Teraz kliknij ' + nm(P.b) + ' (ok. ' + PN.nf(km(), 0) + ' km). Podpowiedź pokaże koszt, straty i czas budowy.'),
+        done: () => reached(), back: () => !UI.tool },
+      { title: 'Linia w budowie', next: true, last: true, enter: () => UI.setTool(null),
+        text: 'Budowa potrwa kilka miesięcy. Gdy linia ruszy, żółte kreski pokażą kierunek przepływu, a panel miasta – skąd płynie prąd. Kolejne linie stawiasz tak samo.' },
+    ];
+  };
+  T.startLines = function () {
+    if (!PN.G || !UI.V) return;
+    T.steps = T.buildLines(); T.i = 0; T.active = true; T.t0 = performance.now(); ensure(); T.go(0);
+  };
+  function ensure() {
+    if (T.card) return;
+    T.card = document.createElement('div'); T.card.className = 'tut-card'; T.card.setAttribute('role', 'dialog'); T.card.setAttribute('aria-live', 'polite');
+    T.ring = document.createElement('div'); T.ring.className = 'tut-ring';
+    document.getElementById('app').append(T.ring, T.card);
+    T.card.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-t]'); if (!b) return;
+      if (b.dataset.t === 'skip') T.stop();
+      if (b.dataset.t === 'next') T.go(T.i + 1);
+    });
+  }
   T.start = function () {
     if (!PN.G || !UI.V) return;
     T.steps = T.build(); T.i = 0; T.active = true; T.t0 = performance.now();
-    if (!T.card) {
-      T.card = document.createElement('div'); T.card.className = 'tut-card'; T.card.setAttribute('role', 'dialog'); T.card.setAttribute('aria-live', 'polite');
-      T.ring = document.createElement('div'); T.ring.className = 'tut-ring';
-      document.getElementById('app').append(T.ring, T.card);
-      T.card.addEventListener('click', (e) => {
-        const b = e.target.closest('[data-t]'); if (!b) return;
-        if (b.dataset.t === 'skip') T.stop();
-        if (b.dataset.t === 'next') T.go(T.i + 1);
-      });
-    }
+    ensure();
     T.go(0);
   };
   T.go = function (i) {
     if (i >= T.steps.length) { T.stop(); return; }
     T.i = Math.max(0, i); const s = T.steps[T.i];
+    document.body.classList.add('tut-on');
     if (s.enter) try { s.enter(); } catch (e) { /* ignore */ }
     T.render(); T.t0 = performance.now();
   };
   T.stop = function () {
-    T.active = false; if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true;
+    T.active = false; document.body.classList.remove('tut-on'); if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true;
     try { localStorage.setItem('pn_tut_done', '1'); } catch (e) { /* storage unavailable */ }
   };
-  T.cancel = function () { T.active = false; if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true; };
+  T.cancel = function () { T.active = false; document.body.classList.remove('tut-on'); if (T.card) T.card.hidden = true; if (T.ring) T.ring.hidden = true; };
   T.done = function () { try { return localStorage.getItem('pn_tut_done') === '1'; } catch (e) { return false; } };
   T.render = function () {
     const s = T.steps[T.i];
-    T.card.innerHTML = '<div class="tut-k">Samouczek · krok ' + (T.i + 1) + ' z ' + T.steps.length + '</div><h3>' + esc(s.title) + '</h3><p>' + esc(s.text) + '</p><div class="row end">' +
+    T.card.innerHTML = '<div class="tut-k">Samouczek · krok ' + (T.i + 1) + ' z ' + T.steps.length + '</div><h3>' + esc(s.title) + '</h3><p>' + esc(typeof s.text === 'function' ? s.text() : s.text) + '</p><div class="row end">' +
       (s.last ? '' : '<button class="act" data-t="skip">Pomiń samouczek</button>') +
       (s.next ? '<button class="act prim" data-t="next">' + (s.last ? 'Zakończ' : 'Dalej') + '</button>' : '<span class="tut-wait">czekam na Twój ruch…</span>') + '</div>';
     T.card.hidden = false;

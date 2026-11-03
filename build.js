@@ -10,7 +10,7 @@ const order = [
   'data/geo_pl.js', 'data/geo_us.js', 'data/places_pl.js', 'data/places_us.js', 'data/events_pl.js', 'data/events_us.js',
   'engine/map.js', 'engine/flow.js', 'engine/sim.js',
   'render/sketch.js', 'render/sprites.js', 'render/terrain.js', 'render/view.js',
-  'ui/ui.js', 'ui/tutorial.js', 'main.js',
+  'ui/ui.js', 'ui/cards.js', 'ui/tutorial.js', 'main.js',
 ];
 const tpl = fs.readFileSync(path.join(SRC, 'index.html'), 'utf8');
 const part = (name) => { const m = tpl.split('<!--PART:' + name + '-->')[1]; return m.split('<!--PART:')[0].trim(); };

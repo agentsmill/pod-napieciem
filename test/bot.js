@@ -27,6 +27,7 @@ module.exports = function (PN, G, years) {
   }
   function act() {
     const y = PN.ym(G);
+    if (process.env.PN_RICH) G.money = Math.max(G.money, G.sc.money * 8); // stress test: never run out of money
     // finance: keep a buffer
     if (G.money < G.sc.money * 0.15 && G.debt < PN.creditLimit(G) * 0.5) PN.takeLoan(G, G.sc.money * 0.5);
     if (G.money > G.sc.money * 3 && G.debt > 0) PN.repay(G, Math.min(G.debt, G.money - G.sc.money * 2));
@@ -84,6 +85,9 @@ module.exports = function (PN, G, years) {
     if (G.satR > 0.05) for (const c of cs.slice(0, 30)) if (c.energized && c.ruralLvl < 4 && G.money > PN.ruralCostFor(G, c) * 4) PN.ruralUp(G, c);
     // offers
     for (const o of G.offers.slice()) PN.acceptOffer(G, o);
+    // independent producers: accept their projects and connect them once built
+    for (const o of (G.ippOffers || []).slice()) PN.acceptIpp(G, o);
+    for (const n of G.nodes) if (n.owner === 'ipp' && n.built && !n.links.length && lt) { const t = nearestEnergized(n, PN.TECH[lt].maxKm * 1.4); if (t) { const r = PN.buildLine(G, lt, n, t); if (r.ok) log.push(y.toFixed(1) + ' connect ' + n.name); } }
     for (const o of G.nodes) if (o.dmg && G.money > PN.repairCost(G, o) * 2) PN.repair(G, o);
     for (const l of G.lines) if (l.dmg && G.money > PN.repairCost(G, l) * 2) PN.repair(G, l);
   }
